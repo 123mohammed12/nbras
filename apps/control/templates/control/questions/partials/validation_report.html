@@ -1,0 +1,63 @@
+<div class="qb-validation-report" id="validationReportContent">
+    {% if validation_report.valid %}
+    <div class="alert alert-success" style="margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div>
+                <strong>النسخة مؤهلة وصالحة للنشر بالكامل:</strong>
+                اجتاز هذا السؤال كافة الفحوصات الأكاديمية والتربوية وقيود قواعد البيانات المعتمدة.
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-danger" style="margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <div>
+                <strong>توجد متطلبات غير مكتملة تعيق النشر:</strong>
+                يرجى معالجة الملاحظات التالية في المسودة قبل محاولة إرسالها للمراجعة أو النشر.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Checklist / Errors -->
+    {% if validation_report.errors %}
+    <div class="qb-val-section" style="margin-bottom: 16px;">
+        <h4 style="font-size: 13.5px; font-weight: 700; color: var(--danger); margin-bottom: 8px;">
+            الأخطاء والموانع الإلزامية ({{ validation_report.errors|length }}):
+        </h4>
+        <ul class="qb-val-list qb-val-errors">
+            {% for err in validation_report.errors %}
+            <li class="qb-val-item qb-val-error">
+                <span class="qb-val-icon">✕</span>
+                <span class="qb-val-msg">{{ err }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Warnings -->
+    {% if validation_report.warnings %}
+    <div class="qb-val-section">
+        <h4 style="font-size: 13.5px; font-weight: 700; color: var(--warning); margin-bottom: 8px;">
+            التنبيهات الإرشادية ({{ validation_report.warnings|length }}):
+        </h4>
+        <ul class="qb-val-list qb-val-warnings">
+            {% for wrn in validation_report.warnings %}
+            <li class="qb-val-item qb-val-warning">
+                <span class="qb-val-icon">⚠</span>
+                <span class="qb-val-msg">{{ wrn }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>

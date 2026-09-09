@@ -1,0 +1,163 @@
+{% extends "control/base.html" %}
+
+{% block title %}سجل عمليات الاشتراكات (Audit Log) | لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات والرموز</a></li>
+            <li class="breadcrumb-item active" aria-current="page">سجل العمليات</li>
+        </ol>
+    </nav>
+
+    <!-- Sub-Nav -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">سجل الأحداث والعمليات الإدارية (Audit Trail)</h6>
+            <small class="text-muted">تسجيل غير قابل للتعديل لكافة عمليات التفعيل والإلغاء وتعديل الحالات</small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 170px;">التاريخ والوقت</th>
+                        <th>العملية</th>
+                        <th>المصدر</th>
+                        <th>الطالب / الاشتراك</th>
+                        <th>المُنفّذ (Actor)</th>
+                        <th>السبب والملاحظات</th>
+                        <th style="width: 100px;" class="text-center">فحص الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in page_obj %}
+                    <tr>
+                        <td>
+                            <small class="text-muted font-monospace">{{ item.created_at|date:"Y-m-d H:i:s" }}</small>
+                        </td>
+                        <td>
+                            {% if item.action == 'create' or item.action == 'direct_activate' %}
+                                <span class="badge bg-success-subtle text-success border border-success">تفعيل جديد</span>
+                            {% elif item.action == 'revoke' %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger">إلغاء إداري</span>
+                            {% elif item.action == 'cancel' %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning">إيقاف</span>
+                            {% elif item.action == 'expire' %}
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary">انتهاء الصلاحية</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark border">{{ item.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary border">{{ item.get_source_display }}</span>
+                        </td>
+                        <td>
+                            {% if item.subscription and item.subscription.user %}
+                                <a href="{% url 'control:student_subscription_detail' item.subscription.user.pk %}" class="fw-bold">
+                                    {{ item.subscription.user.get_full_name|default:item.subscription.user.phone }}
+                                </a>
+                                <small class="text-muted d-block font-monospace">اشتراك #{{ item.subscription.pk|slice:":8" }}</small>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.actor %}
+                                <span class="badge bg-info-subtle text-dark">{{ item.actor.get_full_name|default:item.actor.phone }}</span>
+                            {% else %}
+                                <span class="text-muted">النظام التلقائي</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="text-dark">{{ item.reason|default:"-" }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if item.before_state or item.after_state %}
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#stateModal-{{ item.pk }}">
+                                🔍 الفروقات
+                            </button>
+
+                            <!-- Modal for Before/After JSON -->
+                            <div class="modal fade text-start" id="stateModal-{{ item.pk }}" tabindex="-1" aria-labelledby="modalTitle-{{ item.pk }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title fw-bold" id="modalTitle-{{ item.pk }}">تفاصيل الحالة قبل وبعد العملية (Audit Diff)</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <h6 class="fw-bold text-muted mb-2">الحالة السابقة (Before):</h6>
+                                                    <pre class="bg-light p-3 rounded border font-monospace small" style="max-height: 250px; overflow-y: auto;">{{ item.before_state|default:"{}" }}</pre>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6 class="fw-bold text-muted mb-2">الحالة اللاحقة (After):</h6>
+                                                    <pre class="bg-light p-3 rounded border font-monospace small" style="max-height: 250px; overflow-y: auto;">{{ item.after_state|default:"{}" }}</pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            لا توجد أي سجلات تدقيق حتى الآن.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer bg-white py-3">
+            <nav aria-label="تنقل الصفحات">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">السابق</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">السابق</span></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">التالي</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">التالي</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

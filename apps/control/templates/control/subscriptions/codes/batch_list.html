@@ -1,0 +1,131 @@
+{% extends "control/base.html" %}
+
+{% block title %}دفعات رموز التفعيل | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title h3 mb-1">دفعات رموز التفعيل</h1>
+            <p class="text-muted mb-0">استعراض دفعات الرموز المنشأة ومتابعة أعداد الرموز المتاحة والمستخدمة وتواريخ الصلاحية.</p>
+        </div>
+        <div class="header-actions">
+            {% if perms.subscriptions.generate_code_batch or user.is_superuser %}
+            <a href="{% url 'control:activation_code_batch_generate' %}" class="btn btn-primary">
+                + إنشاء دفعة رموز جديدة
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <!-- Batches Table Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">سجل دفعات الرموز</h5>
+            <a href="{% url 'control:activation_code_lookup' %}" class="btn btn-sm btn-outline-secondary">
+                الاستعلام عن رمز فردي &larr;
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>معرف الدفعة</th>
+                        <th>الخطة المرتبطة</th>
+                        <th>الكمية الكلية</th>
+                        <th>المتاح</th>
+                        <th>المستخدم</th>
+                        <th>الملغى</th>
+                        <th>المنتهي</th>
+                        <th>المسؤول والإنشاء</th>
+                        {% if user.is_superuser %}
+                        <th class="text-center">إجراءات المدير</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for batch in page_obj %}
+                    <tr>
+                        <td>
+                            <strong class="font-monospace text-primary">{{ batch.batch_code }}</strong>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ batch.plan.name }}</div>
+                            <small class="text-muted">{{ batch.plan.get_tier_type_display }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border fs-6">{{ batch.quantity }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success">{{ batch.available_count }} متاح</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark-subtle text-dark">{{ batch.redeemed_count }} مستخدم</span>
+                        </td>
+                        <td>
+                            {% if batch.revoked_count > 0 %}
+                            <span class="badge bg-danger-subtle text-danger">{{ batch.revoked_count }} ملغى</span>
+                            {% else %}
+                            <span class="text-muted small">0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if batch.code_expires_at %}
+                            <small class="font-monospace text-muted">{{ batch.code_expires_at|date:"Y-m-d" }}</small>
+                            {% else %}
+                            <small class="text-muted">بدون انتهاء</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small text-muted">{{ batch.created_by.get_full_name|default:batch.created_by.phone|default:"النظام" }}</div>
+                            <small class="font-monospace text-muted">{{ batch.created_at|date:"Y-m-d H:i" }}</small>
+                        </td>
+                        {% if user.is_superuser %}
+                        <td class="text-center">
+                            {% if batch.available_count > 0 %}
+                            <form method="post" action="{% url 'control:activation_code_batch_revoke' batch_id=batch.id %}" class="d-inline" onsubmit="return confirm('هل أنت متأكد من إلغاء جميع الرموز المتاحة في هذه الدفعة؟ الرموز المستخدمة مسبقاً لن تتأثر.');">
+                                {% csrf_token %}
+                                <input type="hidden" name="reason" value="إلغاء دفعة من قبل مدير النظام">
+                                <button type="submit" class="btn btn-xs btn-outline-danger" title="إلغاء كافة الرموز المتاحة في الدفعة">
+                                    إلغاء المتاح ({{ batch.available_count }})
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            لا توجد دفعات رموز تفعيل منشأة حتى الآن.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer bg-white py-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">السابق</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">التالي</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

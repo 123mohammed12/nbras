@@ -1,0 +1,353 @@
+{
+  "grade_id": "9th",
+  "grade_name": "الصف  التاسع",
+  "track_id": "9th_sci",
+  "track_name": "علمي",
+  "subject_id": "9th_sci_arabic",
+  "subject_name": "لغتي العربية",
+  "term_id": "t2",
+  "term_name": "الجزء الثاني",
+  "units": [
+    {
+      "id": "9th_sci_arabic_t2_u13",
+      "name": "الوحدة الثالثة عشرة: القضايا الإيمانية",
+      "order_index": 13,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u13_l49",
+          "name": "الرقابة الإلهية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u13_l50",
+          "name": "القيم والاستيعاب",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u13_l51",
+          "name": "النحو والصرف (المجرد والمزيد)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u13_l52",
+          "name": "الإملاء (تطبيقات على همزتي الوصل والقطع)",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_arabic_t2_u13_l53",
+          "name": "تقويم الوحدة الثالثة عشرة",
+          "order_index": 5
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u14",
+      "name": "الوحدة الرابعة عشرة: مع الرسول والرسالة",
+      "order_index": 14,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u14_l54",
+          "name": "نظافة الأتباع",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u14_l55",
+          "name": "النحو والصرف (الجامد والمشتق)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u14_l56",
+          "name": "الإملاء (تطبيقات على الهمزة المتوسطة)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u14_l57",
+          "name": "تقويم الوحدة الرابعة عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u15",
+      "name": "الوحدة الخامسة عشرة: الصناعة",
+      "order_index": 15,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u15_l58",
+          "name": "صناعة الأدوية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u15_l59",
+          "name": "النحو والصرف (الميزان الصرفي)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u15_l60",
+          "name": "الإملاء (إملاء اختياري)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u15_l61",
+          "name": "تقويم الوحدة الخامسة عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u16",
+      "name": "الوحدة السادسة عشرة: قيم أخلاقية",
+      "order_index": 16,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u16_l62",
+          "name": "الخلقان العظيمان",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u16_l63",
+          "name": "النحو والصرف (مصادر الأفعال الثلاثية والرباعية)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u16_l64",
+          "name": "الإملاء (تطبيقات على الألف اللينة في الأسماء)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u16_l65",
+          "name": "تقويم الوحدة السادسة عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u17",
+      "name": "الوحدة السابعة عشرة: قيم اجتماعية",
+      "order_index": 17,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u17_l66",
+          "name": "التواضع",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u17_l67",
+          "name": "النحو والصرف (تطبيقات على ما سبق ودراسته)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u17_l68",
+          "name": "الإملاء (إملاء اختياري)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u17_l69",
+          "name": "تقويم الوحدة السابعة عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u18",
+      "name": "الوحدة الثامنة عشرة: فنون أدبية",
+      "order_index": 18,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u18_l70",
+          "name": "مدينة بلقيس",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u18_l71",
+          "name": "النحو والصرف (مصادر الأفعال الخماسية والسداسية)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u18_l72",
+          "name": "الإملاء (تطبيقات على الألف اللينة في الأفعال)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u18_l73",
+          "name": "تقويم الوحدة الثامنة عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u19",
+      "name": "الوحدة التاسعة عشرة: فنون تراثية",
+      "order_index": 19,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u19_l74",
+          "name": "زخرفة المساجد",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u19_l75",
+          "name": "النحو والصرف (الكشف في المعاجم)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u19_l76",
+          "name": "الإملاء (إملاء اختياري)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u19_l77",
+          "name": "تقويم الوحدة التاسعة عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u20",
+      "name": "الوحدة العشرون: شخصيات خالدة",
+      "order_index": 20,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u20_l78",
+          "name": "سيد الشهداء",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u20_l79",
+          "name": "النحو والصرف (اسم الفاعل، وصيغ المبالغة)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u20_l80",
+          "name": "الإملاء (تطبيقات على الحذف (الألف - الواو - الياء))",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u20_l81",
+          "name": "تقويم الوحدة العشرين",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u21",
+      "name": "الوحدة الحادية والعشرون: أحداث ومناسبات",
+      "order_index": 21,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u21_l82",
+          "name": "المولد النبوي",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u21_l83",
+          "name": "النحو والصرف (اسم المفعول)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u21_l84",
+          "name": "الإملاء (تطبيقات على زيادة بعض الحروف)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u21_l85",
+          "name": "تقويم الوحدة الحادية والعشرين",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u22",
+      "name": "الوحدة الثانية والعشرون: قضايا معاصرة",
+      "order_index": 22,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u22_l86",
+          "name": "الضغوط الأسرية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u22_l87",
+          "name": "النحو والصرف (اسم التفضيل)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u22_l88",
+          "name": "الإملاء (تطبيقات على علامات الترقيم)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u22_l89",
+          "name": "تقويم الوحدة الثانية والعشرين",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u23",
+      "name": "الوحدة الثالثة والعشرون: من مخلوقات الله في الكون",
+      "order_index": 23,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u23_l90",
+          "name": "الفضاء الخارجي",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u23_l91",
+          "name": "النحو والصرف (اسما الزمان والمكان)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u23_l92",
+          "name": "الإملاء (تطبيقات على المد والتنوين)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u23_l93",
+          "name": "تقويم الوحدة الثالثة والعشرين",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t2_u24",
+      "name": "الوحدة الرابعة والعشرون: نوادر وحكايات",
+      "order_index": 24,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t2_u24_l94",
+          "name": "طرائف عربية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t2_u24_l95",
+          "name": "النحو والصرف (تطبيقات)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t2_u24_l96",
+          "name": "الإملاء (تطبيقات على ما سبق ودراسته)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t2_u24_l97",
+          "name": "تقويم الوحدة الرابعة والعشرين",
+          "order_index": 4
+        }
+      ]
+    }
+  ]
+}

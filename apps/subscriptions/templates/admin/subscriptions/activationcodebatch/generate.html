@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:subscriptions_activationcodebatch_changelist' %}">دفعات رموز التفعيل</a>
+  &rsaquo; إنشاء
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  {% if raw_codes %}
+    <div class="messagelist"><div class="warning">تظهر الرموز الخام مرة واحدة فقط. انسخها واحفظها بأمان الآن.</div></div>
+    <h2>الدفعة {{ batch.batch_code }} — {{ raw_codes|length }} رمز</h2>
+    <textarea rows="22" style="width:100%;direction:ltr;font-family:monospace" readonly>{% for code in raw_codes %}{{ code }}{% if not forloop.last %}&#10;{% endif %}{% endfor %}</textarea>
+    <div class="submit-row"><a href="{% url 'admin:subscriptions_activationcodebatch_changelist' %}" class="button">العودة للدفعات</a></div>
+  {% else %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <fieldset class="module aligned">{{ form.as_div }}</fieldset>
+      <div class="submit-row">
+        <input type="submit" value="إنشاء الدفعة" class="default">
+        <a href="{% url 'admin:subscriptions_activationcodebatch_changelist' %}" class="closelink">إلغاء</a>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

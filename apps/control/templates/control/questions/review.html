@@ -1,0 +1,191 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}وضع المراجعة والاعتماد: Q-{{ question.id|stringformat:"s"|slice:":8" }}{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <div class="breadcrumbs" style="margin-bottom: 8px;">
+                <a href="{% url 'control:question_list' %}">بنك الأسئلة</a>
+                <span>&rsaquo;</span>
+                <a href="{% url 'control:question_review_queue' %}">طابور المراجعة</a>
+                <span>&rsaquo;</span>
+                <span class="current">مراجعة Q-{{ question.id|stringformat:"s"|slice:":8" }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <h1 class="page-title" style="margin: 0;">
+                    مراجعة وتدقيق السؤال Q-{{ question.id|stringformat:"s"|slice:":8" }}
+                </h1>
+                <span class="qb-version-pill">V{{ version.version_number }}</span>
+                {% if version.status == 'under_review' %}
+                <span class="badge badge-warning">قيد المراجعة</span>
+                {% elif version.status == 'approved' %}
+                <span class="badge badge-info">معتمد</span>
+                {% elif version.status == 'published' %}
+                <span class="badge badge-success">منشور</span>
+                {% else %}
+                <span class="badge badge-muted">{{ version.get_status_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="page-header-actions" style="display: flex; gap: 8px;">
+            <a href="{% url 'control:question_student_preview' question.pk %}" class="btn btn-outline" title="معاينة كطالب بدون إجابات">معاينة الطالب</a>
+            <a href="{% url 'control:question_detail' question.pk %}" class="btn btn-outline">تفاصيل السؤال</a>
+        </div>
+    </div>
+
+    <!-- Reviewer Split Layout -->
+    <div class="qb-review-split">
+        <!-- LEFT: Question Presentation (Student Delivery View) -->
+        <div class="qb-review-main">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">عرض السؤال للطالب</span>
+                    <span class="qb-diff-tag qb-diff-{{ question.difficulty }}">{{ question.get_difficulty_display }}</span>
+                </div>
+                <div class="panel-body">
+                    {% if stimuli %}
+                    {% for stim in stimuli %}
+                    <div class="qb-student-stimulus" style="margin-bottom: 16px;">
+                        <h4 style="font-weight: 700; margin-bottom: 6px;">{{ stim.title|default:"مادة مشتركة" }}</h4>
+                        <div>{{ stim.text_content|linebreaks }}</div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <div class="qb-stem-content" dir="rtl" style="font-size: 15px; margin-bottom: 16px;">
+                        {{ version.question_text|linebreaks }}
+                    </div>
+
+                    {% if assets %}
+                    <div class="qb-assets-grid" style="margin-bottom: 16px;">
+                        {% for asset in assets %}
+                        <div class="qb-asset-card">
+                            <img src="{{ asset.file_path.url }}" alt="{{ asset.alt_text|default:'ملحق' }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Options list with visual indicator -->
+                    <div class="qb-options-list">
+                        {% for opt in options %}
+                        <div class="qb-option-item {% if opt.is_correct %}qb-option-correct{% endif %}">
+                            <div class="qb-option-badge">{{ opt.option_key }}</div>
+                            <div class="qb-option-text">{{ opt.option_text }}</div>
+                            {% if opt.is_correct %}
+                            <div class="qb-correct-tag">✓ الإجابة الصحيحة</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Reviewer Evaluation & Decision Panel -->
+        <div class="qb-review-sidebar">
+            <!-- Correct Answer & Rationale -->
+            <div class="panel" style="border-right: 4px solid var(--success);">
+                <div class="panel-header">
+                    <span class="panel-title" style="color: var(--success);">مفتاح الإجابة والتعليل المعتمد</span>
+                </div>
+                <div class="panel-body">
+                    <div style="margin-bottom: 12px;">
+                        <span class="qb-meta-label">الخيار الصحيح المعتمد:</span>
+                        <div style="font-size: 16px; font-weight: 700; color: var(--success); margin-top: 4px;">
+                            {% for opt in options %}
+                                {% if opt.is_correct %}
+                                الخيار {{ opt.option_key }}: {{ opt.option_text }}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if version.short_explanation %}
+                    <div style="margin-bottom: 10px;">
+                        <span class="qb-meta-label">التلميح والشرح الموجز:</span>
+                        <p style="font-size: 13px; margin-top: 2px; background: var(--bg-muted); padding: 8px 10px; border-radius: 4px;">
+                            {{ version.short_explanation }}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    {% if version.explanation %}
+                    <div>
+                        <span class="qb-meta-label">التعليل الكامل:</span>
+                        <p style="font-size: 13px; margin-top: 2px; background: var(--bg-muted); padding: 8px 10px; border-radius: 4px; line-height: 1.6;">
+                            {{ version.explanation }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Validation Checklist Summary -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">فحص المعايير التربوية والتقنية</span>
+                </div>
+                <div class="panel-body">
+                    {% if validation_report %}
+                        {% include "control/questions/partials/validation_report.html" %}
+                    {% else %}
+                        <p class="text-muted">لا يوجد تقرير فحص بعد.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Reviewer Decision / Lifecycle Action -->
+            <div class="panel" style="background: var(--bg-surface); border: 2px solid var(--primary-border);">
+                <div class="panel-header" style="background: var(--primary-light);">
+                    <span class="panel-title" style="color: var(--primary);">قرار المراجعة والاعتماد</span>
+                </div>
+                <div class="panel-body">
+                    <form method="post" action="{% url 'control:question_lifecycle' question.pk %}">
+                        {% csrf_token %}
+
+                        {% if can_approve %}
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+                            هذا السؤال قيد المراجعة حالياً. بعد التحقق من صحة الصياغة العلمية والإجابة المحددة، اضغط اعتماد:
+                        </p>
+                        <button type="submit" name="action" value="approve" class="btn btn-primary" style="width: 100%; padding: 10px;">
+                            ✓ اعتماد النسخة (Approve Version)
+                        </button>
+
+                        {% elif can_publish %}
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+                            تم اعتماد هذا السؤال سابقاً وهو جاهز للنشر الفوري للطلاب:
+                        </p>
+                        <button type="submit" name="action" value="publish" class="btn btn-primary" style="width: 100%; padding: 10px;" onclick="return confirm('هل أنت متأكد من نشر هذا السؤال؟');">
+                            نشر السؤال رسمياً (Publish)
+                        </button>
+
+                        {% elif can_send_to_review %}
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+                            السؤال ما زال مسودة أولية. أرسله للمراجعة للانتقال لمرحلة التدقيق:
+                        </p>
+                        <button type="submit" name="action" value="send_to_review" class="btn btn-outline" style="width: 100%; padding: 10px; color: var(--warning); border-color: var(--warning);">
+                            إرسال للمراجعة والتدقيق
+                        </button>
+
+                        {% else %}
+                        <div style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 8px 0;">
+                            {% if version.status == 'published' %}
+                            ✓ هذا السؤال منشور ونشط حالياً في المنصة.
+                            {% else %}
+                            لا تتوفر إجراءات انتقال للحالة الحالية أو تنقص الصلاحية المطلوبة.
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

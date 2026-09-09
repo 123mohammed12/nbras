@@ -1,0 +1,170 @@
+<div class="panel">
+    <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="panel-title">
+            قائمة الأسئلة 
+            <span class="text-muted" style="font-size: 12px; font-weight: normal;">(إجمالي المعروض: {{ total_count }} سؤال)</span>
+        </span>
+        <span class="text-muted" style="font-size: 12px;">
+            الصفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+        </span>
+    </div>
+
+    <div class="panel-body" style="padding: 0;">
+        {% if page_obj %}
+        <div class="table-responsive">
+            <table class="data-table qb-table">
+                <thead>
+                    <tr>
+                        <th style="width: 36px; text-align: center;">
+                            <input type="checkbox" id="selectAllMaster" onchange="toggleSelectAll(this)" title="تحديد الكل">
+                        </th>
+                        <th style="width: 100px;">المعرف</th>
+                        <th>نص السؤال</th>
+                        <th>السياق الأكاديمي</th>
+                        <th>المصدر / التوثيق</th>
+                        <th>النوع والصعوبة</th>
+                        <th style="width: 95px;">الحالة</th>
+                        <th style="width: 60px;">النسخة</th>
+                        <th style="width: 120px; text-align: center;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in page_obj %}
+                    <tr>
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="qb-row-check" value="{{ q.id }}" onchange="updateBulkBar()">
+                        </td>
+                        <td>
+                            <a href="{% url 'control:question_detail' q.pk %}" class="qb-ref-code" title="{{ q.id }}">
+                                Q-{{ q.id|stringformat:"s"|slice:":8" }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="qb-stem-excerpt">
+                                <a href="{% url 'control:question_detail' q.pk %}" class="qb-stem-link">
+                                    {{ q.current_version.question_text|truncatechars:85|default:"[سؤال صوري / بدون نص]" }}
+                                </a>
+                            </div>
+                            {% if q.current_version.quality_aggregates.all %}
+                                {% for qa in q.current_version.quality_aggregates.all %}
+                                    {% if qa.quality_flags %}
+                                    <div class="qb-flag-pills">
+                                        {% for flag in qa.quality_flags %}
+                                        <span class="qb-flag-pill" title="إشارة جودة من نتائج الطلاب">{{ flag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="qb-hierarchy-cell">
+                                <span class="qb-subject-tag">{{ q.subject.name_ar }}</span>
+                                {% if q.unit %}
+                                <span class="qb-unit-tag">{{ q.unit.title|truncatechars:25 }}</span>
+                                {% endif %}
+                                {% if q.lesson %}
+                                <span class="qb-lesson-tag">{{ q.lesson.title|truncatechars:25 }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if q.source_type == 'ministerial' %}
+                                {% with item=q.current_version.ministerial_items.first %}
+                                    {% if item %}
+                                    <span class="badge badge-primary" title="نموذج وزاري رسمي">
+                                        وزاري {{ item.ministerial_exam.exam_year }}
+                                    </span>
+                                    <div class="qb-mini-meta">
+                                        ن{{ item.ministerial_exam.model_number }} • س{{ item.question_number }}
+                                    </div>
+                                    {% else %}
+                                    <span class="badge badge-primary">وزاري</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% elif q.source_type == 'training' %}
+                                <span class="badge badge-info">تدريبي</span>
+                            {% elif q.source_type == 'self_practice' %}
+                                <span class="badge badge-muted">اختبر نفسك</span>
+                            {% else %}
+                                <span class="badge badge-muted">{{ q.get_source_type_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="font-size: 12px;">{{ q.get_question_type_display }}</div>
+                            <span class="qb-diff-tag qb-diff-{{ q.difficulty }}">{{ q.get_difficulty_display }}</span>
+                        </td>
+                        <td>
+                            {% if q.status == 'published' %}
+                            <span class="badge badge-success">منشور</span>
+                            {% elif q.status == 'approved' %}
+                            <span class="badge badge-info">معتمد</span>
+                            {% elif q.status == 'under_review' %}
+                            <span class="badge badge-warning">قيد المراجعة</span>
+                            {% elif q.status == 'draft' %}
+                            <span class="badge badge-muted">مسودة</span>
+                            {% elif q.status == 'archived' %}
+                            <span class="badge badge-danger">مؤرشف</span>
+                            {% else %}
+                            <span class="badge badge-muted">{{ q.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center; font-weight: 600; font-size: 12px;">
+                            v{{ q.current_version.version_number|default:1 }}
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="qb-row-actions">
+                                <a href="{% url 'control:question_detail' q.pk %}" class="btn btn-outline btn-sm" title="عرض التفاصيل وإدارة العمليات">
+                                    عرض
+                                </a>
+                                <a href="{% url 'control:question_student_preview' q.pk %}" class="btn btn-outline btn-sm" title="معاينة كطالب">
+                                    معاينة
+                                </a>
+                                {% if q.status == 'under_review' and perms.question_bank.review_question %}
+                                <a href="{% url 'control:question_review' q.pk %}" class="btn btn-primary btn-sm" title="تدقيق واعتماد">
+                                    مراجعة
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="qb-pagination-bar">
+            <div class="qb-pagination-info">
+                عرض {{ page_obj.start_index }} إلى {{ page_obj.end_index }} من أصل {{ total_count }} سؤال
+            </div>
+            <div class="qb-pagination-links">
+                {% if page_obj.has_previous %}
+                <a href="?page=1{% if pagination_querystring %}&{{ pagination_querystring }}{% endif %}" class="qb-page-link" title="الأولى">&laquo;</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if pagination_querystring %}&{{ pagination_querystring }}{% endif %}" class="qb-page-link">السابق</a>
+                {% endif %}
+
+                <span class="qb-page-current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if pagination_querystring %}&{{ pagination_querystring }}{% endif %}" class="qb-page-link">التالي</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if pagination_querystring %}&{{ pagination_querystring }}{% endif %}" class="qb-page-link" title="الأخيرة">&raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 12px; color: var(--text-muted);">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <p style="font-weight: 600; font-size: 15px; margin-bottom: 6px;">لا توجد أسئلة مطابقة للبحث أو الفلاتر المحددة</p>
+            <p class="text-muted" style="font-size: 13px;">جرب تغيير معايير البحث أو مسح الفلاتر النشطة.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>

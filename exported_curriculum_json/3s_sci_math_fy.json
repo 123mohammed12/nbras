@@ -1,0 +1,273 @@
+{
+  "grade_id": "3s",
+  "grade_name": "الصف  الثالث الثانوي",
+  "track_id": "3s_sci",
+  "track_name": "علمي",
+  "subject_id": "3s_sci_math",
+  "subject_name": "الرياضيات",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "3s_sci_math_fy_u1",
+      "name": "الوحدة الأولى : الأعداد المركبة",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u1_l1",
+          "name": "1-1 العدد المركب",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u1_l2",
+          "name": "2-1 جمع وطرح الأعداد المركبة",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u1_l3",
+          "name": "3-1 ضرب وقسمة الأعداد المركبة",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_math_fy_u1_l4",
+          "name": "4-1 الصورة القطبية للعدد المركب",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_math_fy_u1_l5",
+          "name": "5-1 القوى والجذور",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_math_fy_u1_l6",
+          "name": "6-1 حل المعادلة من الدرجة الثانية",
+          "order_index": 6
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_math_fy_u2",
+      "name": "الوحدة الثانية : مبدأ العد ومبرهنة ذات الحدين",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u2_l7",
+          "name": "1-2 مبدأ العد",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u2_l8",
+          "name": "2-2 التباديل",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u2_l9",
+          "name": "3-2 التوافيق",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_math_fy_u2_l10",
+          "name": "4-2 مبرهنة ذات الحدين",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_math_fy_u3",
+      "name": "الوحدة الثالثة : الاحتمالات",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u3_l11",
+          "name": "1-3 بعض المبرهنات الأساسية في الاحتمالات",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u3_l12",
+          "name": "2-3 بناء النموذج الاحتمالي",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u3_l13",
+          "name": "3-3 الاحتمال الشرطي وقانون الضرب والحوادث المستقلة",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_math_fy_u3_l14",
+          "name": "4-3 متتاليات التكرارات المستقلة وقانون الاحتمال الثنائي",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_math_fy_u3_l15",
+          "name": "5-3 السحب مع الإعادة وبدون إعادة",
+          "order_index": 5
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_math_fy_u4",
+      "name": "الوحدة الرابعة : القطوع المخروطية",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u4_l16",
+          "name": "1-4 تمهيد",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u4_l17",
+          "name": "2-4 القطع المكافئ",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u4_l18",
+          "name": "3-4 القطع الناقص",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_math_fy_u4_l19",
+          "name": "4-4 القطع الزائد",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_math_fy_u4_l20",
+          "name": "5-4 انسحاب المحاور الإحداثية",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_math_fy_u4_l21",
+          "name": "6-4 دوران المحاور الإحداثية",
+          "order_index": 6
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_math_fy_u5",
+      "name": "الوحدة الخامسة : الهندسة الفضائية",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u5_l22",
+          "name": "1-5 المستقيم العمودي على مستوى",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u5_l23",
+          "name": "2-5 العمود والمائل",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u5_l24",
+          "name": "3-5 الزاوية الزوجية",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_math_fy_u6",
+      "name": "الوحدة السادسة : التفاضل",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u6_l25",
+          "name": "1-6 نهايات واتصال الدوال المثلثية",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l26",
+          "name": "2-6 المشتقات",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l27",
+          "name": "3-6 مشتقة تركيب دالتين (قاعدة السلاسل )",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l28",
+          "name": "4-6 مشتقة الدالة الضمنية",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l29",
+          "name": "5-6 مشتقة الدالة اللوغاريتمية والأسية",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l30",
+          "name": "6-6 مشتقة الدوال المثلثية",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l31",
+          "name": "7-6 مبرهنتا رول والقيمة المتوسطة",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l32",
+          "name": "8-6 القيم القصوى",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_math_fy_u6_l33",
+          "name": "9-6 دراسة تغير الدالة",
+          "order_index": 9
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_math_fy_u7",
+      "name": "الوحدة السابعة : التكامل",
+      "order_index": 7,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_math_fy_u7_l34",
+          "name": "1-7 التكامل المحدد",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l35",
+          "name": "2-7 التكامل غير المحدد",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l36",
+          "name": "3-7 التكامل بالتعويض",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l37",
+          "name": "4-7 التكامل بالتجزئة",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l38",
+          "name": "5-7 تكامل الدوال الكسرية",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l39",
+          "name": "6-7 تطبيقات التكامل",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l40",
+          "name": "7-6-7 حساب مساحات المناطق المستوية",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_math_fy_u7_l41",
+          "name": "7-7-7 الحجوم الدورانية",
+          "order_index": 8
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{% extends "control/base.html" %}
+
+{% block title %}الاستعلام عن رموز التفعيل | لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات والرموز</a></li>
+            <li class="breadcrumb-item active" aria-current="page">استعلام الرموز</li>
+        </ol>
+    </nav>
+
+    <!-- Sub-Nav -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">بحث (الرمز المقنع أو كود الدفعة)</label>
+                    {{ form.q }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">حالة الرمز</label>
+                    {{ form.status }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">الدفعة</label>
+                    {{ form.batch }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">الخطة</label>
+                    {{ form.plan }}
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        🔍 تصفية
+                    </button>
+                    <a href="{% url 'control:activation_code_lookup' %}" class="btn btn-outline-secondary">
+                        إلغاء
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Codes Table Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">رموز التفعيل (العدد الإجمالي: {{ total_count }})</h6>
+            <small class="text-muted">ملاحظة: تظهر الرموز بصيغة مقنعة (Masked) لحماية الأمان</small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>الرمز المقنع</th>
+                        <th>كود الدفعة</th>
+                        <th>الخطة</th>
+                        <th>الحالة</th>
+                        <th>تاريخ الإنشاء</th>
+                        <th>صلاحية الرمز</th>
+                        <th class="text-center">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code in page_obj %}
+                    <tr>
+                        <td>
+                            <code class="fs-6 font-monospace fw-bold text-dark">{{ code.display_code_masked }}</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark font-monospace border">{{ code.batch_code }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ code.plan.name }}</strong>
+                        </td>
+                        <td>
+                            {% if code.status == 'available' or code.status == 'active' %}
+                                <span class="badge bg-success-subtle text-success border border-success">متاح للتفعيل</span>
+                            {% elif code.status == 'redeemed' or code.status == 'exhausted' %}
+                                <span class="badge bg-primary-subtle text-primary border border-primary">مُستخدم</span>
+                            {% elif code.status == 'revoked' or code.status == 'disabled' %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger">مُلغى</span>
+                            {% elif code.status == 'expired' %}
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary">منتهي الصلاحية</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">{{ code.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ code.created_at|date:"Y-m-d H:i" }}</small>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {% if code.code_expires_at %}{{ code.code_expires_at|date:"Y-m-d" }}{% else %}دائم{% endif %}
+                            </small>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'control:activation_code_detail' code.pk %}" class="btn btn-sm btn-outline-primary" title="فحص الرمز واستخدامه">
+                                🔍 تفاصيل الاستخدام
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            لا توجد رموز تفعيل مطابقة لشروط البحث.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer bg-white py-3">
+            <nav aria-label="تنقل الصفحات">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">السابق</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">السابق</span></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">التالي</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">التالي</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

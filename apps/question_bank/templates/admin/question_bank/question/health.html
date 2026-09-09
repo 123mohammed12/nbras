@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  <form method="get" style="margin-bottom:1rem">
+    <label for="subject_id">معرّف المادة:</label>
+    <input id="subject_id" name="subject_id" value="{{ subject_id }}">
+    <button type="submit">تصفية</button>
+  </form>
+
+  <h2>المخزون المنشور المؤهل ({{ pool.eligible_total }})</h2>
+  <table>
+    <thead><tr><th>المادة</th><th>الوحدة</th><th>الدرس</th><th>المصدر</th><th>الصعوبة</th><th>النوع</th><th>العدد</th></tr></thead>
+    <tbody>
+      {% for row in pool.rows %}
+        <tr><td>{{ row.subject__name_ar }}</td><td>{{ row.unit__title|default:"—" }}</td><td>{{ row.lesson__title|default:"—" }}</td><td>{{ row.source_type }}</td><td>{{ row.difficulty }}</td><td>{{ row.question_type }}</td><td>{{ row.count }}</td></tr>
+      {% empty %}<tr><td colspan="7">لا توجد بيانات.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h2>صحة دفعات Training ({{ training.batch_count }})</h2>
+  <p>فارغة/مكسورة: {{ training.empty_or_broken }} — متأثرة بتقاعد/نسخة غير حالية: {{ training.impacted_by_retirement_or_versioning }}</p>
+  <table>
+    <thead><tr><th>النطاق</th><th>الدفعة</th><th>العناصر</th><th>المؤهلة</th><th>المتقاعدة</th><th>غير الحالية</th><th>اتساق النطاق</th></tr></thead>
+    <tbody>
+      {% for row in training.rows %}
+        <tr><td>{{ row.scope_key }}</td><td>{{ row.batch_index }}</td><td>{{ row.item_count }}</td><td>{{ row.eligible_item_count }}</td><td>{{ row.retired_item_count }}</td><td>{{ row.non_current_item_count }}</td><td>{{ row.scope_consistent|yesno:"نعم,لا" }}</td></tr>
+      {% empty %}<tr><td colspan="7">لا توجد دفعات.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h2>جاهزية مخططات المحاكاة (AR-05)</h2>
+  <table>
+    <thead><tr><th>المخطط</th><th>النسخة</th><th>جاهز</th><th>النواقص</th><th>أخطاء السياسة</th></tr></thead>
+    <tbody>
+      {% for row in mock.rows %}
+        <tr><td>{{ row.title }}</td><td>{{ row.version }}</td><td>{{ row.ready|yesno:"نعم,لا" }}</td><td><pre>{{ row.missing_buckets }}</pre></td><td>{{ row.policy_errors }}</td></tr>
+      {% empty %}<tr><td colspan="5">لا توجد مخططات منشورة.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

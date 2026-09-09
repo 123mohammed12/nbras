@@ -1,0 +1,145 @@
+{% extends "control/base.html" %}
+
+{% block title %}تم توليد دفعة الرموز بنجاح | لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات والرموز</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:activation_code_batch_list' %}">دفعات الرموز</a></li>
+            <li class="breadcrumb-item active" aria-current="page">تم التوليد بنجاح</li>
+        </ol>
+    </nav>
+
+    <!-- Sub-Nav -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <!-- Security Warning Alert -->
+    <div class="alert alert-warning border-start border-warning border-4 shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+            <div class="fs-1 me-3 text-warning">⚠️</div>
+            <div>
+                <h5 class="alert-heading fw-bold mb-1">تحذير أمني هام: عرض لمرة واحدة فقط</h5>
+                <p class="mb-0 text-dark">
+                    هذه هي <strong>المرة الوحيدة</strong> التي ستتمكن فيها من استعراض رموز التفعيل بصيغتها الخام الصريحة. 
+                    لأسباب أمنية، يتم تخزين الرموز مشفرة بتجزئة أمنية (HMAC-SHA256) مع إخفاء أحرفها في قاعدة البيانات. 
+                    يرجى نسخ الرموز أو حفظها في ملف آمن الآن قبل مغادرة الصفحة!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Summary Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="card-title fw-bold mb-0 text-success">
+                    ✅ تم إنشاء الدفعة: <span class="font-monospace text-dark">{{ batch.batch_code }}</span>
+                </h5>
+                <small class="text-muted">الخطة: {{ batch.plan.name }} | العدد: {{ total_count }} رمز</small>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary" id="copyAllBtn" onclick="copyAllCodes()">
+                    📋 نسخ جميع الرموز
+                </button>
+                <a href="{% url 'control:activation_code_batch_list' %}" class="btn btn-secondary">
+                    العودة لقائمة الدفعات
+                </a>
+            </div>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <span class="text-muted d-block small">رقم/كود الدفعة:</span>
+                    <strong class="font-monospace">{{ batch.batch_code }}</strong>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted d-block small">الخطة المرتبطة:</span>
+                    <strong>{{ batch.plan.name }}</strong>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted d-block small">عدد الرموز المُولدة:</span>
+                    <span class="badge bg-primary fs-6">{{ total_count }}</span>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted d-block small">صلاحية الرموز:</span>
+                    <span>{% if batch.code_expires_at %}{{ batch.code_expires_at|date:"Y-m-d H:i" }}{% else %}بدون انتهاء صلاحية{% endif %}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Raw Codes Table Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h6 class="fw-bold mb-0">قائمة الرموز الخام المولدة (جاهزة للطباعة والتوزيع)</h6>
+        </div>
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0" id="codesTable">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th style="width: 80px;">#</th>
+                        <th>رمز التفعيل الخام (Raw Code)</th>
+                        <th>الخطة</th>
+                        <th style="width: 120px;" class="text-center">إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code in raw_codes %}
+                    <tr>
+                        <td class="text-muted">{{ forloop.counter }}</td>
+                        <td>
+                            <code class="fs-6 font-monospace text-primary fw-bold user-select-all" id="code-{{ forloop.counter }}">{{ code }}</code>
+                        </td>
+                        <td>{{ batch.plan.name }}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copySingle('{{ code }}', this)" title="نسخ">
+                                📋 نسخ
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">لا توجد رموز.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<textarea id="allCodesHidden" style="display:none;">{% for code in raw_codes %}{{ code }}
+{% endfor %}</textarea>
+
+<script>
+function copyAllCodes() {
+    const text = document.getElementById("allCodesHidden").value;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById("copyAllBtn");
+        const orig = btn.innerHTML;
+        btn.innerHTML = "✅ تم النسخ إلى الحافظة!";
+        btn.classList.replace("btn-outline-primary", "btn-success");
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.classList.replace("btn-success", "btn-outline-primary");
+        }, 2500);
+    });
+}
+
+function copySingle(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = "✅ تم";
+        btn.classList.replace("btn-outline-secondary", "btn-success");
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.classList.replace("btn-success", "btn-outline-secondary");
+        }, 1500);
+    });
+}
+</script>
+{% endblock %}

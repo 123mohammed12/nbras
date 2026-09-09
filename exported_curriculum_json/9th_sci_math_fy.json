@@ -1,0 +1,343 @@
+{
+  "grade_id": "9th",
+  "grade_name": "الصف  التاسع",
+  "track_id": "9th_sci",
+  "track_name": "علمي",
+  "subject_id": "9th_sci_math",
+  "subject_name": "الرياضيات",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "9th_sci_math_fy_u1",
+      "name": "الوحدة الأولى : المجموعات والعلاقات",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u1_l1",
+          "name": "1-1 كتابة المجموعة بالصفة المميزة",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l2",
+          "name": "1-2 مجموعة الفرق والمجموعة المتممة",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l3",
+          "name": "1-3 العلاقة المتعدية",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l4",
+          "name": "1-4 علاقة التكافؤ",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l5",
+          "name": "1-5 التطبيق",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l6",
+          "name": "1-6 مجموعة الأعداد الحقيقية",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l7",
+          "name": "1-7 التطبيق الخطي",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l8",
+          "name": "1-8 تمارين عامة ومسائل",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_math_fy_u1_l9",
+          "name": "1-9 اختبار الوحدة",
+          "order_index": 9
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_math_fy_u2",
+      "name": "الوحدة الثانية : تحليل المقادير الجبرية",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u2_l10",
+          "name": "2-1 مراجعة",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l11",
+          "name": "2-2 المقدار الثلاثي",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l12",
+          "name": "2-3 التحليل بإكمال المربع",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l13",
+          "name": "2-4 مجموع مكعبين والفرق بينهما",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l14",
+          "name": "2-5 التحليل بالتجميع",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l15",
+          "name": "2-6 ضرب وقسمة الكسور الجبرية",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l16",
+          "name": "2-7 المضاعف المشترك الأصغر",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l17",
+          "name": "2-8 جمع وطرح الكسور الجبرية",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l18",
+          "name": "2-9 تمارين ومسائل عامة",
+          "order_index": 9
+        },
+        {
+          "id": "9th_sci_math_fy_u2_l19",
+          "name": "2-10 اختبار الوحدة",
+          "order_index": 10
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_math_fy_u3",
+      "name": "الوحدة الثالثة : المعادلات",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u3_l20",
+          "name": "1-3 معادلة الدرجة الأولى ذات متغيرين",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u3_l21",
+          "name": "2-3 نظام المعادلات من الدرجة الأولى في متغيرين",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u3_l22",
+          "name": "3-3 معادلات الدرجة الثانية في متغير واحد",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u3_l23",
+          "name": "4-3 مسائل تطبيقية",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u3_l24",
+          "name": "5-3 تمارين ومسائل عامة",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_math_fy_u3_l25",
+          "name": "6-3 اختبار الوحدة",
+          "order_index": 6
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_math_fy_u4",
+      "name": "الوحدة الرابعة : حساب المثلثات",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u4_l26",
+          "name": "1-4 العلاقات العددية في مثلث قائم الزاوية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u4_l27",
+          "name": "2-4 النسب المثلثية للزاوية الحادة",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u4_l28",
+          "name": "3-4 النسب المثلثية للزوايا : 30 ، 45 ، 60",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u4_l29",
+          "name": "4-4 تمارين عامة ومسائل",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u4_l30",
+          "name": "5-4 اختبار الوحدة",
+          "order_index": 5
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_math_fy_u5",
+      "name": "الوحدة الخامسة : الهندسة",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u5_l31",
+          "name": "1-5 الدائرة",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l32",
+          "name": "2-5 العمود النازل من مركز الدائرة على الوتر",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l33",
+          "name": "3-5 أوتار الدائرة",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l34",
+          "name": "4-5 الزاوية المركزية والأقواس",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l35",
+          "name": "5-5 القطاع الدائري",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l36",
+          "name": "6-5 الزاوية المحيطية",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l37",
+          "name": "7-5 الشكل الرباعي الدائري",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l38",
+          "name": "8-5 المماس",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l39",
+          "name": "9-5 الأوضاع النسبية لدائرتين",
+          "order_index": 9
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l40",
+          "name": "10-5 تمارين ومسائل عامة",
+          "order_index": 10
+        },
+        {
+          "id": "9th_sci_math_fy_u5_l41",
+          "name": "11-5 اختبار الوحدة",
+          "order_index": 11
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_math_fy_u6",
+      "name": "الوحدة السادسة : الهندسة الإحداثية والتحويلات",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u6_l42",
+          "name": "1-6 البعد بين نقطتين",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l43",
+          "name": "2-6 تنصيف قطعة مستقيمة",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l44",
+          "name": "3-6 الانعكاس",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l45",
+          "name": "4-6 الانسحاب",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l46",
+          "name": "5-6 الدوران",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l47",
+          "name": "6-6 التكبير",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l48",
+          "name": "7-6 تمارين عامة ومسائل",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_math_fy_u6_l49",
+          "name": "8-6 اختبار الوحدة",
+          "order_index": 8
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_math_fy_u7",
+      "name": "الوحدة السابعة : الإحصاء",
+      "order_index": 7,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_math_fy_u7_l50",
+          "name": "1-7 المتوسط الحسابي",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_math_fy_u7_l51",
+          "name": "2-7 المنوال",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_math_fy_u7_l52",
+          "name": "3-7 التكرار المتجمع",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_math_fy_u7_l53",
+          "name": "4-7 الوسيط",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_math_fy_u7_l54",
+          "name": "5-7 تمارين ومسائل عامة",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_math_fy_u7_l55",
+          "name": "6-7 اختبار الوحدة",
+          "order_index": 6
+        }
+      ]
+    }
+  ]
+}

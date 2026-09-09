@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label='subscriptions' %}">الاشتراكات</a>
+  &rsaquo; <a href="{% url 'admin:subscriptions_subscription_changelist' %}">اشتراكات الطلاب</a>
+  &rsaquo; تفعيل إداري
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <fieldset class="module aligned">
+      {{ form.as_div }}
+    </fieldset>
+    {% if preview %}
+      <fieldset class="module">
+        <h2>معاينة الوصول الناتج</h2>
+        <div class="form-row"><strong>الباقة:</strong> {{ preview.plan.name }}</div>
+        <div class="form-row"><strong>العام الدراسي:</strong> {{ preview.academic_year.name }}</div>
+        <div class="form-row"><strong>الوصول:</strong>
+          {% if preview.resulting_is_all_subjects %}جميع مواد المسار{% else %}{{ preview.resulting_subject_ids|length }} مواد{% endif %}
+        </div>
+        <p class="help">سيعاد التحقق من هذه البيانات عند التأكيد قبل أي تغيير.</p>
+      </fieldset>
+    {% endif %}
+    <div class="submit-row">
+      {% if preview %}
+        <button type="submit" name="action" value="confirm" class="default">تأكيد التفعيل</button>
+      {% else %}
+        <button type="submit" name="action" value="preview" class="default">معاينة الوصول</button>
+      {% endif %}
+      <a href="{% url 'admin:subscriptions_subscription_changelist' %}" class="closelink">إلغاء</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

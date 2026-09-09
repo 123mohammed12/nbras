@@ -1,0 +1,54 @@
+{% extends "control/base.html" %}
+
+{% block title %}معاينة شرح: {{ lesson.title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:lesson_workspace' lesson_id=lesson.id %}">{{ lesson.title }}</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">معاينة الشرح</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1>معاينة شرح الدرس</h1>
+        <p>محاكاة لشاشة قراءة الشرح للطلاب في مركز الدرس</p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'control:lesson_workspace' lesson_id=lesson.id %}?tab=explanation" class="btn btn-ghost btn-sm">&rarr; رجوع للدرس</a>
+        {% if perms.content.change_lessonexplanation or user.is_superuser %}
+        <a href="{% url 'control:lesson_explanation_edit' lesson_id=lesson.id %}" class="btn btn-primary btn-sm">تعديل الشرح</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if explanation %}
+<article class="semantic-reader">
+    <header class="semantic-reader-header">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span class="status-pill {{ explanation.status }}">{{ explanation.get_status_display }}</span>
+            <span class="badge badge-neutral">{{ explanation.get_content_format_display }}</span>
+        </div>
+        <h2 class="semantic-reader-title">{{ explanation.title|default:lesson.title }}</h2>
+        <div style="font-size: 12.5px; color: var(--text-muted);">
+            الوحدة: {{ lesson.unit.title }} | المادة: {{ lesson.unit.subject.name_ar }} | {{ lesson.estimated_minutes }} دقيقة قراءة مقدرة
+        </div>
+    </header>
+
+    <div class="semantic-reader-body">
+        <div style="white-space: pre-wrap; font-family: inherit; font-size: 15.5px; line-height: 1.85;">{{ explanation.body }}</div>
+    </div>
+</article>
+{% else %}
+<div class="card empty-state" style="padding: 48px; text-align: center;">
+    <p>لا يوجد شرح مسجل لهذا الدرس حتى الآن.</p>
+    <a href="{% url 'control:lesson_explanation_edit' lesson_id=lesson.id %}" class="btn btn-primary btn-sm" style="margin-top: 12px;">
+        إنشاء الشرح الآن
+    </a>
+</div>
+{% endif %}
+{% endblock %}

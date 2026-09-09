@@ -1,0 +1,182 @@
+{% extends "control/base.html" %}
+
+{% block title %}مركز الاشتراكات والتفعيل | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title h3 mb-1">مركز الاشتراكات والتفعيل</h1>
+            <p class="text-muted mb-0">إدارة اشتراكات الطلاب، التفعيل المباشر، توليد دفعات الرموز، وتشخيص الاستحقاقات وصلاحيات الوصول.</p>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            {% if perms.subscriptions.direct_activate_subscription or user.is_superuser %}
+            <a href="{% url 'control:direct_activate' %}" class="btn btn-primary">
+                + تفعيل مباشر لطالب
+            </a>
+            {% endif %}
+            {% if perms.subscriptions.generate_code_batch or user.is_superuser %}
+            <a href="{% url 'control:activation_code_batch_generate' %}" class="btn btn-outline-primary">
+                توليد دفعة رموز
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <!-- Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-xl-2">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">الاشتراكات النشطة</div>
+                <div class="h2 mb-0 fw-bold text-success">{{ active_count }}</div>
+                <small class="text-muted">طالب يتمتع بالوصول</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">توشك على الانتهاء</div>
+                <div class="h2 mb-0 fw-bold text-warning">{{ expiring_soon_count }}</div>
+                <small class="text-muted">خلال 7 أيام قادمة</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">الاشتراكات المنتهية</div>
+                <div class="h2 mb-0 fw-bold text-secondary">{{ expired_count }}</div>
+                <small class="text-muted">تتطلب تجديداً</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">دفعات الرموز</div>
+                <div class="h2 mb-0 fw-bold text-primary">{{ total_batches_count }}</div>
+                <small class="text-muted">إجمالي الدفعات المنشأة</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">الرموز المتاحة</div>
+                <div class="h2 mb-0 fw-bold text-info">{{ available_codes_count }}</div>
+                <small class="text-muted">جاهزة للاستخدام</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">الرموز المستخدمة</div>
+                <div class="h2 mb-0 fw-bold text-dark">{{ redeemed_codes_count }}</div>
+                <small class="text-muted">تم شحنها بالكامل</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Operational Split Grid -->
+    <div class="row g-4">
+        <!-- Recent Subscriptions -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">أحدث اشتراكات الطلاب المفعّلة</h5>
+                    <a href="{% url 'control:student_subscription_list' %}" class="btn btn-sm btn-outline-secondary">
+                        عرض الكل &larr;
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>الطالب</th>
+                                <th>الخطة</th>
+                                <th>المصدر</th>
+                                <th>الحالة</th>
+                                <th>تاريخ الانتهاء</th>
+                                <th>تفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sub in recent_subscriptions %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ sub.user.get_full_name|default:sub.user.phone }}</div>
+                                    <small class="text-muted font-monospace">{{ sub.user.public_code|default:sub.user.phone }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ sub.plan.name }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary">{{ sub.get_source_display }}</span>
+                                </td>
+                                <td>
+                                    {% if sub.status == 'active' %}
+                                    <span class="badge bg-success-subtle text-success">نشط</span>
+                                    {% elif sub.status == 'expired' %}
+                                    <span class="badge bg-secondary-subtle text-secondary">منتهي</span>
+                                    {% elif sub.status == 'revoked' %}
+                                    <span class="badge bg-danger-subtle text-danger">مسحوب</span>
+                                    {% else %}
+                                    <span class="badge bg-warning-subtle text-warning">{{ sub.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted font-monospace">{{ sub.expires_at|date:"Y-m-d" }}</small>
+                                </td>
+                                <td>
+                                    <a href="{% url 'control:student_subscription_detail' user_id=sub.user_id %}" class="btn btn-sm btn-outline-primary">
+                                        عرض
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">لا توجد اشتراكات مسجلة مؤخراً.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Audit Events -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">سجل العمليات والتدقيق الأخير</h5>
+                    <a href="{% url 'control:subscription_audit_list' %}" class="btn btn-sm btn-outline-secondary">
+                        السجل الكامل &larr;
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for audit in recent_audits %}
+                        <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-primary-subtle text-primary">{{ audit.action }}</span>
+                                <small class="text-muted font-monospace">{{ audit.created_at|date:"H:i • Y-m-d" }}</small>
+                            </div>
+                            <div class="small fw-semibold text-dark">
+                                الطالب: {{ audit.subscription.user.phone }}
+                            </div>
+                            <div class="small text-muted text-truncate" style="max-width: 380px;">
+                                {% if audit.reason %}السبب: {{ audit.reason }}{% else %}المصدر: {{ audit.get_source_display }}{% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1 small">
+                                <span class="text-secondary">المسؤول: {{ audit.actor.get_full_name|default:audit.actor.phone|default:"النظام" }}</span>
+                                <a href="{% url 'control:student_subscription_detail' user_id=audit.subscription.user_id %}" class="text-primary text-decoration-none">
+                                    ملف الطالب &larr;
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="p-4 text-center text-muted">لا توجد عمليات تدقيق مسجلة.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "control/base.html" %}
+
+{% block title %}
+{% if is_create %}إضافة سياسة وصول مجاني جديدة{% else %}تعديل سياسة وصول مجاني{% endif %} | لوحة التحكم
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات والرموز</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:free_policy_list' %}">سياسات الوصول المجاني</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if is_create %}إضافة سياسة جديدة{% else %}تعديل السياسة{% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Sub-Nav -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        {% if is_create %}➕ إنشاء سياسة وصول مجاني جديدة{% else %}✏️ تعديل سياسة الوصول المجاني{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">السنة الدراسية</label>
+                                {{ form.academic_year }}
+                                <div class="form-text small">اتركه فارغاً للتطبيق على كافة الأعوام</div>
+                                {% if form.academic_year.errors %}<div class="text-danger small mt-1">{{ form.academic_year.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">الصف الدراسي <span class="text-danger">*</span></label>
+                                {{ form.grade }}
+                                {% if form.grade.errors %}<div class="text-danger small mt-1">{{ form.grade.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">الشعبة الدراسية <span class="text-danger">*</span></label>
+                                {{ form.section }}
+                                {% if form.section.errors %}<div class="text-danger small mt-1">{{ form.section.errors.0 }}</div>{% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">المادة الدراسية</label>
+                                {{ form.subject }}
+                                <div class="form-text small">اتركه فارغاً للتطبيق كسياسة عامة على الصف</div>
+                                {% if form.subject.errors %}<div class="text-danger small mt-1">{{ form.subject.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">الوحدة المجانية بالكامل (Free Unit)</label>
+                                {{ form.free_unit }}
+                                <div class="form-text small">اختر وحدة لتكون دروسها واختباراتها مجانية</div>
+                                {% if form.free_unit.errors %}<div class="text-danger small mt-1">{{ form.free_unit.errors.0 }}</div>{% endif %}
+                            </div>
+
+                            <div class="col-12"><hr class="my-2"></div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">اختبارات وزارية مجانية</label>
+                                {{ form.free_ministerial_count }}
+                                {% if form.free_ministerial_count.errors %}<div class="text-danger small mt-1">{{ form.free_ministerial_count.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">تدريبات مواد مجانية</label>
+                                {{ form.free_subject_training_count }}
+                                {% if form.free_subject_training_count.errors %}<div class="text-danger small mt-1">{{ form.free_subject_training_count.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">توليد مخصص مجاني</label>
+                                {{ form.free_subject_custom_generations }}
+                                {% if form.free_subject_custom_generations.errors %}<div class="text-danger small mt-1">{{ form.free_subject_custom_generations.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">نماذج محاكاة مجانية</label>
+                                {{ form.free_mock_generations }}
+                                {% if form.free_mock_generations.errors %}<div class="text-danger small mt-1">{{ form.free_mock_generations.errors.0 }}</div>{% endif %}
+                            </div>
+
+                            <div class="col-md-6 pt-3">
+                                <div class="form-check form-switch">
+                                    {{ form.subject_summaries_free }}
+                                    <label class="form-check-label fw-bold ms-2" for="{{ form.subject_summaries_free.id_for_label }}">
+                                        إتاحة ملخصات المادة مجاناً للجميع
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pt-3">
+                                <div class="form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label fw-bold ms-2" for="{{ form.is_active.id_for_label }}">
+                                        السياسة نشطة وفعالة
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'control:free_policy_list' %}" class="btn btn-outline-secondary">
+                                إلغاء والعودة
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                {% if is_create %}حفظ وإنشاء السياسة{% else %}حفظ التعديلات{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

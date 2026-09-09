@@ -1,0 +1,165 @@
+{
+  "grade_id": "3s",
+  "grade_name": "الصف  الثالث الثانوي",
+  "track_id": "3s_lit",
+  "track_name": "ادبي",
+  "subject_id": "3s_lit_geo",
+  "subject_name": "جغرافيا",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "3s_lit_geo_fy_u1",
+      "name": "الوحدة الأولى- تنظيم المجال الجغرافي للعالم المعاصر :",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_geo_fy_u1_l1",
+          "name": "الدرس الأول : الجغرافيا السياسية وأهميتها",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_geo_fy_u1_l2",
+          "name": "الدرس الثاني : تصنيف العالم المعاصر",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_geo_fy_u1_l3",
+          "name": "الدرس الثالث : التنمية البشرية في العالم",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_geo_fy_u2",
+      "name": "الوحدة الثانية- التكتلات الاقتصادية في العالم المتقدم :",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_geo_fy_u2_l4",
+          "name": "الدرس الأول : الاتحاد الأوروبي",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_geo_fy_u2_l5",
+          "name": "الدرس الثاني : منظمة التجارة الحرة لأمريكا الشمالية",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_geo_fy_u2_l6",
+          "name": "الدرس الثالث : الولايات المتحدة الأمريكية",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_geo_fy_u2_l7",
+          "name": "الدرس الرابع : اليابان",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_geo_fy_u3",
+      "name": "الوحدة الثالثة- تكتلات ومنظمات العالم النامي :",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_geo_fy_u3_l8",
+          "name": "الدرس الأول : منظمة المؤتمر الإسلامي",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_geo_fy_u3_l9",
+          "name": "الدرس الثاني : جامعة الدول العربية",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_geo_fy_u3_l10",
+          "name": "الدرس الثالث : اليمن ودول الخليج العربية",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_geo_fy_u4",
+      "name": "الوحدة الرابعة- المواصلات والاتصالات :",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_geo_fy_u4_l11",
+          "name": "الدرس الأول : وسائل النقل وأهميتها",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_geo_fy_u4_l12",
+          "name": "الدرس الثاني : النقل البحري",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_geo_fy_u4_l13",
+          "name": "الدرس الثالث : النقل الجوي",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_geo_fy_u4_l14",
+          "name": "الدرس الرابع : الاتصالات",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_geo_fy_u5",
+      "name": "الوحدة الخامسة- التبادل التجاري والسياحي في المجال العالمي :",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_geo_fy_u5_l15",
+          "name": "الدرس الأول : التبادل التجاري العالمي واتجاهاته",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_geo_fy_u5_l16",
+          "name": "الدرس الثاني : تجارة النفط والغاز عالمياً",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_geo_fy_u5_l17",
+          "name": "الدرس الثالث : تجارة موارد الغذاء",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_geo_fy_u5_l18",
+          "name": "الدرس الرابع : صناعة السياحة ومقوماتها",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_geo_fy_u6",
+      "name": "الوحدة السادسة- مشكلات عالمية معاصرة :",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_geo_fy_u6_l19",
+          "name": "الدرس الأول : الطاقة وتحدياتها",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_geo_fy_u6_l20",
+          "name": "الدرس الثاني : التلوث البيئي",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_geo_fy_u6_l21",
+          "name": "الدرس الثالث : البطالة في العالم",
+          "order_index": 3
+        }
+      ]
+    }
+  ]
+}

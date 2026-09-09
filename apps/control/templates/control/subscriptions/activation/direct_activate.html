@@ -1,0 +1,163 @@
+{% extends "control/base.html" %}
+
+{% block title %}التفعيل المباشر لاشتراك طالب | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">التفعيل المباشر</li>
+                </ol>
+            </nav>
+            <h1 class="page-title h3 mb-1">التفعيل المباشر لاشتراك طالب</h1>
+            <p class="text-muted mb-0">تفعيل باقة اشتراك مباشرة لحساب طالب مسجل مع التحقق من السياق الدراسي ومعاينة الاستحقاق قبل التأكيد.</p>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <div class="row g-4">
+        <!-- Form Column -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">بيانات التفعيل المباشر</h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" id="direct-activation-form">
+                        {% csrf_token %}
+
+                        <!-- 1. Student Phone -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">1. رقم هاتف الطالب المسجل <span class="text-danger">*</span></label>
+                            {{ form.student_phone }}
+                            {% if form.student_phone.errors %}
+                            <div class="text-danger small mt-1">{{ form.student_phone.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-1">يجب أن يملك الطالب قيداً دراسياً نشطاً ومربوطاً بصف ومسار أكاديمي.</small>
+                        </div>
+
+                        <!-- 2. Plan Selection -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">2. اختيار الخطة / الباقة <span class="text-danger">*</span></label>
+                            {{ form.plan }}
+                            {% if form.plan.errors %}
+                            <div class="text-danger small mt-1">{{ form.plan.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 3. Subject Selection -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">3. المواد المختارة (لباقات عدد المواد فقط)</label>
+                            {{ form.subjects }}
+                            {% if form.subjects.errors %}
+                            <div class="text-danger small mt-1">{{ form.subjects.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-1">اضغط مع الاستمرار على زر <code>Ctrl</code> لاختيار أكثر من مادة. (غير مطلوب لباقة جميع المواد).</small>
+                        </div>
+
+                        <!-- 4. Reason -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">4. سبب التفعيل المباشر <span class="text-danger">*</span></label>
+                            {{ form.reason }}
+                            {% if form.reason.errors %}
+                            <div class="text-danger small mt-1">{{ form.reason.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2 pt-2 border-top">
+                            <button type="submit" name="action" value="preview" class="btn btn-outline-primary">
+                                معاينة الاستحقاق &larr;
+                            </button>
+                            <button type="submit" name="action" value="confirm" class="btn btn-success" id="btn-confirm-activation">
+                                تأكيد التفعيل المباشر وتوثيق العملية
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Column -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100 bg-light">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">نتائج المعاينة والتحقق (Grant Preview)</h5>
+                    <span class="badge bg-secondary-subtle text-secondary">خدمة المعاينة الرسمية</span>
+                </div>
+                <div class="card-body p-4">
+                    {% if preview %}
+                    <div class="alert alert-success border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-1">✓ الاستحقاق مؤهل ومتاح للتفعيل</h6>
+                        <small>تم التحقق من تطابق الخطة مع قيد الطالب الأكاديمي.</small>
+                    </div>
+
+                    <div class="bg-white p-3 rounded shadow-sm mb-3">
+                        <div class="text-muted small">الطالب المستهدف</div>
+                        <div class="fw-bold text-dark">{{ student_user.get_full_name|default:student_user.phone }}</div>
+                        <div class="small text-muted font-monospace">{{ student_user.phone }} • {{ student_enrollment.grade.name_ar }} ({{ student_enrollment.section.name_ar }})</div>
+                    </div>
+
+                    <div class="bg-white p-3 rounded shadow-sm mb-3">
+                        <div class="text-muted small">الخطة ونطاق التغطية</div>
+                        <div class="fw-bold text-primary">{{ preview.plan.name }}</div>
+                        <div class="small text-muted mt-1">
+                            نوع الباقة: <strong>{{ preview.plan.tier_type }}</strong>
+                            {% if preview.plan.subject_limit %} • الحد الأقصى للمواد: <strong>{{ preview.plan.subject_limit }}</strong>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-3 rounded shadow-sm mb-3">
+                        <div class="text-muted small mb-1">المواد التي سيتم فتحها بهذا التفعيل (New Subjects)</div>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for sid in preview.new_subject_ids %}
+                            <span class="badge bg-success-subtle text-success border px-2 py-1 font-monospace">مادة: {{ sid }}</span>
+                            {% empty %}
+                            {% if preview.resulting_is_all_subjects %}
+                            <span class="badge bg-info-subtle text-info border px-2 py-1">جميع مواد التخصص مشمولة</span>
+                            {% else %}
+                            <span class="text-muted small">لا توجد مواد جديدة مضافة</span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if preview.academic_year %}
+                    <div class="bg-white p-3 rounded shadow-sm mb-3">
+                        <div class="text-muted small">العام الدراسي وتاريخ الانتهاء</div>
+                        <div class="small fw-semibold text-dark">{{ preview.academic_year.name }}</div>
+                        <small class="text-muted font-monospace">تاريخ الانتهاء: {{ preview.academic_year.ends_at }}</small>
+                    </div>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 text-secondary opacity-50">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                        </svg>
+                        <div class="fw-semibold">لم يتم استخراج معاينة بعد</div>
+                        <small>أدخل رقم هاتف الطالب واختر الخطة واضغط "معاينة الاستحقاق" لفحص التطابق قبل التفعيل.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

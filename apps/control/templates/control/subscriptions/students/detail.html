@@ -1,0 +1,230 @@
+{% extends "control/base.html" %}
+
+{% block title %}الملف التشغيلي للاشتراكات: {{ student.get_full_name|default:student.phone }} | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'control:student_subscription_list' %}">اشتراكات الطلاب</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ student.phone }}</li>
+                </ol>
+            </nav>
+            <h1 class="page-title h3 mb-1">الملف التشغيلي لاشتراكات الطالب</h1>
+            <div class="text-muted small">
+                {{ student.get_full_name|default:"طالب مسجل" }} • {{ student.phone }}
+                {% if student.public_code %} • الكود العام: <strong class="font-monospace">{{ student.public_code }}</strong>{% endif %}
+            </div>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            {% if perms.subscriptions.direct_activate_subscription or user.is_superuser %}
+            <a href="{% url 'control:direct_activate' %}?phone={{ student.phone }}" class="btn btn-primary btn-sm">
+                + تفعيل باقة لهذا الطالب
+            </a>
+            {% endif %}
+            <a href="{% url 'control:student_subscription_list' %}" class="btn btn-outline-secondary btn-sm">
+                عودة للقائمة
+            </a>
+        </div>
+    </div>
+
+    <!-- Student Academic & Enrollment Card -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small mb-1">بيانات الحساب والطالب</div>
+                <div class="fw-bold text-dark h5 mb-1">{{ student.get_full_name|default:"-" }}</div>
+                <div class="small text-muted font-monospace mb-1">الهاتف: {{ student.phone }}</div>
+                <div class="small text-muted font-monospace">تاريخ التسجيل: {{ student.created_at|date:"Y-m-d" }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small mb-1">القيد الدراسي النشط</div>
+                {% if enrollment %}
+                <div class="fw-bold text-primary h5 mb-1">{{ enrollment.grade.name_ar }}</div>
+                <div class="small text-muted">{{ enrollment.section.name_ar }}</div>
+                <div class="small text-secondary font-monospace mt-1">العام الدراسي: {{ enrollment.academic_year.name_ar|default:"-" }}</div>
+                {% else %}
+                <div class="text-danger small py-2">لا يوجد قيد دراسي نشط لهذا الطالب حالياً.</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small mb-1">حالة الاشتراك الحالية</div>
+                {% with active_sub=subscriptions.0 %}
+                {% if active_sub and active_sub.status == 'active' %}
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-success-subtle text-success border fs-6">مشترك نشط</span>
+                    <strong class="text-dark">{{ active_sub.plan.name }}</strong>
+                </div>
+                <div class="small text-muted">
+                    ينتهي في: <strong class="font-monospace text-dark">{{ active_sub.expires_at|date:"Y-m-d" }}</strong>
+                </div>
+                <div class="small text-muted mt-1">
+                    المصدر: {{ active_sub.get_source_display }}
+                </div>
+                {% else %}
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-secondary-subtle text-secondary border fs-6">غير مشترك</span>
+                </div>
+                <small class="text-muted">يخضع لسياسة الوصول المجاني المعتمدة للصف.</small>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Access Diagnostic Table (Using check_resources_access_batch) -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0 fw-bold">التشخيص الحي لصلاحيات الوصول للمواد (Live Access Diagnostics)</h5>
+                <small class="text-muted">مستنتج لحظياً عبر خدمة الوصول الرسمية المعتمدة (check_resource_access) لنفس منطق تطبيق الطالب.</small>
+            </div>
+            <span class="badge bg-light text-dark border">خدمة الاستحقاقات الرسمية</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 35%;">المادة الدراسية</th>
+                        <th style="width: 20%;">قرار الوصول (Allowed)</th>
+                        <th style="width: 25%;">رمز السبب (Reason Code)</th>
+                        <th style="width: 20%;">المصدر المانح (Source)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for diag in diagnostic_results %}
+                    <tr>
+                        <td>
+                            <strong>{{ diag.subject.name_ar }}</strong>
+                            <small class="text-muted d-block font-monospace">{{ diag.subject.id }}</small>
+                        </td>
+                        <td>
+                            {% if diag.allowed %}
+                            <span class="badge bg-success-subtle text-success border px-2 py-1">
+                                ✓ متاح للوصول الكامل
+                            </span>
+                            {% else %}
+                            <span class="badge bg-danger-subtle text-danger border px-2 py-1">
+                                ✕ مقفل (يتطلب اشتراكاً)
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <code class="text-dark">{{ diag.reason_code }}</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary border">{{ diag.source }}</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            لا توجد مواد دراسية منشورة في هذا السياق الأكاديمي للتشخيص.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Subscriptions History -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">سجل الاشتراكات التاريخية للطالب ({{ subscriptions|length }})</h5>
+            <small class="text-muted">جميع الاشتراكات السابقة والحالية</small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>الخطة</th>
+                        <th>المواد المشمولة</th>
+                        <th>المصدر</th>
+                        <th>الحالة</th>
+                        <th>الفترة الزمنية</th>
+                        <th>سجل التدقيق</th>
+                        {% if user.is_superuser %}
+                        <th class="text-center">إجراءات المدير</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in subscriptions %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">{{ sub.plan.name }}</div>
+                            <small class="text-muted font-monospace">{{ sub.plan.code }}</small>
+                        </td>
+                        <td>
+                            {% if sub.is_all_subjects %}
+                            <span class="badge bg-info-subtle text-info">جميع مواد التخصص</span>
+                            {% else %}
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for s in sub.selected_subjects.all %}
+                                <span class="badge bg-light text-dark border">{{ s.name_ar }}</span>
+                                {% empty %}
+                                <span class="text-muted small">-</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-secondary">{{ sub.get_source_display }}</span>
+                            {% if sub.activated_by %}
+                            <small class="d-block text-muted">بواسطة: {{ sub.activated_by.phone }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sub.status == 'active' %}
+                            <span class="badge bg-success-subtle text-success">نشط</span>
+                            {% elif sub.status == 'expired' %}
+                            <span class="badge bg-secondary-subtle text-secondary">منتهي</span>
+                            {% elif sub.status == 'revoked' %}
+                            <span class="badge bg-danger-subtle text-danger">مسحوب</span>
+                            {% elif sub.status == 'cancelled' %}
+                            <span class="badge bg-warning-subtle text-warning">ملغى</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="font-monospace text-muted">{{ sub.starts_at|date:"Y-m-d" }} &larr; {{ sub.expires_at|date:"Y-m-d" }}</small>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ sub.audit_events.count }} عمليات توثيق</small>
+                        </td>
+                        {% if user.is_superuser %}
+                        <td class="text-center">
+                            {% if sub.status == 'active' %}
+                            <form method="post" action="{% url 'control:subscription_revoke' subscription_id=sub.id %}" class="d-inline" onsubmit="return confirm('هل أنت متأكد من سحب أو إلغاء هذا الاشتراك؟');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action_type" value="revoke">
+                                <input type="hidden" name="reason" value="إجراء سحب إداري من صفحة تشخيص الطالب">
+                                <button type="submit" class="btn btn-xs btn-outline-danger" title="سحب الاشتراك فوراً وإيقاف صلاحية الوصول">
+                                    سحب الاشتراك
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">لا توجد اشتراكات مسجلة لهذا الطالب.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

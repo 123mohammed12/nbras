@@ -1,0 +1,83 @@
+{% extends "control/base.html" %}
+
+{% block title %}النماذج الوزارية | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title h3 mb-1">النماذج الوزارية الرسمية</h1>
+            <p class="text-muted mb-0">استعراض وإدارة امتحانات الشهادة الثانوية العامة الموثقة في المنصة، والتحقق من أقسامها وعناصرها.</p>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            <a href="{% url 'control:ministerial_batches' %}" class="btn btn-outline-primary">
+                دفعات الدروس الوزارية
+            </a>
+            <a href="{% url 'control:import_upload' %}?type=exams" class="btn btn-outline-secondary" title="إعادة استيراد أو تحديث نطاق عبر مركز الاستيراد">
+                استيراد / استبدال نطاق &larr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-bottom mb-4">
+        <ul class="nav nav-tabs border-0">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:assessments_hub' %}">سجل أنواع التقييمات</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active fw-bold" href="{% url 'control:ministerial_list' %}">النماذج الوزارية</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:ministerial_batches' %}">دفعات الدروس الوزارية</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:training_list' %}">دفعات التدريب</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:mock_list' %}">نماذج المحاكاة</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-center"
+                  hx-get="{% url 'control:ministerial_list' %}"
+                  hx-target="#ministerial-table-container"
+                  hx-swap="outerHTML">
+                <div class="col-md-3">
+                    {{ form.subject }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.exam_year }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.exam_role }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.status }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.q }}
+                </div>
+                <div class="col-md-1 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">تصفية</button>
+                    <a href="{% url 'control:ministerial_list' %}" class="btn btn-outline-secondary btn-sm" title="إعادة تعيين">↺</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">سجل النماذج الوزارية</h5>
+            <span class="badge bg-light text-dark border">الإجمالي: {{ total_count }} نموذج</span>
+        </div>
+        {% include "control/assessments/ministerial/partials/table.html" %}
+    </div>
+</div>
+{% endblock %}

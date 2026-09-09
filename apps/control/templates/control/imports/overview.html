@@ -1,0 +1,137 @@
+{% extends "control/base.html" %}
+
+{% block title %}مركز الاستيراد والمعالجة{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item current">مركز الاستيراد</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">مركز استيراد ومعالجة المحتوى</h1>
+        <p class="text-muted" style="margin-top: 4px; font-size: 13.5px;">
+            رفع وفحص حزم الامتحانات الوزارية، الملخصات، والبطاقات الذكية، مع المعاينة الذرية ومنع التكرار.
+        </p>
+    </div>
+    <div class="page-actions" style="display: flex; gap: 8px;">
+        {% if can_execute %}
+        <a href="{% url 'control:import_upload' %}" class="btn btn-primary" id="btnNewImport">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 6px;">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ استيراد جديد</span>
+        </a>
+        {% endif %}
+
+        {% if user.is_superuser %}
+        <a href="/admin/imports/contentimportlog/" target="_blank" class="btn btn-ghost btn-sm" title="فتح سجلات الاستيراد في Django Admin">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 4px;">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>سجلات Django (Super)</span>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Metrics Cards Grid -->
+<div class="metrics-grid">
+    <div class="metric-card border-primary">
+        <div class="metric-header">
+            <span class="metric-title">إجمالي العمليات المسجلة</span>
+            <div class="metric-icon badge-primary" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.total_logs }}</div>
+        <div class="metric-subtitle">سجلات الاستيراد والمعاينة في النظام</div>
+    </div>
+
+    <div class="metric-card border-success">
+        <div class="metric-header">
+            <span class="metric-title">استيراد ناجح ومكتمل</span>
+            <div class="metric-icon badge-success" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value" style="color: var(--success);">{{ metrics.succeeded }}</div>
+        <div class="metric-subtitle">عمليات تم تنفيذها ذرياً بدون أخطاء</div>
+    </div>
+
+    <div class="metric-card {% if metrics.failed > 0 %}border-danger{% endif %}">
+        <div class="metric-header">
+            <span class="metric-title">عمليات مرفوضة أو فاشلة</span>
+            <div class="metric-icon {% if metrics.failed > 0 %}badge-danger{% else %}badge-neutral{% endif %}" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value" {% if metrics.failed > 0 %}style="color: var(--danger);"{% endif %}>{{ metrics.failed }}</div>
+        <div class="metric-subtitle">فشلت أثناء التحقق أو رُفضت لتعارض البنية</div>
+    </div>
+
+    <div class="metric-card border-warning">
+        <div class="metric-header">
+            <span class="metric-title">نشاط آخر 24 ساعة</span>
+            <div class="metric-icon badge-warning" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 14 14"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.last_24h }}</div>
+        <div class="metric-subtitle">حزم جديدة تمت معالجتها مؤخراً</div>
+    </div>
+</div>
+
+<!-- History Workspace Panel -->
+<div class="card">
+    <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2 class="card-title">سجل العمليات التاريخي</h2>
+            <p class="card-subtitle">تتبع كافة طلبات الاستيراد، نتائج التحقق، وتفاصيل التنفيذ</p>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="get" 
+              class="import-filter-form"
+              style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;"
+              hx-get="{% url 'control:import_overview' %}"
+              hx-target="#historyTableContainer"
+              hx-push-url="true">
+            <div style="min-width: 150px;">
+                {{ filter_form.content_type }}
+            </div>
+            <div style="min-width: 140px;">
+                {{ filter_form.operation }}
+            </div>
+            <div style="min-width: 130px;">
+                {{ filter_form.status }}
+            </div>
+            <div style="min-width: 220px;">
+                {{ filter_form.q }}
+            </div>
+            <button type="submit" class="btn btn-outline btn-sm">تصفية</button>
+            <a href="{% url 'control:import_overview' %}" class="btn btn-ghost btn-sm">مسح</a>
+        </form>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+        {% include "control/imports/partials/history_table.html" %}
+    </div>
+</div>
+{% endblock %}

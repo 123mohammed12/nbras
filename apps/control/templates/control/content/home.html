@@ -1,0 +1,104 @@
+{% extends "control/base.html" %}
+
+{% block title %}المحتوى الدراسي{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">المحتوى الدراسي</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1>المحتوى الدراسي</h1>
+        <p>استكشاف الهيكل التعليمي وإدارة الشروحات، الملخصات، وحزم البطاقات الذكية</p>
+    </div>
+</div>
+
+<!-- Hierarchy Filter Bar -->
+<form method="get" action="{% url 'control:content_home' %}" class="hierarchy-filters">
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <label for="id_grade" style="font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap;">الصف الدراسي:</label>
+        <select name="grade" id="id_grade" class="form-select" onchange="this.form.submit()" style="min-width: 180px;">
+            <option value="">-- كل الصفوف --</option>
+            {% for g in grades %}
+            <option value="{{ g.id }}" {% if selected_grade_id == g.id %}selected{% endif %}>{{ g.name_ar }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {% if available_sections %}
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <label for="id_section" style="font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap;">القسم / المسار:</label>
+        <select name="section" id="id_section" class="form-select" onchange="this.form.submit()" style="min-width: 160px;">
+            <option value="">-- كل الأقسام --</option>
+            {% for s in available_sections %}
+            <option value="{{ s.id }}" {% if selected_section_id == s.id %}selected{% endif %}>{{ s.name_ar }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-right: auto;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="بحث عن مادة..." class="form-input" style="width: 200px;">
+        <button type="submit" class="btn btn-secondary btn-sm">بحث</button>
+        {% if selected_grade_id or selected_section_id or search_query %}
+        <a href="{% url 'control:content_home' %}" class="btn btn-ghost btn-sm" title="إلغاء التصفية">إلغاء</a>
+        {% endif %}
+    </div>
+</form>
+
+<!-- Subjects Grid -->
+{% if subjects %}
+<div class="subject-grid">
+    {% for subject in subjects %}
+    <div class="subject-card">
+        <div>
+            <div class="subject-card-header">
+                <div>
+                    <h3 class="subject-card-title">{{ subject.name_ar }}</h3>
+                    <div class="subject-card-subtitle">{{ subject.grade.name_ar }} — {{ subject.section.name_ar }}</div>
+                </div>
+                <span class="status-pill {{ subject.status }}">{{ subject.get_status_display }}</span>
+            </div>
+
+            <div class="subject-stats-row">
+                <div class="subject-stat-item">
+                    <div class="stat-num">{{ subject.units_count }}</div>
+                    <div class="stat-label">وحدات</div>
+                </div>
+                <div class="subject-stat-item">
+                    <div class="stat-num">{{ subject.lessons_count }}</div>
+                    <div class="stat-label">دروس</div>
+                </div>
+                <div class="subject-stat-item">
+                    <div class="stat-num">{{ subject.summaries_count }}</div>
+                    <div class="stat-label">ملخصات</div>
+                </div>
+                <div class="subject-stat-item">
+                    <div class="stat-num">{{ subject.decks_count }}</div>
+                    <div class="stat-label">حزم بطاقات</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+            <a href="{% url 'control:subject_workspace' subject_id=subject.id %}" class="btn btn-primary btn-sm">
+                فتح مساحة المادة &larr;
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card empty-state" style="padding: 48px; text-align: center;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 12px; opacity: 0.5;">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <h3>لا توجد مواد دراسية مطابقة</h3>
+    <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">لم يتم العثور على مواد وفق خيارات التصفية الحالية.</p>
+</div>
+{% endif %}
+{% endblock %}

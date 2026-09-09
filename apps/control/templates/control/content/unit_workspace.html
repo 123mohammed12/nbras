@@ -1,0 +1,162 @@
+{% extends "control/base.html" %}
+
+{% block title %}{{ unit.title }} — {{ unit.subject.name_ar }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:subject_workspace' subject_id=unit.subject.id %}">{{ unit.subject.name_ar }}</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">{{ unit.title }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h1>{{ unit.title }}</h1>
+            <span class="status-pill {{ unit.status }}">{{ unit.get_status_display }}</span>
+        </div>
+        <p>مادة {{ unit.subject.name_ar }} | {{ unit.term.name_ar|default:"ترم غير محدد" }} | المعرف: <code>{{ unit.id }}</code></p>
+    </div>
+    <div class="page-actions">
+        {% if perms.content.add_summary or user.is_superuser %}
+        <a href="{% url 'control:summary_create' %}?unit_id={{ unit.id }}" class="btn btn-primary btn-sm">
+            + إضافة ملخص للوحدة
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Lessons Table Section -->
+<div class="card" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">الدروس التعليمية التابعة للوحدة ({{ lessons|length }})</h3>
+            <p class="card-subtitle">مؤشرات الجاهزية للشرح والملخصات والبطاقات الذكية لكل درس</p>
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if lessons %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">الترتيب</th>
+                        <th>عنوان الدرس</th>
+                        <th>شرح الدرس</th>
+                        <th>الملخصات</th>
+                        <th>البطاقات الذكية</th>
+                        <th>الحالة العامة</th>
+                        <th style="width: 130px; text-align: left;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in lessons %}
+                    <tr>
+                        <td><span class="badge badge-neutral">{{ lesson.sort_order }}</span></td>
+                        <td>
+                            <strong>{{ lesson.title }}</strong>
+                            <div style="font-size: 11px; color: var(--text-muted);">{{ lesson.id }}</div>
+                        </td>
+                        <td>
+                            {% if lesson.explanation %}
+                                <span class="status-pill {{ lesson.explanation.status }}" title="{{ lesson.explanation.get_content_format_display }}">
+                                    شرح: {{ lesson.explanation.get_status_display }}
+                                </span>
+                            {% else %}
+                                <span style="font-size: 12px; color: var(--text-muted);">غير متوفر</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if lesson.summary_count > 0 %}
+                                <span class="badge badge-neutral" style="font-weight: 600;">{{ lesson.summary_count }} ملخص</span>
+                            {% else %}
+                                <span style="font-size: 12px; color: var(--text-muted);">لا توجد</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if lesson.deck_count > 0 %}
+                                <span class="badge badge-primary" style="font-weight: 600;">{{ lesson.deck_count }} حزمة</span>
+                            {% else %}
+                                <span style="font-size: 12px; color: var(--text-muted);">لا توجد</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-pill {{ lesson.status }}">{{ lesson.get_status_display }}</span>
+                        </td>
+                        <td style="text-align: left;">
+                            <a href="{% url 'control:lesson_workspace' lesson_id=lesson.id %}" class="btn btn-secondary btn-sm">
+                                فتح الدرس &larr;
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>لا توجد دروس مضافة في هذه الوحدة حالياً.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Unit-Level Summaries Section -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">ملخصات الوحدة</h3>
+            <p class="card-subtitle">الملخصات الشاملة المخصصة لكامل محتوى هذه الوحدة</p>
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if unit_summaries %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>عنوان الملخص</th>
+                        <th>الحالة</th>
+                        <th>مرفقات</th>
+                        <th>تاريخ التحديث</th>
+                        <th style="text-align: left;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for summary in unit_summaries %}
+                    <tr>
+                        <td><strong>{{ summary.title }}</strong></td>
+                        <td><span class="status-pill {{ summary.status }}">{{ summary.get_status_display }}</span></td>
+                        <td>
+                            {% if summary.file_path %}
+                            <span class="badge badge-neutral">ملف مرفق</span>
+                            {% else %}
+                            <span style="color: var(--text-muted); font-size: 12px;">نص فقط</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size: 12px; color: var(--text-muted);" dir="ltr">{{ summary.updated_at|date:"Y-m-d H:i" }}</td>
+                        <td style="text-align: left;">
+                            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                                <a href="{% url 'control:summary_preview' pk=summary.pk %}" class="btn btn-ghost btn-sm">معاينة</a>
+                                {% if perms.content.change_summary or user.is_superuser %}
+                                <a href="{% url 'control:summary_update' pk=summary.pk %}" class="btn btn-secondary btn-sm">تعديل</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>لا توجد ملخصات خاصة بهذه الوحدة بعد.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

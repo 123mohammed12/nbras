@@ -1,0 +1,138 @@
+{% extends "control/base.html" %}
+
+{% block title %}
+{% if is_create %}إنشاء خطة اشتراك جديدة{% else %}تعديل الخطة: {{ plan.name }}{% endif %} | لوحة التحكم
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات والرموز</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscription_plan_list' %}">خطط الاشتراكات</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if is_create %}إضافة خطة{% else %}تعديل: {{ plan.name }}{% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Sub-Nav -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if not is_create and plan.is_immutable %}
+            <div class="alert alert-warning border-start border-warning border-4 shadow-sm mb-4">
+                <div class="d-flex align-items-center">
+                    <span class="fs-2 me-3">🔒</span>
+                    <div>
+                        <h6 class="alert-heading fw-bold mb-1">الخطة مقيدة التعديل (Immutable Constraints)</h6>
+                        <p class="mb-0 small text-dark">
+                            ترتبط بهذه الخطة اشتراكات أو رموز تفعيل مولدة. للحفاظ على تكامل البيانات، تم قفل تعديل 
+                            (نوع الباقة، السنة الدراسية، الصف، الشعبة، والحد الأقصى للمواد). يمكنك تعديل الاسم، السعر، المدة، والحالة.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        {% if is_create %}➕ إضافة خطة اشتراك تجارية جديدة{% else %}✏️ تعديل بيانات الخطة: {{ plan.name }}{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">اسم الخطة <span class="text-danger">*</span></label>
+                                {{ form.name }}
+                                {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">كود/معرف الخطة الفريد <span class="text-danger">*</span></label>
+                                {{ form.code }}
+                                {% if form.code.errors %}<div class="text-danger small mt-1">{{ form.code.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">نوع الباقة (Tier) <span class="text-danger">*</span></label>
+                                {{ form.tier_type }}
+                                {% if form.tier_type.errors %}<div class="text-danger small mt-1">{{ form.tier_type.errors.0 }}</div>{% endif %}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">السنة الدراسية <span class="text-danger">*</span></label>
+                                {{ form.academic_year }}
+                                {% if form.academic_year.errors %}<div class="text-danger small mt-1">{{ form.academic_year.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">الصف الدراسي <span class="text-danger">*</span></label>
+                                {{ form.grade }}
+                                {% if form.grade.errors %}<div class="text-danger small mt-1">{{ form.grade.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">الشعبة الدراسية <span class="text-danger">*</span></label>
+                                {{ form.section }}
+                                {% if form.section.errors %}<div class="text-danger small mt-1">{{ form.section.errors.0 }}</div>{% endif %}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">حد المواد (للباقات المحدودة)</label>
+                                {{ form.subject_limit }}
+                                <div class="form-text small">اتركه فارغاً لباقات كافة المواد</div>
+                                {% if form.subject_limit.errors %}<div class="text-danger small mt-1">{{ form.subject_limit.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">مدة الصلاحية (بالأيام) <span class="text-danger">*</span></label>
+                                {{ form.duration_days }}
+                                {% if form.duration_days.errors %}<div class="text-danger small mt-1">{{ form.duration_days.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">السعر (بالريال اليمني) <span class="text-danger">*</span></label>
+                                {{ form.price }}
+                                {% if form.price.errors %}<div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>{% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">ترتيب العرض</label>
+                                {{ form.sort_order }}
+                                {% if form.sort_order.errors %}<div class="text-danger small mt-1">{{ form.sort_order.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center pt-4">
+                                <div class="form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label fw-bold ms-2" for="{{ form.is_active.id_for_label }}">خطة نشطة ومتاحة للتفعيل</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'control:subscription_plan_list' %}" class="btn btn-outline-secondary">
+                                إلغاء والعودة
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                {% if is_create %}حفظ وإنشاء الخطة{% else %}حفظ التعديلات{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

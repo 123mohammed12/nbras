@@ -1,0 +1,252 @@
+{
+  "grade_id": "3s",
+  "grade_name": "الصف  الثالث الثانوي",
+  "track_id": "3s_lit",
+  "track_name": "ادبي",
+  "subject_id": "3s_lit_phil",
+  "subject_name": "مبادى الفلسفة",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "3s_lit_phil_fy_u1",
+      "name": "الوحدة الأولى: مفهوم الفلسفة وأهميتها",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u1_l1",
+          "name": "أولاً: تعريف الفلسفة لغة واصطلاحًا.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u1_l2",
+          "name": "ثانيًا: الفلسفة وطبيعة الفيلسوف.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u1_l3",
+          "name": "ثالثًا: أهمية الفلسفة للفرد والمجتمع.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_phil_fy_u1_l4",
+          "name": "رابعًا: أهمية الفلسفة في مواجهة مشكلات العالم المعاصر.",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u2",
+      "name": "الوحدة الثانية: الفلسفة والعلم",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u2_l5",
+          "name": "أولاً: خصائص الأسلوب الفلسفي.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u2_l6",
+          "name": "ثانيًا: خصائص الأسلوب العلمي.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u2_l7",
+          "name": "ثالثًا: العلاقة بين الفلسفة والعلم.",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u3",
+      "name": "الوحدة الثالثة: مباحث الفلسفة وعلم الأخلاق",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u3_l8",
+          "name": "أولاً: الوجود.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u3_l9",
+          "name": "ثانيًا: المعرفة.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u3_l10",
+          "name": "ثالثًا: القيم.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_phil_fy_u3_l11",
+          "name": "رابعًا: علم الأخلاق.",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u4",
+      "name": "الوحدة الرابعة: الفكر الفلسفي في الحضارات الشرقية القديمة:",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u4_l12",
+          "name": "أولاً: خصائص الفكر الفلسفي الشرقي القديم.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u4_l13",
+          "name": "ثانيًا: إثبات معرفة الشرقيين القدامى للفلسفة قبل اليونان.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u4_l14",
+          "name": "ثالثًا: نماذج من الفكر الفلسفي الشرقي القديم.",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u5",
+      "name": "الوحدة الخامسة: الفكر الفلسفي اليوناني القديم:",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u5_l15",
+          "name": "أولاً: خصائص الفلسفة اليونانية وعوامل ازدهارها.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u5_l16",
+          "name": "ثانيًا: الفلسفة اليونانية قبل سقراط.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u5_l17",
+          "name": "ثالثًا: رواد الفلسفة اليونانية.",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u6",
+      "name": "الوحدة السادسة: الفكر الفلسفي في العصر الأوربي الوسيط:",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u6_l18",
+          "name": "أولاً: خصائص الفكر الفلسفي في العصر الأوربي الوسيط.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u6_l19",
+          "name": "ثانيًا: المذاهب الفلسفية في العصر الأوربي الوسيط.",
+          "order_index": 2
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u7",
+      "name": "الوحدة السابعة: الفكر الفلسفي العربي الإسلامي في العصر الوسيط:",
+      "order_index": 7,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u7_l20",
+          "name": "أولاً: الإسلام وموقفه من التفكير العقلي والفلسفي.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u7_l21",
+          "name": "ثانيًا: صلة الحضارة العربية الإسلامية بالحضارات الأخرى.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u7_l22",
+          "name": "ثالثًا: مصادر الفكر الفلسفي العربي الإسلامي.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_phil_fy_u7_l23",
+          "name": "رابعًا: الفلسفة بين التأييد والمعارضة.",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u8",
+      "name": "الوحدة الثامنة: مجالات الفلسفة العربية الإسلامية وروادها:",
+      "order_index": 8,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u8_l24",
+          "name": "أولاً: مجالات الفلسفة العربية الإسلامية.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u8_l25",
+          "name": "ثانيًا: رواد الفلسفة العربية الإسلامية.",
+          "order_index": 2
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u9",
+      "name": "الوحدة التاسعة: الفكر الفلسفي الغربي الحديث والمعاصر:",
+      "order_index": 9,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u9_l26",
+          "name": "أولاً: نشأة الفكر الفلسفي الغربي الحديث.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u9_l27",
+          "name": "ثانيًا: سمات الفكر الفلسفي الغربي الحديث.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_lit_phil_fy_u9_l28",
+          "name": "ثالثًا: رواد الفكر الفلسفي الغربي الحديث.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_lit_phil_fy_u9_l29",
+          "name": "رابعًا: سمات الفكر الفلسفي الغربي المعاصر.",
+          "order_index": 4
+        },
+        {
+          "id": "3s_lit_phil_fy_u9_l30",
+          "name": "خامسًا: تيارات الفكر الفلسفي الغربي المعاصر.",
+          "order_index": 5
+        }
+      ]
+    },
+    {
+      "id": "3s_lit_phil_fy_u10",
+      "name": "الوحدة العاشرة: الفكر الفلسفي العربي المعاصر:",
+      "order_index": 10,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_lit_phil_fy_u10_l31",
+          "name": "أولاً: عوامل نشأة الفكر الفلسفي العربي المعاصر.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_lit_phil_fy_u10_l32",
+          "name": "ثانيًا: اتجاهات الفكر الفلسفي العربي المعاصر.",
+          "order_index": 2
+        }
+      ]
+    }
+  ]
+}

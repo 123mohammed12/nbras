@@ -1,0 +1,457 @@
+{
+  "grade_id": "9th",
+  "grade_name": "الصف  التاسع",
+  "track_id": "9th_sci",
+  "track_name": "علمي",
+  "subject_id": "9th_sci_islamic",
+  "subject_name": "التربية الإسلامية",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "9th_sci_islamic_fy_u1",
+      "name": "الوحدة الأولى:",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u1_l1",
+          "name": "الدرس الأول: معرفة الله",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u1_l2",
+          "name": "الدرس الثاني: أسماء الله وصفاته",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u1_l3",
+          "name": "الدرس الثالث: معاني أسماء الله وصفاته",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u1_l4",
+          "name": "الدرس الرابع: ليس كمثله شيء",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u1_l5",
+          "name": "الدرس الخامس: التسبيح",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u1_l6",
+          "name": "تقويم الوحدة الأولى",
+          "order_index": 6
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u2",
+      "name": "الوحدة الثانية:",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u2_l7",
+          "name": "الدرس الأول: القرآن الكريم كتاب الهداية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u2_l8",
+          "name": "الدرس الثاني: القرآن الكريم معجزة خالدة",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u2_l9",
+          "name": "تقويم الوحدة الثانية",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u3",
+      "name": "مجال الحديث",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u3_l10",
+          "name": "الدرس الأول: أثر التجليس في سلوك الإنسان",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l11",
+          "name": "الدرس الثاني: الحب في الله والبغض في الله",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l12",
+          "name": "الدرس الثالث: الأخوة والتكافل",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l13",
+          "name": "الدرس الرابع: حرمة المسلم",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l14",
+          "name": "الدرس الخامس: التجسس وسوء الظن",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l15",
+          "name": "الدرس السادس: التحذير من الكبر",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l16",
+          "name": "الدرس السابع: القدوة الحسنة والقدوة السيئة",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u3_l17",
+          "name": "تقويم المجال",
+          "order_index": 8
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u4",
+      "name": "مجال الفقه",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u4_l18",
+          "name": "الدرس الأول: مكانة الحج في الإسلام",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l19",
+          "name": "الدرس الثاني: شروط الحج ومناسكه",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l20",
+          "name": "الدرس الثالث: الإحرام",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l21",
+          "name": "الدرس الرابع: محظورات الإحرام",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l22",
+          "name": "الدرس الخامس: مناسك الحج",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l23",
+          "name": "الدرس السادس: أنواع الحج",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l24",
+          "name": "الدرس السابع: العمرة",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l25",
+          "name": "الدرس الثامن: زيارة النبي صلى الله عليه وآله وسلم",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_islamic_fy_u4_l26",
+          "name": "تقويم المجال",
+          "order_index": 9
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u5",
+      "name": "مجال السيرة",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u5_l27",
+          "name": "الدرس الأول: الرسول ﷺ القائد الحكيم.",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l28",
+          "name": "الدرس الثاني: معركة الأحزاب (۱)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l29",
+          "name": "الدرس الثالث: معركة الأحزاب (۲)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l30",
+          "name": "الدرس الرابع: الوجود اليهودي في جزيرة العرب",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l31",
+          "name": "الدرس الخامس: إجلاء يهود بني قينقاع من المدينة",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l32",
+          "name": "الدرس السادس: إجلاء يهود بني النضير",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l33",
+          "name": "الدرس السابع: إجلاء يهود بني قريظة",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l34",
+          "name": "الدرس الثامن: فتح خيبر ( ٧ هجرية)",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_islamic_fy_u5_l35",
+          "name": "تقويم المجال",
+          "order_index": 9
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u6",
+      "name": "أعلام إسلامية",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u6_l36",
+          "name": "الدرس الأول: الإمام علي بن أبي طالب عليه السلام",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u6_l37",
+          "name": "الدرس الثاني: حذيفة بن اليمان",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u6_l38",
+          "name": "تقويم المجال",
+          "order_index": 3
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u7",
+      "name": "الوحدة الثالثة: مجال الإيمان قول وعمل",
+      "order_index": 7,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u7_l39",
+          "name": "الدرس الأول: أثر الإيمان في حياة الفرد والمجتمع",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l40",
+          "name": "الدرس الثاني: الإيمان قول وعمل",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l41",
+          "name": "الدرس الثالث: الشهادتان",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l42",
+          "name": "الدرس الرابع: الولاء والبراء",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l43",
+          "name": "الدرس الخامس: النفاق",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l44",
+          "name": "الدرس السادس: الكفر بالطاغوت",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l45",
+          "name": "الدرس السابع: تعظيم شعائر الله",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l46",
+          "name": "الدرس الثامن: الدعاء",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_islamic_fy_u7_l47",
+          "name": "تقويم المجال",
+          "order_index": 9
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u8",
+      "name": "مجال الحديث - الفصل الدراسي الثاني",
+      "order_index": 8,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u8_l48",
+          "name": "الدرس الأول: الدعوة إلى الخير",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l49",
+          "name": "الدرس الثاني: فضل العمل والسعي",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l50",
+          "name": "الدرس الثالث: الكسب الحلال",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l51",
+          "name": "الدرس الرابع: اغتنام الوقت",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l52",
+          "name": "الدرس الخامس: الجهاد في سبيل الله",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l53",
+          "name": "الدرس السادس: الدعاء",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l54",
+          "name": "الدرس السابع: التوبة",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u8_l55",
+          "name": "تقويم المجال",
+          "order_index": 8
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u9",
+      "name": "مجال الفقه - الفصل الدراسي الثاني",
+      "order_index": 9,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u9_l56",
+          "name": "الدرس الأول: الأطعمة وآداب الأكل",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l57",
+          "name": "الدرس الثاني: الأشربة وآداب الشرب",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l58",
+          "name": "الدرس الثالث: اللباس",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l59",
+          "name": "الدرس الرابع: خصال الفطرة",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l60",
+          "name": "الدرس الخامس: الأيمان",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l61",
+          "name": "الدرس السادس: النذر",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l62",
+          "name": "الدرس السابع: اللقطة والضالة",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l63",
+          "name": "الدرس الثامن: الإعارة والقرض",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_islamic_fy_u9_l64",
+          "name": "تقويم المجال",
+          "order_index": 9
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_islamic_fy_u10",
+      "name": "مجال السيرة - الفصل الدراسي الثاني",
+      "order_index": 10,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_islamic_fy_u10_l65",
+          "name": "الدرس الأول: صلح الحديبية",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l66",
+          "name": "الدرس الثاني: مخاطبة العالم بالدخول في الإسلام",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l67",
+          "name": "الدرس الثالث: غزوة مؤتة",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l68",
+          "name": "الدرس الرابع: فتح مكة",
+          "order_index": 4
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l69",
+          "name": "الدرس الخامس: معركة حنين",
+          "order_index": 5
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l70",
+          "name": "الدرس السادس: غزوة تبوك",
+          "order_index": 6
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l71",
+          "name": "الدرس السابع: حجة الوداع",
+          "order_index": 7
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l72",
+          "name": "الدرس الثامن: مرض الرسول ﷺ ووفاته",
+          "order_index": 8
+        },
+        {
+          "id": "9th_sci_islamic_fy_u10_l73",
+          "name": "تقويم المجال",
+          "order_index": 9
+        }
+      ]
+    }
+  ]
+}

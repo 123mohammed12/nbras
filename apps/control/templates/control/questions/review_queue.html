@@ -1,0 +1,137 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}طابور المراجعة والتدقيق التربوي{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="page-header">
+        <div>
+            <div class="breadcrumbs" style="margin-bottom: 8px;">
+                <a href="{% url 'control:question_list' %}">بنك الأسئلة</a>
+                <span>&rsaquo;</span>
+                <span class="current">طابور المراجعة</span>
+            </div>
+            <h1 class="page-title">
+                طابور المراجعة والتدقيق التربوي
+                <span class="badge badge-warning" style="font-size: 14px; margin-right: 8px;">{{ total_pending }} معلق</span>
+            </h1>
+            <p class="page-subtitle">الأسئلة المحالة إلى المراجعة للتحقق من سلامتها العلمية والتربوية قبل الاعتماد والنشر</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'control:question_list' %}" class="btn btn-outline">العودة للبنك الرئيسي</a>
+        </div>
+    </div>
+
+    <!-- Filter by Subject -->
+    <div class="panel" style="margin-bottom: 20px;">
+        <div class="panel-body" style="padding: 12px 16px;">
+            <form method="get" style="display: flex; gap: 12px; align-items: center;">
+                <label style="font-weight: 600; font-size: 13px;">تصفية حسب المادة:</label>
+                <select name="subject" class="form-control" style="max-width: 260px;" onchange="this.form.submit()">
+                    <option value="">جميع المواد التي بها أسئلة للمراجعة</option>
+                    {% for subj in subjects %}
+                    <option value="{{ subj.id }}" {% if selected_subject == subj.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subj.name_ar }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if selected_subject %}
+                <a href="{% url 'control:question_review_queue' %}" class="btn btn-outline btn-sm">مسح التصفية</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Pending Questions List -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">الأسئلة بانتظار الاعتماد ({{ total_pending }})</span>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+            {% if page_obj %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">المعرف</th>
+                        <th>نص ومحتوى السؤال</th>
+                        <th>السياق الأكاديمي</th>
+                        <th>المصدر</th>
+                        <th>النوع والصعوبة</th>
+                        <th>تاريخ الإحالة</th>
+                        <th style="width: 120px; text-align: center;">إجراء المراجعة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in page_obj %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'control:question_review' q.pk %}" class="qb-ref-code">
+                                Q-{{ q.id|stringformat:"s"|slice:":8" }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="qb-stem-excerpt">
+                                <a href="{% url 'control:question_review' q.pk %}" class="qb-stem-link">
+                                    {{ q.current_version.question_text|truncatechars:90 }}
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="qb-hierarchy-cell">
+                                <span class="qb-subject-tag">{{ q.subject.name_ar }}</span>
+                                {% if q.unit %}<span class="qb-unit-tag">{{ q.unit.title|truncatechars:20 }}</span>{% endif %}
+                                {% if q.lesson %}<span class="qb-lesson-tag">{{ q.lesson.title|truncatechars:20 }}</span>{% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-muted">{{ q.get_source_type_display }}</span>
+                        </td>
+                        <td>
+                            <div>{{ q.get_question_type_display }}</div>
+                            <span class="qb-diff-tag qb-diff-{{ q.difficulty }}">{{ q.get_difficulty_display }}</span>
+                        </td>
+                        <td class="text-muted" style="font-size: 12px;">
+                            {{ q.updated_at|date:"Y-m-d H:i" }}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'control:question_review' q.pk %}" class="btn btn-primary btn-sm" title="فتح شاشة التدقيق والاعتماد">
+                                مراجعة واعتماد
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="qb-pagination-bar">
+                <div class="qb-pagination-info">
+                    عرض {{ page_obj.start_index }} إلى {{ page_obj.end_index }} من أصل {{ total_pending }} سؤال
+                </div>
+                <div class="qb-pagination-links">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if selected_subject %}&subject={{ selected_subject }}{% endif %}" class="qb-page-link">السابق</a>
+                    {% endif %}
+                    <span class="qb-page-current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if selected_subject %}&subject={{ selected_subject }}{% endif %}" class="qb-page-link">التالي</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 12px; color: var(--success);">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <p style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">طابور المراجعة فارغ تماماً!</p>
+                <p class="text-muted" style="font-size: 13px;">تم تدقيق واعتماد جميع الأسئلة المحالة بنجاح، أو لا توجد مسودات محالة حالياً.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

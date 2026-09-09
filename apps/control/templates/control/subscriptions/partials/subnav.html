@@ -1,0 +1,54 @@
+<!-- Subscriptions Sub-Navigation Tabs -->
+<div class="border-bottom mb-4">
+    <ul class="nav nav-tabs border-0">
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'overview' %}active fw-bold text-primary{% endif %}" href="{% url 'control:subscriptions_overview' %}">
+                نظرة عامة
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'students' %}active fw-bold text-primary{% endif %}" href="{% url 'control:student_subscription_list' %}">
+                اشتراكات الطلاب
+            </a>
+        </li>
+        {% if perms.subscriptions.direct_activate_subscription or user.is_superuser %}
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'direct_activate' %}active fw-bold text-primary{% endif %}" href="{% url 'control:direct_activate' %}">
+                تفعيل مباشر
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.subscriptions.view_activationcodebatch or user.is_superuser %}
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'codes' %}active fw-bold text-primary{% endif %}" href="{% url 'control:activation_code_batch_list' %}">
+                دفعات الرموز
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.subscriptions.view_activationcode or user.is_superuser %}
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'code_lookup' %}active fw-bold text-primary{% endif %}" href="{% url 'control:activation_code_lookup' %}">
+                الاستعلام عن رمز
+            </a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'audit' %}active fw-bold text-primary{% endif %}" href="{% url 'control:subscription_audit_list' %}">
+                سجل العمليات
+            </a>
+        </li>
+
+        {% if user.is_superuser %}
+        <li class="nav-item ms-auto border-start ps-2">
+            <a class="nav-link {% if active_subtab == 'plans' %}active fw-bold text-danger{% endif %}" href="{% url 'control:subscription_plan_list' %}" title="إدارة الخطط التجارية (مدير النظام)">
+                خطط الاشتراكات ⚙
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_subtab == 'free_policy' %}active fw-bold text-danger{% endif %}" href="{% url 'control:free_policy_list' %}" title="سياسة الوصول المجاني (مدير النظام)">
+                الوصول المجاني ⚙
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>

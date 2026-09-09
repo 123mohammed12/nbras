@@ -1,0 +1,283 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}
+{% if is_create %}إضافة سؤال جديد{% else %}تعديل السؤال Q-{{ question.id|stringformat:"s"|slice:":8" }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <div class="breadcrumbs" style="margin-bottom: 8px;">
+                <a href="{% url 'control:question_list' %}">بنك الأسئلة</a>
+                <span>&rsaquo;</span>
+                {% if is_create %}
+                <span class="current">إضافة سؤال جديد</span>
+                {% else %}
+                <a href="{% url 'control:question_detail' question.pk %}">Q-{{ question.id|stringformat:"s"|slice:":8" }}</a>
+                <span>&rsaquo;</span>
+                <span class="current">تعديل المسودة</span>
+                {% endif %}
+            </div>
+            <h1 class="page-title">
+                {% if is_create %}إضافة سؤال جديد إلى بنك الأسئلة{% else %}تعديل مسودة السؤال (النسخة V{{ version.version_number }}){% endif %}
+            </h1>
+        </div>
+
+        <div class="page-header-actions">
+            {% if not is_create %}
+            <a href="{% url 'control:question_detail' question.pk %}" class="btn btn-outline">إلغاء والعودة</a>
+            {% else %}
+            <a href="{% url 'control:question_list' %}" class="btn btn-outline">إلغاء والعودة</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- If Frozen, block direct form and offer Clone -->
+    {% if is_frozen %}
+    <div class="panel" style="border-right: 4px solid var(--warning); padding: 24px; text-align: center;">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 16px; color: var(--warning);">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">هذا السؤال منشور رسمياً ومجمد تاريخياً</h2>
+            <p class="text-muted" style="margin-bottom: 20px; font-size: 14px; line-height: 1.7;">
+                لحماية نزاهة نتائج الطلاب والاختبارات المنجزة، لا يُسمح بتعديل النسخ المنشورة مباشرة.
+                يمكنك إنشاء نسخة جديدة مسودة مستنسخة، وتعديلها ومراجعتها واعتمادها، وعند نشرها ستصبح هي النسخة الفعالة للطلاب تلقائياً.
+            </p>
+            <form method="post" action="{% url 'control:question_clone' question.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-size: 14px;">
+                    إنشاء نسخة مسودة جديدة للتعديل (Clone to Draft)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Full-Page Editor Form -->
+    <form method="post" class="qb-editor-form" id="questionEditorForm">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="alert alert-danger" style="margin-bottom: 20px;">
+            <div>
+                <strong>يرجى تصحيح الأخطاء التالية قبل الحفظ:</strong>
+                <ul style="margin: 6px 18px 0 0; font-size: 13px;">
+                    {% for field, errors in form.errors.items %}
+                    <li>{{ field }}: {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Section A: Academic Context (Only for Create, or displayed read-only for Edit) -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">أ. السياق الأكاديمي والمنهجي</span>
+                <span class="text-muted" style="font-size: 12px;">ربط السؤال بالمنهج التعليمي المعتمد</span>
+            </div>
+            <div class="panel-body">
+                {% if is_create %}
+                <div class="qb-form-grid-3">
+                    <div class="form-group">
+                        <label class="form-label required">{{ form.subject.label }}</label>
+                        {{ form.subject }}
+                        {% if form.subject.errors %}<span class="form-error">{{ form.subject.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="form-group" id="form_unit_container">
+                        <label class="form-label">{{ form.unit.label }}</label>
+                        {{ form.unit }}
+                        {% if form.unit.errors %}<span class="form-error">{{ form.unit.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="form-group" id="form_lesson_container">
+                        <label class="form-label">{{ form.lesson.label }}</label>
+                        {{ form.lesson }}
+                        {% if form.lesson.errors %}<span class="form-error">{{ form.lesson.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="qb-form-grid-3" style="background: var(--bg-muted); padding: 12px 16px; border-radius: var(--radius-sm);">
+                    <div>
+                        <span class="qb-meta-label">المادة الدراسية</span>
+                        <span class="qb-meta-value font-weight-bold">{{ question.subject.name_ar }}</span>
+                    </div>
+                    <div>
+                        <span class="qb-meta-label">الوحدة</span>
+                        <span class="qb-meta-value">{{ question.unit.title|default:"غير محددة" }}</span>
+                    </div>
+                    <div>
+                        <span class="qb-meta-label">الدرس</span>
+                        <span class="qb-meta-value">{{ question.lesson.title|default:"غير محدد" }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Section B: Classification & Source -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">ب. التصنيف والخصائص الفنية</span>
+            </div>
+            <div class="panel-body">
+                <div class="qb-form-grid-4">
+                    {% if is_create %}
+                    <div class="form-group">
+                        <label class="form-label required">{{ form.source_type.label }}</label>
+                        {{ form.source_type }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">{{ form.question_type.label }}</label>
+                        {{ form.question_type }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">{{ form.difficulty.label }}</label>
+                        {{ form.difficulty }}
+                    </div>
+                    {% else %}
+                    <div>
+                        <span class="qb-meta-label">المصدر</span>
+                        <span class="qb-meta-value">{{ question.get_source_type_display }}</span>
+                    </div>
+                    <div>
+                        <span class="qb-meta-label">النوع</span>
+                        <span class="qb-meta-value">{{ question.get_question_type_display }}</span>
+                    </div>
+                    <div>
+                        <span class="qb-meta-label">الصعوبة</span>
+                        <span class="qb-meta-value">{{ question.get_difficulty_display }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label class="form-label required">{{ form.points.label }}</label>
+                        {{ form.points }}
+                        {% if form.points.errors %}<span class="form-error">{{ form.points.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+
+                {% if is_create and form.origin_note %}
+                <div class="form-group" style="margin-top: 12px;">
+                    <label class="form-label">{{ form.origin_note.label }}</label>
+                    {{ form.origin_note }}
+                    <span class="text-muted" style="font-size: 11.5px;">{{ form.origin_note.help_text }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Section C: Question Stem -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">ج. نص ومحتوى السؤال</span>
+            </div>
+            <div class="panel-body">
+                <div class="form-group" style="max-width: 300px; margin-bottom: 16px;">
+                    <label class="form-label">{{ form.prompt_layout.label }}</label>
+                    {{ form.prompt_layout }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">{{ form.question_text.label }}</label>
+                    {{ form.question_text }}
+                    {% if form.question_text.errors %}<span class="form-error">{{ form.question_text.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section D: Options and Answer Key -->
+        <div class="panel">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="panel-title">د. الخيارات وتحديد الإجابة الصحيحة</span>
+                <span class="text-muted" style="font-size: 12px;">حدد الدائرة المجاورة للخيار المعتمد كإجابة صحيحة</span>
+            </div>
+            <div class="panel-body">
+                <div class="qb-options-editor">
+                    <!-- Option A -->
+                    <div class="qb-opt-edit-row">
+                        <div class="qb-opt-radio-cell">
+                            <input type="radio" name="correct_option" value="A" id="radio_opt_a" 
+                                   {% if form.correct_option.value == 'A' or form.correct_option.initial == 'A' %}checked{% endif %}>
+                            <label for="radio_opt_a" class="qb-opt-letter-tag">أ / A</label>
+                        </div>
+                        <div class="qb-opt-input-cell">
+                            {{ form.option_a }}
+                        </div>
+                    </div>
+
+                    <!-- Option B -->
+                    <div class="qb-opt-edit-row">
+                        <div class="qb-opt-radio-cell">
+                            <input type="radio" name="correct_option" value="B" id="radio_opt_b"
+                                   {% if form.correct_option.value == 'B' or form.correct_option.initial == 'B' %}checked{% endif %}>
+                            <label for="radio_opt_b" class="qb-opt-letter-tag">ب / B</label>
+                        </div>
+                        <div class="qb-opt-input-cell">
+                            {{ form.option_b }}
+                        </div>
+                    </div>
+
+                    <!-- Option C -->
+                    <div class="qb-opt-edit-row" id="opt_c_row">
+                        <div class="qb-opt-radio-cell">
+                            <input type="radio" name="correct_option" value="C" id="radio_opt_c"
+                                   {% if form.correct_option.value == 'C' or form.correct_option.initial == 'C' %}checked{% endif %}>
+                            <label for="radio_opt_c" class="qb-opt-letter-tag">ج / C</label>
+                        </div>
+                        <div class="qb-opt-input-cell">
+                            {{ form.option_c }}
+                        </div>
+                    </div>
+
+                    <!-- Option D -->
+                    <div class="qb-opt-edit-row" id="opt_d_row">
+                        <div class="qb-opt-radio-cell">
+                            <input type="radio" name="correct_option" value="D" id="radio_opt_d"
+                                   {% if form.correct_option.value == 'D' or form.correct_option.initial == 'D' %}checked{% endif %}>
+                            <label for="radio_opt_d" class="qb-opt-letter-tag">د / D</label>
+                        </div>
+                        <div class="qb-opt-input-cell">
+                            {{ form.option_d }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section E: Pedagogical Explanations -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">هـ. الشرح والتعليل التربوي</span>
+                <span class="text-muted" style="font-size: 12px;">يظهر للطالب بعد إتمام المحاولة وتأكيد الإجابة</span>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="form-label">{{ form.short_explanation.label }}</label>
+                    {{ form.short_explanation }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">{{ form.explanation.label }}</label>
+                    {{ form.explanation }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Footer Action Bar -->
+        <div class="qb-editor-actions-bar">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700;">
+                {% if is_create %}حفظ السؤال كمسودة أولية{% else %}حفظ التعديلات في المسودة{% endif %}
+            </button>
+            {% if is_create %}
+            <a href="{% url 'control:question_list' %}" class="btn btn-outline">إلغاء</a>
+            {% else %}
+            <a href="{% url 'control:question_detail' question.pk %}" class="btn btn-outline">إلغاء</a>
+            {% endif %}
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

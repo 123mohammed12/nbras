@@ -1,0 +1,128 @@
+{% extends "control/base.html" %}
+
+{% block title %}إدارة حزمة: {{ deck.title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+{% if deck.lesson %}
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:lesson_workspace' lesson_id=deck.lesson.id %}?tab=flashcards">{{ deck.lesson.title }}</a></span>
+{% endif %}
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">{{ deck.title }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h1>{{ deck.title }}</h1>
+            <span class="status-pill {{ deck.status }}">{{ deck.get_status_display }}</span>
+        </div>
+        <p>
+            {% if deck.lesson %}
+            الدرس: <strong>{{ deck.lesson.title }}</strong> | المادة: {{ deck.lesson.unit.subject.name_ar }} | 
+            {% endif %}
+            إجمالي البطاقات: <strong>{{ cards|length }}</strong>
+        </p>
+    </div>
+    <div class="page-actions">
+        {% if deck.lesson %}
+        <a href="{% url 'control:lesson_workspace' lesson_id=deck.lesson.id %}?tab=flashcards" class="btn btn-ghost btn-sm">&rarr; رجوع للدرس</a>
+        {% endif %}
+        {% if perms.content.change_flashcarddeck or user.is_superuser %}
+        <a href="{% url 'control:deck_update' pk=deck.pk %}" class="btn btn-secondary btn-sm">تعديل الحزمة</a>
+        {% endif %}
+        {% if perms.content.add_flashcard or user.is_superuser %}
+        <a href="{% url 'control:card_create' deck_pk=deck.pk %}" class="btn btn-primary btn-sm">+ إضافة بطاقة جديدة</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if deck.description %}
+<div style="margin-bottom: 20px; font-size: 13.5px; color: var(--text-secondary); background: var(--bg-surface); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+    {{ deck.description }}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">البطاقات التعليمية في الحزمة ({{ cards|length }})</h3>
+            <p class="card-subtitle">ترتيب البطاقات، الوجه الأمامي، الإجابة الخلفية، ومستوى الصعوبة</p>
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if cards %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">الترتيب</th>
+                        <th>الوجه الأمامي (السؤال)</th>
+                        <th>الوجه الخلفي (الإجابة)</th>
+                        <th>الصعوبة</th>
+                        <th>الحالة</th>
+                        <th style="width: 140px; text-align: left;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                    <tr>
+                        <td><span class="badge badge-neutral">{{ card.sort_order }}</span></td>
+                        <td>
+                            <div style="font-weight: 600;">{{ card.front_text|default:"—"|truncatechars:45 }}</div>
+                            {% if card.front_image_path %}
+                            <span class="badge badge-neutral" style="margin-top: 2px;">يحتوي صورة</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>{{ card.back_text|default:"—"|truncatechars:45 }}</div>
+                            {% if card.back_image_path %}
+                            <span class="badge badge-neutral" style="margin-top: 2px;">يحتوي صورة</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if card.difficulty == "easy" %}
+                                <span class="badge badge-success">سهل</span>
+                            {% elif card.difficulty == "medium" %}
+                                <span class="badge badge-neutral">متوسط</span>
+                            {% else %}
+                                <span class="badge badge-warning">صعب</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if card.is_active %}
+                                <span style="color: var(--color-success); font-size: 12px; font-weight: 600;">نشطة</span>
+                            {% else %}
+                                <span style="color: var(--text-muted); font-size: 12px;">معطلة</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: left;">
+                            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                                <a href="{% url 'control:card_preview' pk=card.pk %}" class="btn btn-ghost btn-sm">معاينة القلب</a>
+                                {% if perms.content.change_flashcard or user.is_superuser %}
+                                <a href="{% url 'control:card_update' pk=card.pk %}" class="btn btn-secondary btn-sm">تعديل</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding: 40px;">
+            <p>لا توجد بطاقات مضافة في هذه الحزمة حتى الآن.</p>
+            {% if perms.content.add_flashcard or user.is_superuser %}
+            <a href="{% url 'control:card_create' deck_pk=deck.pk %}" class="btn btn-primary btn-sm" style="margin-top: 10px;">
+                + إضافة أول بطاقة
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

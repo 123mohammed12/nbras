@@ -1,0 +1,117 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}معاينة كطالب: Q-{{ question.id|stringformat:"s"|slice:":8" }}{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Preview Mode Header Bar -->
+    <div class="qb-preview-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="qb-preview-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>معاينة تجربة الطالب (Student Delivery Preview)</span>
+            </div>
+            <span class="text-muted" style="font-size: 13px;">هذه الشاشة تحاكي عرض السؤال في تطبيق ومنصة الطالب تماماً دون كشف الإجابة الصحيحة</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <a href="{% url 'control:question_review' question.pk %}" class="btn btn-outline btn-sm">فتح وضع المراجعة</a>
+            <a href="{% url 'control:question_detail' question.pk %}" class="btn btn-outline btn-sm">العودة لتفاصيل السؤال</a>
+        </div>
+    </div>
+
+    <!-- Student Exam Simulator Card -->
+    <div class="qb-student-simulator">
+        <div class="qb-student-exam-card">
+            <!-- Question Top Meta (Subject, Question number, Points) -->
+            <div class="qb-student-card-header">
+                <div class="qb-student-subject">
+                    <span>{{ question.subject.name_ar }}</span>
+                    {% if question.unit %}
+                    <span>&bull;</span>
+                    <span>{{ question.unit.title }}</span>
+                    {% endif %}
+                </div>
+                <div class="qb-student-points">
+                    <span>{{ version.points|default:"1.00" }} درجة</span>
+                </div>
+            </div>
+
+            <!-- Stimulus if present -->
+            {% if stimuli %}
+            {% for stim in stimuli %}
+            <div class="qb-student-stimulus">
+                {% if stim.title %}
+                <h3 class="qb-student-stim-title">{{ stim.title }}</h3>
+                {% endif %}
+                <div class="qb-student-stim-text">
+                    {{ stim.text_content|linebreaks }}
+                </div>
+                {% if stim.image_path %}
+                <div style="margin-top: 10px; text-align: center;">
+                    <img src="{{ stim.image_path.url }}" alt="صورة المادة المشتركة" style="max-width: 100%; border-radius: 6px;">
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Question Stem -->
+            <div class="qb-student-stem" dir="rtl">
+                {{ version.question_text|linebreaks|default:"[نص السؤال]" }}
+            </div>
+
+            <!-- Assets / Diagram -->
+            {% if assets %}
+            <div class="qb-student-assets">
+                {% for asset in assets %}
+                <div class="qb-student-asset-item">
+                    <img src="{{ asset.file_path.url }}" alt="{{ asset.alt_text|default:'رسم توضيحي' }}">
+                    {% if asset.caption %}
+                    <span class="qb-student-asset-caption">{{ asset.caption }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Options Interactive List -->
+            <div class="qb-student-options">
+                {% for opt in options %}
+                <label class="qb-student-opt-label" id="opt_lbl_{{ opt.option_key }}">
+                    <input type="radio" name="student_choice" value="{{ opt.option_key }}" class="qb-student-radio" onchange="highlightStudentOption(this)">
+                    <span class="qb-student-opt-key">{{ opt.option_key }}</span>
+                    <span class="qb-student-opt-text">
+                        {{ opt.option_text }}
+                        {% if opt.option_image_path %}
+                        <div style="margin-top: 6px;">
+                            <img src="{{ opt.option_image_path.url }}" alt="صورة الخيار" style="max-height: 100px; border-radius: 4px;">
+                        </div>
+                        {% endif %}
+                    </span>
+                </label>
+                {% empty %}
+                <p class="text-muted" style="padding: 12px;">لا توجد خيارات معرّفة لهذا السؤال.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Simulated Action Bar -->
+            <div class="qb-student-footer">
+                <button type="button" class="btn btn-primary" style="padding: 9px 24px;" onclick="alert('في تطبيق الطالب، يتم تأكيد الإجابة وإرسالها للتصحيح.');">
+                    تأكيد الإجابة
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function highlightStudentOption(radio) {
+    document.querySelectorAll('.qb-student-opt-label').forEach(lbl => lbl.classList.remove('selected'));
+    radio.closest('.qb-student-opt-label').classList.add('selected');
+}
+</script>
+{% endblock %}

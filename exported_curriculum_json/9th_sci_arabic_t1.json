@@ -1,0 +1,348 @@
+{
+  "grade_id": "9th",
+  "grade_name": "الصف  التاسع",
+  "track_id": "9th_sci",
+  "track_name": "علمي",
+  "subject_id": "9th_sci_arabic",
+  "subject_name": "لغتي العربية",
+  "term_id": "t1",
+  "term_name": "الجزء الاول",
+  "units": [
+    {
+      "id": "9th_sci_arabic_t1_u1",
+      "name": "الوحدة الأولى: القرآن كتاب هداية",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u1_l1",
+          "name": "عباد الرحمن (نصوص وتذوق)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u1_l2",
+          "name": "النحو والصرف: (تطبيقات عامة لما سبقت دراسته)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u1_l3",
+          "name": "الإملاء: (تطبيقات عامة)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u1_l4",
+          "name": "تقويم الوحدة الأولى",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u2",
+      "name": "الوحدة الثانية: الغزو الفكري",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u2_l5",
+          "name": "الحزب الناعمة (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u2_l6",
+          "name": "النحو والصرف: (المستثنى بـ 'إلا')",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u2_l7",
+          "name": "الإملاء: (الحذف في أول الكلمة)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u2_l8",
+          "name": "تقويم الوحدة الثانية",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u3",
+      "name": "الوحدة الثالثة: قيم إنسانية",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u3_l9",
+          "name": "من عهد الإمام علي لمالك الأشتر (نصوص وتذوق)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u3_l10",
+          "name": "النحو والصرف: المستثنى بـ (غير وسوى وخلا وعدا)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u3_l11",
+          "name": "الإملاء: (تطبيقات على الحذف في أول الكلمة)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u3_l12",
+          "name": "تقويم الوحدة الثالثة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u4",
+      "name": "الوحدة الرابعة: مفاهيم زراعية",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u4_l13",
+          "name": "المحاصيل الزراعية في اليمن: (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u4_l14",
+          "name": "النحو والصرف: (أسلوب النداء)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u4_l15",
+          "name": "الإملاء: (وسط الكلمة)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u4_l16",
+          "name": "تقويم الوحدة الرابعة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u5",
+      "name": "الوحدة الخامسة: فخر واعتزاز",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u5_l17",
+          "name": "زمنا الفخار (نصوص وتذوق)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u5_l18",
+          "name": "النحو والصرف: (تطبيقات على ما سبقت دراسته)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u5_l19",
+          "name": "الإملاء: (تطبيقات إملائية)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u5_l20",
+          "name": "تقويم الوحدة الخامسة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u6",
+      "name": "الوحدة السادسة: قيم إيمانية",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u6_l21",
+          "name": "فضل الجهاد في سبيل الله (نصوص وتذوق)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u6_l22",
+          "name": "النحو والصرف: (أسلوب الشرط)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u6_l23",
+          "name": "الإملاء: (الحذف في آخر الكلمة)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u6_l24",
+          "name": "تقويم الوحدة السادسة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u7",
+      "name": "الوحدة السابعة: أعلام جهادية",
+      "order_index": 7,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u7_l25",
+          "name": "الإمام الثائر (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u7_l26",
+          "name": "النحو والصرف: (اقتران جواب الشرط بالفاء)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u7_l27",
+          "name": "الإملاء: (إملاء اختياري)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u7_l28",
+          "name": "تقويم الوحدة السابعة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u8",
+      "name": "الوحدة الثامنة: شخصيات إسلامية",
+      "order_index": 8,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u8_l29",
+          "name": "الإمام الشافعي (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u8_l30",
+          "name": "تطبيقات نحوية",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u8_l31",
+          "name": "الإملاء: (زيادة الألف والواو)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u8_l32",
+          "name": "تقويم الوحدة الثامنة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u9",
+      "name": "الوحدة التاسعة: علوم وتكنولوجيا",
+      "order_index": 9,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u9_l33",
+          "name": "ثورة المعلومات (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u9_l34",
+          "name": "النحو والصرف: أسلوب التعجب",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u9_l35",
+          "name": "الإملاء: (إملاء اختياري)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u9_l36",
+          "name": "تقويم الوحدة التاسعة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u10",
+      "name": "الوحدة العاشرة: من ذاكرة التاريخ",
+      "order_index": 10,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u10_l37",
+          "name": "دماء الحجيج (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u10_l38",
+          "name": "النحو والصرف: (أسلوب المدح والذم 'نعم - بئس - حبذا - لا حبذا')",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u10_l39",
+          "name": "الإملاء (تطبيقات على وصل 'ما' بما قبلها)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u10_l40",
+          "name": "تقويم الوحدة العاشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u11",
+      "name": "الوحدة الحادية عشرة: مهن وأعمال",
+      "order_index": 11,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u11_l41",
+          "name": "في سبيل التعليم (نصوص وتذوق)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u11_l42",
+          "name": "النحو والصرف: (أسلوب الإغراء والتحذير)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u11_l43",
+          "name": "الإملاء: (إملاء اختياري)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u11_l44",
+          "name": "تقويم الوحدة الحادية عشرة",
+          "order_index": 4
+        }
+      ]
+    },
+    {
+      "id": "9th_sci_arabic_t1_u12",
+      "name": "الوحدة الثانية عشرة: جمال اللغة العربية",
+      "order_index": 12,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_arabic_t1_u12_l45",
+          "name": "اللغة الخالدة (قراءة)",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_arabic_t1_u12_l46",
+          "name": "النحو والصرف: (تطبيقات على ما سبق)",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_arabic_t1_u12_l47",
+          "name": "الإملاء (تطبيقات إملائية)",
+          "order_index": 3
+        },
+        {
+          "id": "9th_sci_arabic_t1_u12_l48",
+          "name": "تقويم الوحدة الثانية عشرة",
+          "order_index": 4
+        }
+      ]
+    }
+  ]
+}

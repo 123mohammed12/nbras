@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  <p>ارفع ملف JSON واحدًا أو عدة ملفات أو ZIP. تتم قراءة نوع المحتوى من عقد JSON، وتسبق كل عملية كتابة معاينة كاملة.</p>
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="submit-row">
+      <button type="submit" name="submit" value="preview">تحقق ومعاينة</button>
+    </div>
+  </form>
+  {% if report_json %}
+    <h2>تقرير العملية</h2>
+    <pre style="direction:ltr;text-align:left;white-space:pre-wrap">{{ report_json }}</pre>
+  {% endif %}
+  {% if confirm_token %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="confirm_token" value="{{ confirm_token }}">
+      <div class="submit-row">
+        <button type="submit" class="default">تأكيد وتنفيذ التقرير المعروض</button>
+      </div>
+    </form>
+    <p>تنتهي صلاحية التأكيد بعد 15 دقيقة، ويُعاد التحقق داخل معاملة ذرية عند التنفيذ.</p>
+  {% endif %}
+{% endblock %}

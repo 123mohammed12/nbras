@@ -1,0 +1,136 @@
+{% extends "control/base.html" %}
+
+{% block title %}مركز إدارة الامتحانات والتقييمات | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title h3 mb-1">مركز إدارة الامتحانات والتقييمات</h1>
+            <p class="text-muted mb-0">متابعة النماذج الوزارية، دفعات التدريب، نماذج المحاكاة، وجاهزية كافة أنواع التقييمات في المنصة.</p>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            <a href="{% url 'control:ministerial_list' %}" class="btn btn-primary">
+                النماذج الوزارية
+            </a>
+            <a href="{% url 'control:training_list' %}" class="btn btn-outline-primary">
+                دفعات التدريب
+            </a>
+            <a href="{% url 'control:mock_list' %}" class="btn btn-outline-primary">
+                نماذج المحاكاة
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="text-muted small mb-1">النماذج الوزارية الموثقة</div>
+                <div class="h3 mb-0 fw-bold text-primary">{{ ministerial_count }}</div>
+                <div class="small text-muted mt-2">
+                    <a href="{% url 'control:ministerial_list' %}" class="text-decoration-none">استعراض النماذج &larr;</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 border-start border-success border-4 h-100">
+                <div class="text-muted small mb-1">دفعات التدريب المتوازنة</div>
+                <div class="h3 mb-0 fw-bold text-success">{{ training_batch_count }}</div>
+                <div class="small text-muted mt-2">
+                    <a href="{% url 'control:training_list' %}" class="text-decoration-none">استعراض الدفعات &larr;</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 border-start border-info border-4 h-100">
+                <div class="text-muted small mb-1">مخططات نماذج المحاكاة</div>
+                <div class="h3 mb-0 fw-bold text-info">{{ mock_blueprint_count }}</div>
+                <div class="small text-muted mt-2">
+                    <a href="{% url 'control:mock_list' %}" class="text-decoration-none">فحص المخططات &larr;</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 border-start border-secondary border-4 h-100">
+                <div class="text-muted small mb-1">اختبارات الدروس والوحدات</div>
+                <div class="h3 mb-0 fw-bold text-secondary">{{ curriculum_assessment_count }}</div>
+                <div class="small text-muted mt-2">
+                    <a href="{% url 'control:content_home' %}" class="text-decoration-none">المحتوى الدراسي &larr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-bottom mb-4">
+        <ul class="nav nav-tabs border-0">
+            <li class="nav-item">
+                <a class="nav-link active fw-bold" href="{% url 'control:assessments_hub' %}">سجل كافة أنواع التقييمات</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:ministerial_list' %}">النماذج الوزارية</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:ministerial_batches' %}">دفعات الدروس الوزارية</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:training_list' %}">دفعات التدريب</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:mock_list' %}">نماذج المحاكاة (Blueprints)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'control:custom_test_readiness' %}">جاهزية الاختبارات المخصصة</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Complete Assessment Types Inventory -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">الجرد الشامل لكافة أنواع التقييمات والامتحانات في المنصة (14 نوعاً ومساراً)</h5>
+            <span class="badge bg-light text-dark border">دليل معماري معتمد</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 25%;">نوع التقييم / الاختبار</th>
+                        <th style="width: 20%;">التصنيف المعماري</th>
+                        <th style="width: 40%;">الوصف والمسار البرمجي</th>
+                        <th style="width: 15%;" class="text-center">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_types %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">{{ item.name }}</div>
+                            <small class="font-monospace text-muted">{{ item.code }}</small>
+                        </td>
+                        <td>
+                            <span class="badge {{ item.badge_class }}">{{ item.classification }}</span>
+                            <div class="small text-muted mt-1 font-monospace">{{ item.model }}</div>
+                        </td>
+                        <td>
+                            <div class="small text-secondary">{{ item.description }}</div>
+                        </td>
+                        <td class="text-center">
+                            {% if item.url %}
+                            <a href="{{ item.url }}" class="btn btn-sm btn-outline-primary">
+                                إدارة ومتابعة &larr;
+                            </a>
+                            {% else %}
+                            <span class="text-muted small">مُدار برمجياً</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

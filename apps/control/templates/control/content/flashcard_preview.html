@@ -1,0 +1,89 @@
+{% extends "control/base.html" %}
+
+{% block title %}معاينة بطاقة: {{ card.deck.title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:deck_detail' pk=card.deck.pk %}">{{ card.deck.title }}</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">معاينة القلب التفاعلي</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1>معاينة البطاقة التعليمية (تقليب تفاعلي)</h1>
+        <p>انقر على البطاقة أو استخدم زر القلب لاختبار تجربة الطالب الحقيقية</p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'control:deck_detail' pk=card.deck.pk %}" class="btn btn-ghost btn-sm">&rarr; رجوع للحزمة</a>
+        {% if perms.content.change_flashcard or user.is_superuser %}
+        <a href="{% url 'control:card_update' pk=card.pk %}" class="btn btn-secondary btn-sm">تعديل البطاقة</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Interactive 3D Card Scene -->
+<div class="flashcard-3d-scene">
+    <div class="flashcard-card-object" id="flashcardElement" onclick="this.classList.toggle('flipped')" title="انقر لقلب البطاقة">
+        <!-- Front Face -->
+        <div class="flashcard-face face-front">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="flashcard-badge-tag badge-primary">الوجه الأمامي (سؤال / مفهوم)</span>
+                <span class="badge {% if card.difficulty == 'easy' %}badge-success{% elif card.difficulty == 'medium' %}badge-neutral{% else %}badge-warning{% endif %}">
+                    {{ card.get_difficulty_display|default:card.difficulty }}
+                </span>
+            </div>
+
+            {% if card.front_image_path %}
+            <img src="{{ card.front_image_path.url }}" alt="Front Image" class="flashcard-media-img">
+            {% endif %}
+
+            <div class="flashcard-content-text">{{ card.front_text|default:"" }}</div>
+
+            <div class="flip-hint-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                <span>انقر في أي مكان لقلب البطاقة ومعاينة الإجابة</span>
+            </div>
+        </div>
+
+        <!-- Back Face -->
+        <div class="flashcard-face face-back">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="flashcard-badge-tag badge-success">الوجه الخلفي (الإجابة)</span>
+                <span class="badge badge-neutral">الترتيب: {{ card.sort_order }}</span>
+            </div>
+
+            {% if card.back_image_path %}
+            <img src="{{ card.back_image_path.url }}" alt="Back Image" class="flashcard-media-img">
+            {% endif %}
+
+            <div class="flashcard-content-text" style="color: #047857;">{{ card.back_text|default:"" }}</div>
+
+            {% if card.explanation %}
+            <div style="background-color: rgba(37, 99, 235, 0.08); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; text-align: right; color: var(--text-primary); border-right: 3px solid var(--primary);">
+                <strong>توضيح:</strong> {{ card.explanation }}
+            </div>
+            {% endif %}
+
+            <div class="flip-hint-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                <span>انقر للعودة إلى الوجه الأمامي</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 16px;">
+    <button type="button" class="btn btn-secondary" onclick="document.getElementById('flashcardElement').classList.toggle('flipped')">
+        قلب البطاقة (Flip)
+    </button>
+</div>
+{% endblock %}

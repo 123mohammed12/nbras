@@ -1,0 +1,204 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}صحة وتغطية بنك الأسئلة{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <div class="breadcrumbs" style="margin-bottom: 8px;">
+                <a href="{% url 'control:question_list' %}">بنك الأسئلة</a>
+                <span>&rsaquo;</span>
+                <span class="current">صحة وتغطية البنك</span>
+            </div>
+            <h1 class="page-title">صحة وتغطية بنك الأسئلة (Pool & Quality Health)</h1>
+            <p class="page-subtitle">تشخيص فوري لتغطية الأسئلة المنشورة، جاهزية دفعات التدريب، ونماذج المحاكاة</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'control:question_list' %}" class="btn btn-outline">العودة للبنك</a>
+        </div>
+    </div>
+
+    <!-- Subject Selector Filter -->
+    <div class="panel" style="margin-bottom: 20px;">
+        <div class="panel-body" style="padding: 12px 16px;">
+            <form method="get" style="display: flex; gap: 12px; align-items: center;">
+                <label style="font-weight: 600; font-size: 13px;">تصفية الفحص حسب المادة:</label>
+                <select name="subject_id" class="form-control" style="max-width: 280px;" onchange="this.form.submit()">
+                    <option value="">جميع المواد الأكاديمية</option>
+                    {% for subj in subjects %}
+                    <option value="{{ subj.id }}" {% if selected_subject == subj.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subj.name_ar }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if selected_subject %}
+                <a href="{% url 'control:question_health' %}" class="btn btn-outline btn-sm">عرض الكل</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- KPI Cards Grid -->
+    <div class="kpi-grid">
+        <div class="kpi-card primary-card">
+            <div class="kpi-card-header">
+                <span class="kpi-title">الأسئلة المنشورة المؤهلة للطلاب</span>
+            </div>
+            <div class="kpi-value">{{ pool.eligible_total }}</div>
+            <div class="kpi-subtext">نسخ حالية ونشطة ومنشورة رسمياً</div>
+        </div>
+
+        <div class="kpi-card {% if training.empty_or_broken > 0 %}alert-card{% else %}success-card{% endif %}">
+            <div class="kpi-card-header">
+                <span class="kpi-title">دفعات التدريب النشطة</span>
+            </div>
+            <div class="kpi-value">{{ training.batch_count }}</div>
+            <div class="kpi-subtext">
+                {% if training.empty_or_broken > 0 %}
+                {{ training.empty_or_broken }} دفعة فارغة أو غير متسقة
+                {% else %}
+                جميع الدفعات مكتملة وسليمة
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="kpi-card {% if training.impacted_by_retirement_or_versioning > 0 %}alert-card{% else %}success-card{% endif %}">
+            <div class="kpi-card-header">
+                <span class="kpi-title">دفعات تأثرت بالتقاعد/التعديل</span>
+            </div>
+            <div class="kpi-value">{{ training.impacted_by_retirement_or_versioning }}</div>
+            <div class="kpi-subtext">تحتاج تحديث ارتباطات النسخ</div>
+        </div>
+    </div>
+
+    <!-- Student Quality Flags Section -->
+    <div class="panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+            <span class="panel-title">إشارات جودة الأسئلة من نتائج الطلاب (Quality Warnings)</span>
+            <span class="text-muted" style="font-size: 12px;">مستخرجة آلياً من سجلات أداء الطلاب في المنصة</span>
+        </div>
+        <div class="panel-body">
+            <div class="qb-health-flags-grid">
+                <a href="{% url 'control:question_list' %}?quality_flag=POTENTIAL_ANSWER_KEY_ISSUE" class="qb-health-flag-card danger">
+                    <div class="qb-flag-count">{{ flag_counts.POTENTIAL_ANSWER_KEY_ISSUE|default:0 }}</div>
+                    <div class="qb-flag-title">احتمال خلل في مفتاح الإجابة</div>
+                    <div class="qb-flag-desc">نسبة اختيار الطلاب لخيار خاطئ مرتفعة جداً مقارنة بالإجابة الرسمية</div>
+                </a>
+
+                <a href="{% url 'control:question_list' %}?quality_flag=HIGH_SKIP_RATE" class="qb-health-flag-card warning">
+                    <div class="qb-flag-count">{{ flag_counts.HIGH_SKIP_RATE|default:0 }}</div>
+                    <div class="qb-flag-title">معدل تخطي مرتفع</div>
+                    <div class="qb-flag-desc">نسبة تجاوز وتخطي الطلاب لهذا السؤال تفوق الحد المقبول</div>
+                </a>
+
+                <a href="{% url 'control:question_list' %}?quality_flag=INEFFECTIVE_DISTRACTOR" class="qb-health-flag-card info">
+                    <div class="qb-flag-count">{{ flag_counts.INEFFECTIVE_DISTRACTOR|default:0 }}</div>
+                    <div class="qb-flag-title">مشتت غير فعال</div>
+                    <div class="qb-flag-desc">خيارات لم يخترها أي طالب تقريباً مما يقلل فاعلية السؤال</div>
+                </a>
+
+                <a href="{% url 'control:question_list' %}?quality_flag=TOO_EASY" class="qb-health-flag-card success">
+                    <div class="qb-flag-count">{{ flag_counts.TOO_EASY|default:0 }}</div>
+                    <div class="qb-flag-title">سؤال سهل جداً</div>
+                    <div class="qb-flag-desc">نسبة الحل الصحيح تفوق 95% على عينة كافية</div>
+                </a>
+
+                <a href="{% url 'control:question_list' %}?quality_flag=TOO_HARD" class="qb-health-flag-card alert">
+                    <div class="qb-flag-count">{{ flag_counts.TOO_HARD|default:0 }}</div>
+                    <div class="qb-flag-title">سؤال صعب جداً</div>
+                    <div class="qb-flag-desc">نسبة الخطأ تفوق 80% وقد تتطلب مراجعة صياغة السؤال</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mock Blueprint Readiness Section -->
+    <div class="panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+            <span class="panel-title">جاهزية نماذج الامتحانات الوزارية والتجريبية (Mock Blueprints Readiness)</span>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+            {% if mock.rows %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>النموذج ومخطط الاختبار</th>
+                        <th style="width: 80px; text-align: center;">النسخة</th>
+                        <th style="width: 120px; text-align: center;">حالة الجاهزية</th>
+                        <th>الأقسام أو البنود الناقصة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in mock.rows %}
+                    <tr>
+                        <td style="font-weight: 600;">{{ row.title }}</td>
+                        <td style="text-align: center;">V{{ row.version }}</td>
+                        <td style="text-align: center;">
+                            {% if row.ready %}
+                            <span class="badge badge-success">✓ جاهز</span>
+                            {% else %}
+                            <span class="badge badge-danger">✕ غير جاهز</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if row.missing_buckets %}
+                            <span class="text-danger" style="font-size: 12px;">نقص في: {{ row.missing_buckets|join:", " }}</span>
+                            {% elif row.policy_errors %}
+                            <span class="text-warning" style="font-size: 12px;">{{ row.policy_errors|join:", " }}</span>
+                            {% else %}
+                            <span class="text-muted" style="font-size: 12px;">مكتمل بنسبة 100%</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted" style="padding: 16px;">لا توجد مخططات اختبارات مسجلة للمادة المحددة.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Pool Coverage Table by Lesson -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">تفاصيل التغطية الميدانية للأسئلة المنشورة</span>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+            {% if pool.rows %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>المادة الدراسية</th>
+                        <th>الوحدة</th>
+                        <th>الدرس</th>
+                        <th>المصدر</th>
+                        <th>الصعوبة</th>
+                        <th>النوع</th>
+                        <th style="width: 100px; text-align: center;">عدد الأسئلة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in pool.rows %}
+                    <tr>
+                        <td>{{ r.subject__name_ar }}</td>
+                        <td>{{ r.unit__title|default:"عام للمادة" }}</td>
+                        <td>{{ r.lesson__title|default:"عام للوحدة" }}</td>
+                        <td><span class="badge badge-muted">{{ r.source_type }}</span></td>
+                        <td>{{ r.difficulty }}</td>
+                        <td>{{ r.question_type }}</td>
+                        <td style="text-align: center; font-weight: 700;">{{ r.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted" style="padding: 16px;">لا توجد أسئلة منشورة مطابقة.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}بنك الأسئلة والتقييمات{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-title">
+            <h1 class="page-title">بنك الأسئلة والتقييمات</h1>
+            <p class="page-subtitle">إدارة ومراجعة واعتماد ونشر بنك الأسئلة الأكاديمية والوزارية</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'control:question_health' %}" class="btn btn-outline" title="فحص صحة وتغطية البنك">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                <span>صحة البنك</span>
+            </a>
+            <a href="{% url 'control:question_review_queue' %}" class="btn btn-outline" title="قائمة المراجعة والتدقيق">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                <span>طابور المراجعة</span>
+                {% if counts.under_review > 0 %}
+                <span class="badge badge-warning" style="margin-right: 4px;">{{ counts.under_review }}</span>
+                {% endif %}
+            </a>
+            {% if perms.question_bank.add_question or user.is_superuser %}
+            <a href="{% url 'control:question_create' %}" class="btn btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>إضافة سؤال جديد</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Workspace Tabs (mapped strictly to real states) -->
+    <div class="workspace-tabs">
+        <a href="?tab=all" class="workspace-tab-item {% if current_tab == 'all' %}active{% endif %}">
+            الكل <span class="tab-count">{{ counts.all }}</span>
+        </a>
+        <a href="?tab=draft" class="workspace-tab-item {% if current_tab == 'draft' %}active{% endif %}">
+            مسودات <span class="tab-count">{{ counts.draft }}</span>
+        </a>
+        <a href="?tab=under_review" class="workspace-tab-item {% if current_tab == 'under_review' %}active{% endif %}">
+            للمراجعة <span class="tab-count">{{ counts.under_review }}</span>
+        </a>
+        <a href="?tab=approved" class="workspace-tab-item {% if current_tab == 'approved' %}active{% endif %}">
+            معتمد <span class="tab-count">{{ counts.approved }}</span>
+        </a>
+        <a href="?tab=published" class="workspace-tab-item {% if current_tab == 'published' %}active{% endif %}">
+            منشور <span class="tab-count">{{ counts.published }}</span>
+        </a>
+        <a href="?tab=archived" class="workspace-tab-item {% if current_tab == 'archived' %}active{% endif %}">
+            مؤرشف <span class="tab-count">{{ counts.archived }}</span>
+        </a>
+        <a href="?tab=needs_attention" class="workspace-tab-item {% if current_tab == 'needs_attention' %}active{% endif %}">
+            يحتاج انتباه
+        </a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="qb-filter-panel">
+        <form method="get" class="qb-filter-form" id="questionFilterForm">
+            <input type="hidden" name="tab" value="{{ current_tab }}">
+            
+            <div class="qb-filter-row">
+                <div class="qb-filter-col qb-search-col">
+                    {{ filter_form.q }}
+                </div>
+                <div class="qb-filter-col">
+                    {{ filter_form.subject }}
+                </div>
+                <div class="qb-filter-col" id="id_unit_container">
+                    {{ filter_form.unit }}
+                </div>
+                <div class="qb-filter-col" id="id_lesson_container">
+                    {{ filter_form.lesson }}
+                </div>
+                <div class="qb-filter-col">
+                    {{ filter_form.source_type }}
+                </div>
+                <div class="qb-filter-col">
+                    {{ filter_form.question_type }}
+                </div>
+                <div class="qb-filter-col">
+                    {{ filter_form.difficulty }}
+                </div>
+                <div class="qb-filter-col">
+                    {{ filter_form.quality_flag }}
+                </div>
+                <div class="qb-filter-col qb-filter-actions">
+                    <button type="submit" class="btn btn-primary btn-sm">تصفية</button>
+                    <a href="?tab={{ current_tab }}" class="btn btn-outline btn-sm" title="إعادة تعيين الفلاتر">مسح</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filters Chips -->
+    {% if active_filters %}
+    <div class="qb-active-chips-bar">
+        <span class="qb-chips-label">الفلاتر النشطة:</span>
+        {% for f in active_filters %}
+        <a href="{{ f.remove_url }}" class="qb-chip" title="إزالة هذا الفلتر">
+            <span>{{ f.label }}</span>
+            <span class="qb-chip-remove">&times;</span>
+        </a>
+        {% endfor %}
+        <a href="?tab={{ current_tab }}" class="qb-chip-clear">مسح جميع الفلاتر</a>
+    </div>
+    {% endif %}
+
+    <!-- Contextual Bulk Action Bar (Visible when rows selected) -->
+    <form method="post" action="{% url 'control:question_bulk_action' %}" id="bulkActionForm">
+        {% csrf_token %}
+        <input type="hidden" name="selected_ids" id="bulkSelectedIds" value="">
+        <input type="hidden" name="action" id="bulkActionType" value="">
+
+        <div class="qb-bulk-bar" id="bulkActionBar" style="display: none;">
+            <div class="qb-bulk-info">
+                <span class="qb-bulk-count" id="bulkCountText">0 أسئلة محددة</span>
+            </div>
+            <div class="qb-bulk-buttons">
+                <button type="button" class="btn btn-outline btn-sm" onclick="submitBulk('validate')">
+                    ✓ تحقق من المحدد
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="submitBulk('send_to_review')">
+                    إرسال للمراجعة
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="submitBulk('approve')">
+                    اعتماد المحدد
+                </button>
+                {% if perms.question_bank.publish_question or user.is_superuser %}
+                <button type="button" class="btn btn-primary btn-sm" onclick="submitBulk('publish')">
+                    نشر المحدد
+                </button>
+                {% endif %}
+                <button type="button" class="btn btn-outline btn-sm" onclick="clearAllSelections()" style="color: var(--text-muted);">
+                    إلغاء التحديد
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Table Container -->
+    <div id="questionTableContainer">
+        {% include "control/questions/partials/question_table.html" %}
+    </div>
+</div>
+
+<script>
+function updateBulkBar() {
+    const checkboxes = document.querySelectorAll('.qb-row-check:checked');
+    const bar = document.getElementById('bulkActionBar');
+    const countText = document.getElementById('bulkCountText');
+    const idsField = document.getElementById('bulkSelectedIds');
+
+    if (checkboxes.length > 0) {
+        bar.style.display = 'flex';
+        countText.textContent = `${checkboxes.length} أسئلة محددة`;
+        const ids = Array.from(checkboxes).map(cb => cb.value);
+        idsField.value = ids.join(',');
+    } else {
+        bar.style.display = 'none';
+        idsField.value = '';
+    }
+}
+
+function toggleSelectAll(master) {
+    const checkboxes = document.querySelectorAll('.qb-row-check');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+    updateBulkBar();
+}
+
+function clearAllSelections() {
+    const master = document.getElementById('selectAllMaster');
+    if (master) master.checked = false;
+    const checkboxes = document.querySelectorAll('.qb-row-check');
+    checkboxes.forEach(cb => cb.checked = false);
+    updateBulkBar();
+}
+
+function submitBulk(action) {
+    const idsField = document.getElementById('bulkSelectedIds');
+    if (!idsField.value) {
+        alert('يرجى تحديد سؤال واحد على الأقل أولاً.');
+        return;
+    }
+    const count = idsField.value.split(',').length;
+    let label = 'تنفيذ الإجراء';
+    if (action === 'validate') label = 'التحقق من';
+    if (action === 'send_to_review') label = 'إرسال للمراجعة لـ';
+    if (action === 'approve') label = 'اعتماد';
+    if (action === 'publish') label = 'نشر';
+
+    if (confirm(`هل أنت متأكد من ${label} (${count}) سؤالاً محدداً؟`)) {
+        document.getElementById('bulkActionType').value = action;
+        document.getElementById('bulkActionForm').submit();
+    }
+}
+</script>
+{% endblock %}

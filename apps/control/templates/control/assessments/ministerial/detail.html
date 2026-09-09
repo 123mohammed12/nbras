@@ -1,0 +1,206 @@
+{% extends "control/base.html" %}
+
+{% block title %}{{ exam.title }} | النماذج الوزارية | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'control:assessments_hub' %}">التقييمات</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'control:ministerial_list' %}">النماذج الوزارية</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ exam.model_code }}</li>
+                </ol>
+            </nav>
+            <h1 class="page-title h3 mb-1">{{ exam.title }}</h1>
+            <div class="d-flex align-items-center gap-2 text-muted small">
+                <span class="badge bg-light text-dark border">{{ exam.subject.name_ar }}</span>
+                <span>سنة: <strong>{{ exam.exam_year }}</strong></span>
+                <span>•</span>
+                <span>{{ exam.get_exam_role_display|default:"-" }}</span>
+                <span>•</span>
+                <span>نموذج: <strong>{{ exam.model_number }}</strong></span>
+                <span>•</span>
+                {% if exam.status == "published" %}
+                <span class="badge bg-success">منشور</span>
+                {% elif exam.status == "draft" %}
+                <span class="badge bg-warning text-dark">مسودة</span>
+                {% else %}
+                <span class="badge bg-secondary">{{ exam.status }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            <!-- Validate Publishability -->
+            <button class="btn btn-outline-info btn-sm"
+                    hx-get="{% url 'control:ministerial_validate' pk=exam.pk %}"
+                    hx-target="#validation-result-container"
+                    hx-swap="innerHTML">
+                فحص الجاهزية للنشر
+            </button>
+
+            <!-- Recalculate Totals -->
+            <form method="post" action="{% url 'control:ministerial_recalculate' pk=exam.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary btn-sm" title="إعادة حساب عدد الأسئلة ومجموع الدرجات من العناصر الحالية">
+                    إعادة حساب المجاميع
+                </button>
+            </form>
+
+            <a href="{% url 'control:import_upload' %}?type=exams" class="btn btn-outline-warning btn-sm" title="إذا كنت بحاجة لاستبدال بيانات هذا النموذج بالكامل، استخدم مسار الاستبدال المحمي">
+                استبدال النطاق (ADM-04) &larr;
+            </a>
+
+            <a href="{% url 'control:ministerial_list' %}" class="btn btn-outline-secondary btn-sm">
+                عودة للقائمة
+            </a>
+        </div>
+    </div>
+
+    <!-- Validation container -->
+    <div id="validation-result-container"></div>
+
+    <!-- Metadata Cards -->
+    <div class="row g-3 mb-4 mt-2">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">إجمالي الأسئلة</div>
+                <div class="h4 mb-0 fw-bold text-primary">{{ exam.total_questions }} سؤال</div>
+                <div class="small text-muted mt-1">عناصر النموذج المسجلة</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">مجموع الدرجات</div>
+                <div class="h4 mb-0 fw-bold text-success">{{ exam.total_points|default:"0.00" }} درجة</div>
+                <div class="small text-muted mt-1">الدرجة الكلية المعتمدة</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">مدة الامتحان</div>
+                <div class="h4 mb-0 fw-bold text-dark">{{ exam.duration_minutes|default:"-" }} دقيقة</div>
+                <div class="small text-muted mt-1">الزمن المخصص للاختبار</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="text-muted small">الربط بالاختبار التفاعلي</div>
+                <div class="mb-0 fw-bold">
+                    {% if exam.assessment %}
+                    <span class="badge bg-success-subtle text-success border">مرتبط: {{ exam.assessment.title }}</span>
+                    {% else %}
+                    <span class="badge bg-danger-subtle text-danger border">غير مرتبط باختبار</span>
+                    {% endif %}
+                </div>
+                <div class="small text-muted mt-1 font-monospace">رمز: {{ exam.model_code }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sections Overview -->
+    {% if sections %}
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">أقسام النموذج الوزاري ({{ sections.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10%;">الترتيب</th>
+                            <th style="width: 40%;">عنوان القسم</th>
+                            <th style="width: 35%;">التعليمات والملاحظات</th>
+                            <th style="width: 15%;">المثير / النص المرفق</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sec in sections %}
+                        <tr>
+                            <td><span class="badge bg-secondary-subtle text-secondary">{{ sec.sort_order }}</span></td>
+                            <td class="fw-bold">{{ sec.title|default:"قسم بدون عنوان" }}</td>
+                            <td class="small text-muted">{{ sec.instructions|default:"-" }}</td>
+                            <td>
+                                {% if sec.stimulus %}
+                                <span class="badge bg-info-subtle text-info border">مرفق مثير: {{ sec.stimulus.title }}</span>
+                                {% else %}
+                                <span class="text-muted small">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Exam Items / Questions -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">عناصر وأسئلة النموذج الوزاري ({{ items.count }})</h5>
+            <small class="text-muted">ملاحظة: لتعديل نص السؤال أو الخيارات، يتم الانتقال إلى بنك الأسئلة (ADM-03)</small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 8%;">رقم السؤال</th>
+                        <th style="width: 8%;">الترتيب</th>
+                        <th style="width: 45%;">نص السؤال</th>
+                        <th style="width: 15%;">الوحدة / الدرس</th>
+                        <th style="width: 10%;">الدرجة</th>
+                        <th style="width: 14%;" class="text-center">إدارة السؤال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="fw-bold text-primary">#{{ item.question_number }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ item.sort_order }}</span></td>
+                        <td>
+                            <div class="text-truncate" style="max-width: 450px;" title="{{ item.question_version.question_text }}">
+                                {{ item.question_version.question_text }}
+                            </div>
+
+                            <div class="small text-muted mt-1 d-flex gap-2">
+                                <span>نوع: {{ item.question_version.question.get_question_type_display }}</span>
+                                <span>•</span>
+                                <span>صعوبة: {{ item.question_version.question.get_difficulty_display }}</span>
+                                <span>•</span>
+                                <span>إصدار: v{{ item.question_version.version_number }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small fw-semibold">{{ item.question_version.question.unit.title|default:"-" }}</div>
+                            <small class="text-muted">{{ item.question_version.question.lesson.title|default:"-" }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ item.points }}</strong> <small class="text-muted">درجة</small>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'control:question_review' pk=item.question_version.question_id %}"
+                               class="btn btn-sm btn-outline-primary"
+                               target="_blank"
+                               title="فتح في مساحة بنك الأسئلة لمراجعة الخيارات والحل">
+                                فتح في بنك الأسئلة ↗
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            لا توجد عناصر مسجلة في هذا النموذج الوزاري حالياً.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

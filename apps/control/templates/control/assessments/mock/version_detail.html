@@ -1,0 +1,211 @@
+{% extends "control/base.html" %}
+
+{% block title %}إصدار المخطط v{{ version.version_number }} | {{ blueprint.title }} | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'control:assessments_hub' %}">التقييمات</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'control:mock_list' %}">نماذج المحاكاة</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">إصدار v{{ version.version_number }}</li>
+                </ol>
+            </nav>
+            <h1 class="page-title h3 mb-1">{{ version.title }} (إصدار v{{ version.version_number }})</h1>
+            <div class="d-flex align-items-center gap-2 text-muted small">
+                <span class="badge bg-light text-dark border">{{ blueprint.subject.name_ar }}</span>
+                <span>المخطط: <strong>{{ blueprint.title|default:blueprint.key }}</strong></span>
+                <span>•</span>
+                <span class="font-monospace text-secondary">{{ blueprint.key }}</span>
+                <span>•</span>
+                {% if is_published %}
+                <span class="badge bg-success">منشور ومحمى من التعديل</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">مسودة قابلة للتحرير</span>
+                {% endif %}
+                {% if version.is_current %}
+                <span class="badge bg-info-subtle text-info border">الإصدار الحالي المعتمد</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            {% if not is_published %}
+            <form method="post" action="{% url 'control:mock_version_publish' blueprint_id=blueprint.pk version_id=version.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm" {% if not readiness.ready %}disabled title="لا يمكن النشر: حوض الأسئلة غير كافٍ أو توجد أخطاء في المخطط"{% endif %}>
+                    نشر الإصدار المعتمد
+                </button>
+            </form>
+            {% endif %}
+            <a href="{% url 'control:mock_list' %}" class="btn btn-outline-secondary btn-sm">
+                عودة لقائمة المخططات
+            </a>
+        </div>
+    </div>
+
+    <!-- Readiness Diagnostic Card -->
+    <div class="card shadow-sm border-0 mb-4 {% if readiness.ready %}border-start border-success border-4{% else %}border-start border-danger border-4{% endif %}">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">تقرير كفاية وجاهزية حوض الأسئلة (Pool Readiness)</h5>
+            {% if readiness.ready %}
+            <span class="badge bg-success p-2">جاهز للنشر 100% (الحوض كافٍ)</span>
+            {% else %}
+            <span class="badge bg-danger p-2">غير جاهز للنشر (نقص في حوض الأسئلة)</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">إجمالي الأسئلة المطلوبة في المخطط</div>
+                        <div class="h3 mb-0 fw-bold text-dark">{{ readiness.required_total }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">إجمالي الأسئلة المتاحة المطابقة</div>
+                        <div class="h3 mb-0 fw-bold {% if readiness.available_total >= readiness.required_total %}text-success{% else %}text-danger{% endif %}">
+                            {{ readiness.available_total }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">حالة توافق السياسات والدلاء</div>
+                        <div class="h4 mb-0 fw-bold {% if readiness.policy_errors %}text-danger{% else %}text-success{% endif %}">
+                            {% if readiness.policy_errors %}
+                            {{ readiness.policy_errors|length }} خطأ في المخطط
+                            {% else %}
+                            متوافق تماماً
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if readiness.policy_errors %}
+            <div class="alert alert-danger mb-3 py-2 small">
+                <strong>أخطاء في بنية المخطط:</strong> {{ readiness.policy_errors|join:", " }}
+            </div>
+            {% endif %}
+
+            {% if readiness.missing_buckets %}
+            <div class="alert alert-warning mb-0">
+                <h6 class="fw-bold mb-2">الدلاء التي تعاني من نقص في حوض الأسئلة:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered bg-white mb-0 small">
+                        <thead>
+                            <tr class="table-light">
+                                <th>المصدر</th>
+                                <th>معرف الوحدة</th>
+                                <th>الصعوبة</th>
+                                <th>نوع السؤال</th>
+                                <th>المطلوب</th>
+                                <th>المتاح في الحوض</th>
+                                <th>العجز</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in readiness.missing_buckets %}
+                            <tr>
+                                <td>{{ b.source }}</td>
+                                <td class="font-monospace">{{ b.unit_id }}</td>
+                                <td>{{ b.difficulty }}</td>
+                                <td>{{ b.question_type }}</td>
+                                <td><span class="badge bg-secondary">{{ b.required }}</span></td>
+                                <td><span class="badge bg-danger">{{ b.available }}</span></td>
+                                <td class="text-danger fw-bold">-{{ b.required|add:"-b.available" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Immutability Banner if Published -->
+    {% if is_published %}
+    <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <div>
+            <strong>إصدار منشور ومجمد:</strong> هذا الإصدار معتمد ومتاح للطلاب ومحمي من التعديل لضمان التوافقية التاريخية واستقرار محاولات الاختبارات.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Blueprint Version Form -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">بيانات وتوزيعات إصدار المخطط</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">عنوان الإصدار</label>
+                        {{ form.title }}
+                        {{ form.title.errors }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">عدد الأسئلة</label>
+                        {{ form.question_count }}
+                        {{ form.question_count.errors }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">المدة (بالدقائق)</label>
+                        {{ form.duration_minutes }}
+                        {{ form.duration_minutes.errors }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">مجموع الدرجات</label>
+                        {{ form.total_points }}
+                        {{ form.total_points.errors }}
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">توزيع الوحدات (JSON)</label>
+                        {{ form.unit_distribution_json }}
+                        {{ form.unit_distribution_json.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">توزيع الصعوبة (JSON)</label>
+                        {{ form.difficulty_distribution_json }}
+                        {{ form.difficulty_distribution_json.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">توزيع أنواع الأسئلة (JSON)</label>
+                        {{ form.question_type_distribution_json }}
+                        {{ form.question_type_distribution_json.errors }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small text-muted">دلاء الاختيار المعتمدة (Selection Buckets JSON)</label>
+                    {{ form.selection_buckets_json }}
+                    {{ form.selection_buckets_json.errors }}
+                    <small class="text-muted">الدلاء هي المصدر الصارم المعتمد لخوارزمية الاختيار العشوائي المتوازن لاختبار المحاكاة.</small>
+                </div>
+
+                {% if not is_published %}
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        حفظ تعديلات المسودة
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

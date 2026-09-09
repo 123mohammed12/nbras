@@ -1,0 +1,410 @@
+{
+  "grade_id": "3s",
+  "grade_name": "الصف  الثالث الثانوي",
+  "track_id": "3s_sci",
+  "track_name": "علمي",
+  "subject_id": "3s_sci_english_edu",
+  "subject_name": "اانجليزي",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "3s_sci_english_edu_fy_u1",
+      "name": "Unit 1 Describing things",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_english_edu_fy_u1_l1",
+          "name": "Shapes, coverings and materials",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l2",
+          "name": "Lost",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l3",
+          "name": "An unusual animal",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l4",
+          "name": "Language review 1",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l5",
+          "name": "The countryside",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l6",
+          "name": "A drive in the countryside",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l7",
+          "name": "Language review 2",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l8",
+          "name": "A view from a window",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l9",
+          "name": "Arts reader: A difficult choice?",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l10",
+          "name": "Arts reader: Proverbs and idioms",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l11",
+          "name": "Science reader: Acids and alkalis",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u1_l12",
+          "name": "Science reader: States of matter",
+          "order_index": 12
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_english_edu_fy_u2",
+      "name": "Unit 2 Reporting events",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_english_edu_fy_u2_l13",
+          "name": "Newspaper headlines",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l14",
+          "name": "Today's news",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l15",
+          "name": "Rich and Arabic: dreamers",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l16",
+          "name": "Language review 3",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l17",
+          "name": "Natural disaster",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l18",
+          "name": "A newspaper report",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l19",
+          "name": "Language review 4",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l20",
+          "name": "Amenia - 7, December 1988",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l21",
+          "name": "Arts reader: Telford Hall Episode 1",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l22",
+          "name": "Arts reader: A famous play by Shakespeare",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l23",
+          "name": "Science reader: Light",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u2_l24",
+          "name": "Science reader: Sound",
+          "order_index": 12
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_english_edu_fy_u3",
+      "name": "Unit 3 Looking for a job",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_english_edu_fy_u3_l25",
+          "name": "Getting work experience",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l26",
+          "name": "Thinking about the future",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l27",
+          "name": "Getting careers advice",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l28",
+          "name": "Language review 5",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l29",
+          "name": "Personal qualities",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l30",
+          "name": "Applying for a job",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l31",
+          "name": "Language review 6",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l32",
+          "name": "A business letter",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l33",
+          "name": "Arts reader: Telford Hall Episode 2",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l34",
+          "name": "Arts reader: Critics and criticism",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l35",
+          "name": "Science reader: Arab scientists",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u3_l36",
+          "name": "Science reader: Vaccinations",
+          "order_index": 12
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_english_edu_fy_u4",
+      "name": "Unit 4 Tables, flow charts and diagrams",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_english_edu_fy_u4_l37",
+          "name": "Food",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l38",
+          "name": "Farming in Yemen",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l39",
+          "name": "Language review 7",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l40",
+          "name": "Words and more words",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l41",
+          "name": "Investigating the world around us",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l42",
+          "name": "Language review 8",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l43",
+          "name": "Frozen peas",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l44",
+          "name": "Arts reader: Telford Hall Episode 3",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l45",
+          "name": "Arts reader: Calligraphy",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l46",
+          "name": "Science reader: Experimental procedures",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u4_l47",
+          "name": "Science reader: Internal combustion engine",
+          "order_index": 11
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_english_edu_fy_u5",
+      "name": "Unit 5 Working things out",
+      "order_index": 5,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_english_edu_fy_u5_l48",
+          "name": "Word sets",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l49",
+          "name": "Possibilities",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l50",
+          "name": "Puzzles and riddles",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l51",
+          "name": "Language review 9",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l52",
+          "name": "The mystery of the Mary Celeste",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l53",
+          "name": "What could have happened?",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l54",
+          "name": "Language review 10",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l55",
+          "name": "Tracks in the sand",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l56",
+          "name": "Arts reader: A poem",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l57",
+          "name": "Arts reader: Strange happenings",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l58",
+          "name": "Science reader: The Moon",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u5_l59",
+          "name": "Science reader: Radioactivity",
+          "order_index": 12
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_english_edu_fy_u6",
+      "name": "Unit 6 Looking back",
+      "order_index": 6,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_english_edu_fy_u6_l60",
+          "name": "Emergencies in the news",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l61",
+          "name": "A lucky escape",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l62",
+          "name": "Ali Baba and Jebel Kebir",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l63",
+          "name": "Saving Anwar",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l64",
+          "name": "My archaeological works",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l65",
+          "name": "Working in public service",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l66",
+          "name": "Huge changes in Libyan health care",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l67",
+          "name": "Discovering Yemen",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l68",
+          "name": "Tourism and the future",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l69",
+          "name": "Arts reader",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_english_edu_fy_u6_l70",
+          "name": "Science reader",
+          "order_index": 11
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-2">
+        <ul class="nav nav-pills nav-fill">
+            <li class="nav-item">
+                <a class="nav-link {% if active_subtab == 'overview' %}active fw-bold{% endif %}" href="{% url 'control:notifications_overview' %}">
+                    📊 نظرة عامة ومؤشرات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_subtab == 'list' %}active fw-bold{% endif %}" href="{% url 'control:notification_list' %}">
+                    📋 سجل وتصفح الإشعارات
+                </a>
+            </li>
+            {% if perms.notifications.add_notification or user.is_superuser %}
+            <li class="nav-item">
+                <a class="nav-link {% if active_subtab == 'create' %}active fw-bold{% endif %}" href="{% url 'control:notification_create' %}">
+                    ✍️ إنشاء حملة إشعار جديدة
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>

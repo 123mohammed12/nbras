@@ -1,0 +1,254 @@
+{% extends "control/base.html" %}
+
+{% block title %}سجل وتصفح الإشعارات | لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:notifications_overview' %}">مركز الإشعارات</a></li>
+            <li class="breadcrumb-item active" aria-current="page">سجل الإشعارات</li>
+        </ol>
+    </nav>
+
+    <!-- Subnav -->
+    {% include "control/notifications/partials/subnav.html" %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">سجل وتصفح الإشعارات (Notifications Browser)</h3>
+            <p class="text-muted mb-0">البحث، التصفية، وإدارة حالات حملات الإشعارات عبر المنصة.</p>
+        </div>
+        {% if perms.notifications.add_notification or user.is_superuser %}
+        <div>
+            <a href="{% url 'control:notification_create' %}" class="btn btn-primary shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> إشعار جديد
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Filters Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-lg-3 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="بحث بالعنوان أو النص...">
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select name="status" class="form-select">
+                        <option value="">-- كافة الحالات --</option>
+                        {% for val, label in status_choices %}
+                            <option value="{{ val }}" {% if status == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select name="category" class="form-select">
+                        <option value="">-- كافة التصنيفات --</option>
+                        {% for val, label in category_choices %}
+                            <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select name="priority" class="form-select">
+                        <option value="">-- الأولوية --</option>
+                        {% for val, label in priority_choices %}
+                            <option value="{{ val }}" {% if priority == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select name="audience" class="form-select">
+                        <option value="">-- الجمهور المستهدف --</option>
+                        {% for val, label in audience_choices %}
+                            <option value="{{ val }}" {% if audience == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-12 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary w-100" title="تطبيق التصفية">
+                        تصفية
+                    </button>
+                    {% if q or status or category or priority or audience %}
+                    <a href="{% url 'control:notification_list' %}" class="btn btn-outline-secondary" title="إعادة تعيين">
+                        ✕
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3" style="width: 25%;">العنوان والمحتوى</th>
+                            <th>التصنيف</th>
+                            <th>الأولوية</th>
+                            <th>الجمهور</th>
+                            <th>الحالة</th>
+                            <th>المستلمون</th>
+                            <th>موعد النشر / الإنشاء</th>
+                            <th class="text-end pe-3">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for n in page_obj %}
+                        <tr>
+                            <td class="ps-3">
+                                <a href="{% url 'control:notification_detail' n.pk %}" class="fw-bold text-dark text-decoration-none d-block text-truncate" style="max-width: 280px;" title="{{ n.title }}">
+                                    {{ n.title }}
+                                </a>
+                                <small class="text-muted text-truncate d-block" style="max-width: 280px;" title="{{ n.body }}">
+                                    {{ n.body|truncatechars:70 }}
+                                </small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ n.get_category_display }}</span>
+                            </td>
+                            <td>
+                                {% if n.priority == 'HIGH' %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger">مرتفع</span>
+                                {% elif n.priority == 'LOW' %}
+                                    <span class="badge bg-secondary-subtle text-secondary">منخفض</span>
+                                {% else %}
+                                    <span class="badge bg-primary-subtle text-primary">عادي</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info-subtle text-info-emphasis">{{ n.get_audience_display }}</span>
+                                {% if n.grade %}
+                                    <small class="d-block text-muted">{{ n.grade.name_ar }}{% if n.section %} - {{ n.section.name_ar }}{% endif %}</small>
+                                {% elif n.subject %}
+                                    <small class="d-block text-muted">{{ n.subject.name_ar }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if n.status == 'DRAFT' %}
+                                    <span class="badge bg-secondary">مسودة</span>
+                                {% elif n.status == 'SCHEDULED' %}
+                                    <span class="badge bg-warning text-dark">مجدول</span>
+                                {% elif n.status == 'PUBLISHING' %}
+                                    <span class="badge bg-info text-dark">تجهيز</span>
+                                {% elif n.status == 'PUBLISHED' %}
+                                    <span class="badge bg-success">منشور</span>
+                                {% elif n.status == 'CANCELLED' %}
+                                    <span class="badge bg-danger">ملغى</span>
+                                {% elif n.status == 'EXPIRED' %}
+                                    <span class="badge bg-dark">منتهي</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="fw-bold">{{ n.recipients_count }}</span>
+                            </td>
+                            <td>
+                                {% if n.publish_at %}
+                                    <small class="text-muted d-block" title="موعد النشر">📅 {{ n.publish_at|date:"Y-m-d H:i" }}</small>
+                                {% else %}
+                                    <small class="text-muted d-block" title="تاريخ الإنشاء">🕒 {{ n.created_at|date:"Y-m-d H:i" }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-3 text-nowrap">
+                                <a href="{% url 'control:notification_detail' n.pk %}" class="btn btn-sm btn-outline-primary" title="معاينة وتفاصيل">
+                                    تفاصيل
+                                </a>
+
+                                {% if n.status == 'DRAFT' and perms.notifications.change_notification %}
+                                    <a href="{% url 'control:notification_edit' n.pk %}" class="btn btn-sm btn-outline-secondary ms-1" title="تعديل المسودة">
+                                        تعديل
+                                    </a>
+                                {% endif %}
+
+                                {% if n.status == 'SCHEDULED' and perms.notifications.publish_notification %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#cancelModal{{ n.pk }}" title="إلغاء الجدولة">
+                                        إلغاء
+                                    </button>
+                                {% endif %}
+
+                                <!-- Cancel Modal -->
+                                {% if n.status == 'SCHEDULED' or n.status == 'DRAFT' %}
+                                <div class="modal fade" id="cancelModal{{ n.pk }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fw-bold text-danger">تأكيد إلغاء الإشعار</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                <p>هل أنت متأكد من إلغاء الإشعار: <strong>{{ n.title }}</strong>؟</p>
+                                                <div class="alert alert-warning small mb-0">
+                                                    لن يتم إرسال الإشعار أو تجهيز المستلمين له بعد تأكيد الإلغاء.
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">تراجع</button>
+                                                <form action="{% url 'control:notification_cancel' n.pk %}" method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">تأكيد الإلغاء</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <div class="fs-2 mb-2">🔍</div>
+                                <p class="mb-0">لم يتم العثور على أي إشعارات مطابقة لمعايير البحث والتصفية.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer bg-white py-3">
+            <nav aria-label="صفحات الإشعارات">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&status={{ status }}&category={{ category }}&priority={{ priority }}&audience={{ audience }}">السابق</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">السابق</span></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ q }}&status={{ status }}&category={{ category }}&priority={{ priority }}&audience={{ audience }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&status={{ status }}&category={{ category }}&priority={{ priority }}&audience={{ audience }}">التالي</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">التالي</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

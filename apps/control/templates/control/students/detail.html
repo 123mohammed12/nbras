@@ -1,0 +1,562 @@
+{% extends "control/base.html" %}
+
+{% block title %}ملف الدعم الفني: {{ student.student_profile.full_name|default:student.phone|default:student.public_code }} | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'control:student_list' %}">شؤون الطلاب والدعم</a></li>
+                    <li class="breadcrumb-item active font-monospace" aria-current="page">{{ student.public_code }}</li>
+                </ol>
+            </nav>
+            <h1 class="page-title h3 mb-1">
+                {{ student.student_profile.full_name|default:"طالب بدون ملف" }}
+            </h1>
+            <div class="text-muted small d-flex flex-wrap gap-3 align-items-center mt-1">
+                <span>الكود العام: <strong class="font-monospace text-dark">{{ student.public_code }}</strong></span>
+                <span>الهاتف: <strong class="font-monospace text-dark">{{ student.phone|default:"—" }}</strong></span>
+                <span>نوع الحساب:
+                    {% if student.account_type == 'registered' %}
+                        <span class="badge bg-primary-subtle text-primary border">مسجل</span>
+                    {% else %}
+                        <span class="badge bg-warning-subtle text-warning border">زائر</span>
+                    {% endif %}
+                </span>
+                <span>الحالة:
+                    {% if student.is_active %}
+                        <span class="badge bg-success-subtle text-success">نشط</span>
+                    {% else %}
+                        <span class="badge bg-danger-subtle text-danger">معطل</span>
+                    {% endif %}
+                </span>
+                <span>تاريخ الانضمام: <span class="text-secondary">{{ student.date_joined|date:"Y-m-d H:i" }}</span></span>
+                {% if student.last_login %}
+                <span>آخر تسجيل دخول: <span class="text-secondary">{{ student.last_login|date:"Y-m-d H:i" }}</span></span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            {% if perms.accounts.revoke_usersession or user.is_superuser %}
+            <form method="post" action="{% url 'control:student_session_revoke_all' user_id=student.id %}" onsubmit="return confirm('هل أنت متأكد من رغبتك في سحب جميع جلسات هذا الطالب فوراً؟ سيتم تسجيل خروجه من كافة الأجهزة.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    سحب جميع الجلسات
+                </button>
+            </form>
+            {% endif %}
+            <a href="{% url 'control:student_list' %}" class="btn btn-outline-secondary btn-sm">
+                عودة للبحث
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview Cards Row -->
+    <div class="row g-3 mb-4">
+        <!-- 1. Student Profile & Location -->
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-bold">البيانات الشخصية والموقع</span>
+                    <span class="badge bg-light text-secondary border">الملف الشخصي</span>
+                </div>
+                {% if student.student_profile %}
+                    <div class="fw-bold text-dark h5 mb-2">{{ student.student_profile.full_name }}</div>
+                    <ul class="list-unstyled small text-muted mb-0">
+                        <li class="mb-1"><strong>المحافظة:</strong> {% if student.student_profile.governorate %}{{ student.student_profile.governorate.name_ar }}{% else %}{{ student.student_profile.custom_governorate_name|default:"—" }}{% endif %}</li>
+                        <li class="mb-1"><strong>المديرية:</strong> {% if student.student_profile.district %}{{ student.student_profile.district.name_ar }}{% else %}{{ student.student_profile.custom_district_name|default:"—" }}{% endif %}</li>
+                        <li class="mb-1"><strong>العزلة:</strong> {% if student.student_profile.isolation %}{{ student.student_profile.isolation.name_ar }}{% else %}{{ student.student_profile.custom_isolation_name|default:"—" }}{% endif %}</li>
+                        <li class="mb-1"><strong>المدرسة:</strong> {% if student.student_profile.school %}{{ student.student_profile.school.name_ar }}{% else %}{{ student.student_profile.custom_school_name|default:"—" }}{% endif %}</li>
+                    </ul>
+                {% else %}
+                    <div class="text-muted small py-3 text-center">
+                        لا يوجد ملف شخصي مكتمل (حساب زائر أو غير معبأ).
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 2. Academic Enrollment -->
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-bold">القيد الدراسي الحالي</span>
+                    {% if enrollment %}
+                        <span class="badge bg-success-subtle text-success border">مقيد نشط</span>
+                    {% else %}
+                        <span class="badge bg-danger-subtle text-danger border">غير مقيد</span>
+                    {% endif %}
+                </div>
+                {% if enrollment %}
+                    <div class="fw-bold text-primary h5 mb-1">{{ enrollment.grade.name_ar }}</div>
+                    <div class="text-dark small mb-2">الشعبة: <strong>{{ enrollment.section.name_ar }}</strong></div>
+                    <ul class="list-unstyled small text-muted mb-0">
+                        <li class="mb-1"><strong>العام الدراسي:</strong> {% if enrollment.academic_year %}{{ enrollment.academic_year.name_ar }}{% else %}—{% endif %}</li>
+                        <li class="mb-1"><strong>تاريخ القيد:</strong> {{ enrollment.started_at|date:"Y-m-d" }}</li>
+                        <li class="mb-1"><strong>الحالة:</strong> {{ enrollment.get_status_display }}</li>
+                    </ul>
+                {% else %}
+                    <div class="alert alert-warning py-2 px-3 small mb-0 mt-2">
+                        لا يوجد قيد دراسي نشط لهذا الطالب حالياً. لا يمكن الوصول إلى المواد والدروس قبل إتمام القيد.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 3. Active Subscription Summary -->
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-bold">حالة الاشتراك والوصول</span>
+                    {% if active_subscription %}
+                        <span class="badge bg-success text-white">اشتراك سارٍ</span>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary border">بدون اشتراك نشط</span>
+                    {% endif %}
+                </div>
+                {% if active_subscription %}
+                    <div class="fw-bold text-dark h5 mb-1">{{ active_subscription.plan.name }}</div>
+                    <div class="small text-muted mb-2">
+                        ينتهي في: <strong class="font-monospace text-danger">{{ active_subscription.expires_at|date:"Y-m-d" }}</strong>
+                    </div>
+                    <ul class="list-unstyled small text-muted mb-2">
+                        <li class="mb-1"><strong>المصدر:</strong> {{ active_subscription.get_source_display }}</li>
+                        <li class="mb-1"><strong>العام الدراسي:</strong> {% if active_subscription.academic_year %}{{ active_subscription.academic_year.name_ar }}{% else %}عام{% endif %}</li>
+                        <li class="mb-1"><strong>نطاق المواد:</strong>
+                            {% if active_subscription.is_all_subjects %}
+                                <span class="badge bg-info-subtle text-info">كل المواد</span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning">مواد محددة ({{ active_subscription.selected_subjects.count }})</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% else %}
+                    <div class="text-muted small py-2 mb-2">
+                        لا يوجد اشتراك مدفوع نشط حالياً. يخضع الطالب لسياسة الوصول المجاني المتاحة لصفه.
+                    </div>
+                {% endif %}
+                <div class="mt-auto pt-2 border-top">
+                    <a href="{% url 'control:student_subscription_detail' user_id=student.id %}" class="btn btn-outline-primary btn-sm w-100">
+                        إدارة الاشتراكات والرموز في المركز المخصص ←
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="studentSupportTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-semibold" id="access-tab" data-bs-toggle="tab" data-bs-target="#accessPane" type="button" role="tab">
+                تشخيص الوصول للمواد
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="devices-tab" data-bs-toggle="tab" data-bs-target="#devicesPane" type="button" role="tab">
+                فحص الأجهزة والتطبيق ({{ devices|length }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="sessions-tab" data-bs-toggle="tab" data-bs-target="#sessionsPane" type="button" role="tab">
+                الجلسات النشطة والأمان ({{ active_session_count }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="learning-tab" data-bs-toggle="tab" data-bs-target="#learningPane" type="button" role="tab">
+                الملخص التعليمي وحل مشكلات التقدم
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tabs Content -->
+    <div class="tab-content" id="studentSupportTabsContent">
+        <!-- 1. Access Diagnostics Tab -->
+        <div class="tab-pane fade show active" id="accessPane" role="tabpanel">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">فحص استحقاقات الوصول المباشر لمواد الصف</h5>
+                    <p class="text-muted small mb-0">نتائج الفحص الفوري باستخدام Domain Access Service للتحقق من أسباب منع أو تمكين الطالب من المواد.</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>المادة</th>
+                                <th>نتيجة الوصول</th>
+                                <th>رمز السبب (Reason Code)</th>
+                                <th>مصدر الإتاحة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in diagnostic_results %}
+                            <tr>
+                                <td class="fw-semibold text-dark">{{ item.subject.name_ar }}</td>
+                                <td>
+                                    {% if item.allowed %}
+                                        <span class="badge bg-success-subtle text-success">مسموح</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger">ممنوع</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-secondary font-monospace border">{{ item.reason_code }}</span>
+                                </td>
+                                <td class="small text-muted">{{ item.source }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    {% if not enrollment %}
+                                        لا يمكن فحص الوصول لعدم وجود قيد دراسي نشط يحدد الصف والشعبة.
+                                    {% else %}
+                                        لا توجد مواد منشورة مرتبطة بهذا الصف حالياً.
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Devices Tab -->
+        <div class="tab-pane fade" id="devicesPane" role="tabpanel">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-bold">الأجهزة المسجلة ({{ devices|length }})</h5>
+                        <p class="text-muted small mb-0">فحص إصدارات التطبيق والأجهزة لمساعدة الطالب في حل مشكلات عدم التوافق.</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>المنصة</th>
+                                <th>اسم / طراز الجهاز</th>
+                                <th>نظام التشغيل</th>
+                                <th>إصدار التطبيق</th>
+                                <th>معرّف الجهاز (آمن)</th>
+                                <th>آخر نشاط</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dev in devices %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary font-monospace">
+                                        {{ dev.get_platform_display }}
+                                    </span>
+                                </td>
+                                <td class="fw-semibold text-dark">
+                                    {{ dev.device_name|default:"جهاز غير مسمى" }}
+                                </td>
+                                <td class="small text-muted">
+                                    {{ dev.operating_system|default:"—" }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace">
+                                        {{ dev.app_version|default:"غير محدد" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="font-monospace small text-secondary" title="{{ dev.installation_id }}">
+                                        {{ dev.safe_installation_id }}
+                                    </span>
+                                </td>
+                                <td class="small text-muted">
+                                    {{ dev.last_seen_at|date:"Y-m-d H:i" }}
+                                </td>
+                                <td>
+                                    {% if dev.is_active %}
+                                        <span class="badge bg-success-subtle text-success">نشط</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary">معطل</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    لم يسجل هذا الطالب الدخول من أي تطبيق أو جهاز بعد.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-light py-2 px-3 small text-muted">
+                    ملاحظة أمنية: معرّفات التطبيق الحساسة (Push Tokens / FCM) محجوبة تماماً لحماية خصوصية الطالب.
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Sessions Workspace Tab -->
+        <div class="tab-pane fade" id="sessionsPane" role="tabpanel">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-bold">جلسات تسجيل الدخول الحالية</h5>
+                        <p class="text-muted small mb-0">إلغاء وسحب الجلسات المشبوهة أو المخترقة بأمان دون التأثير على بيانات الطالب الأكاديمية.</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>تاريخ الإنشاء</th>
+                                <th>آخر استخدام</th>
+                                <th>تنتهي في</th>
+                                <th>الجهاز المرتبط</th>
+                                <th>عنوان الشبكة (آمن)</th>
+                                <th>الحالة</th>
+                                <th class="text-end">الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sess in sessions %}
+                            <tr>
+                                <td class="small">{{ sess.created_at|date:"Y-m-d H:i" }}</td>
+                                <td class="small">{{ sess.last_used_at|date:"Y-m-d H:i" }}</td>
+                                <td class="small font-monospace">{{ sess.expires_at|date:"Y-m-d H:i" }}</td>
+                                <td class="small">
+                                    {% if sess.device %}
+                                        {{ sess.device.device_name|default:sess.device.get_platform_display }}
+                                    {% else %}
+                                        <span class="text-muted">جلسة ويب / غير محدد</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-secondary font-monospace border">
+                                        {{ sess.masked_ip }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if sess.revoked_at %}
+                                        <span class="badge bg-danger-subtle text-danger" title="سُحبت في: {{ sess.revoked_at|date:'Y-m-d H:i' }}">
+                                            مسحوبة
+                                        </span>
+                                    {% elif not sess.is_active %}
+                                        <span class="badge bg-secondary-subtle text-secondary">منتهية الصلاحية</span>
+                                    {% else %}
+                                        <span class="badge bg-success-subtle text-success">نشطة</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if sess.is_active and not sess.revoked_at %}
+                                        {% if perms.accounts.revoke_usersession or user.is_superuser %}
+                                        <form method="post" action="{% url 'control:student_session_revoke' user_id=student.id session_id=sess.id %}" class="d-inline" onsubmit="return confirm('هل أنت متأكد من سحب هذه الجلسة؟ سيُطلب من الطالب تسجيل الدخول مجدداً على هذا الجهاز.');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger btn-sm py-0 px-2">
+                                                سحب الجلسة
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    لا توجد جلسات مسجلة لهذا الحساب.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-light py-2 px-3 small text-muted">
+                    ملاحظة أمنية: رموز التحديث (Refresh Tokens) مشفرة ومحمية ولا تظهر في واجهات العمليات إطلاقاً.
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Learning Support Snapshot Tab -->
+        <div class="tab-pane fade" id="learningPane" role="tabpanel">
+            <!-- Learning Snapshot Alert -->
+            <div class="alert alert-info py-2 px-3 small mb-4 d-flex align-items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-info">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>
+                    <strong>ملخص الدعم التعليمي (للقراءة فقط):</strong> يساعد موظف الدعم على تشخيص بلاغات مثل "أنهيت الاختبار ولم يظهر التقدم" أو "لم تحتسب نسبة إنجاز الدرس".
+                </span>
+            </div>
+
+            <div class="row g-3">
+                <!-- Recent Attempts -->
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0 mb-4 h-100">
+                        <div class="card-header bg-white py-3">
+                            <h6 class="mb-0 fw-bold">آخر محاولات الاختبارات والتقييمات</h6>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>الاختبار / العنوان</th>
+                                        <th>النوع</th>
+                                        <th>الحالة</th>
+                                        <th>الدرجة</th>
+                                        <th>التاريخ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for att in recent_attempts %}
+                                    <tr>
+                                        <td class="small fw-semibold">
+                                            {% if att.dynamic_title %}
+                                                {{ att.dynamic_title }}
+                                            {% elif att.assessment %}
+                                                {{ att.assessment.title }}
+                                            {% else %}
+                                                اختبار عام
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border small">
+                                                {{ att.get_attempt_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if att.status == 'evaluated' %}
+                                                <span class="badge bg-success-subtle text-success small">مصحح</span>
+                                            {% elif att.status == 'submitted' %}
+                                                <span class="badge bg-info-subtle text-info small">مقدم</span>
+                                            {% elif att.status == 'in_progress' %}
+                                                <span class="badge bg-warning-subtle text-warning small">قيد الحل</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-secondary small">{{ att.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small font-monospace">
+                                            {{ att.score }} / {{ att.maximum_score }} ({{ att.percentage }}%)
+                                        </td>
+                                        <td class="small text-muted">
+                                            {{ att.started_at|date:"Y-m-d H:i" }}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">
+                                            لا توجد محاولات اختبارات مسجلة لهذا الطالب.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Lesson Progress -->
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0 mb-4 h-100">
+                        <div class="card-header bg-white py-3">
+                            <h6 class="mb-0 fw-bold">آخر إنجازات الدروس</h6>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>الدرس</th>
+                                        <th>الوحدة / المادة</th>
+                                        <th>الإنجاز</th>
+                                        <th>الحالة</th>
+                                        <th>آخر نشاط</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lp in recent_lesson_progress %}
+                                    <tr>
+                                        <td class="small fw-semibold">{{ lp.lesson.title }}</td>
+                                        <td class="small text-muted">
+                                            {{ lp.lesson.unit.subject.name_ar }}
+                                        </td>
+                                        <td class="small font-monospace">{{ lp.completion_percentage }}%</td>
+                                        <td>
+                                            {% if lp.status == 'completed' %}
+                                                <span class="badge bg-success-subtle text-success small">مكتمل</span>
+                                            {% elif lp.status == 'in_progress' %}
+                                                <span class="badge bg-warning-subtle text-warning small">جارٍ</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-secondary small">{{ lp.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small text-muted">{{ lp.last_activity_at|date:"Y-m-d H:i" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">
+                                            لا يوجد سجل تقدم في الدروس لهذا الطالب حتى الآن.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject Progress Summary -->
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white py-3">
+                            <h6 class="mb-0 fw-bold">ملخص إنجاز المواد</h6>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>المادة</th>
+                                        <th>نسبة الإنجاز الكلية</th>
+                                        <th>نسبة الإتقان</th>
+                                        <th>الوحدات المكتملة</th>
+                                        <th>عدد المحاولات</th>
+                                        <th>آخر تفاعل</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sp in subject_progress_list %}
+                                    <tr>
+                                        <td class="fw-semibold text-dark">{{ sp.subject.name_ar }}</td>
+                                        <td class="font-monospace">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ sp.completion_percentage }}%;"></div>
+                                                </div>
+                                                <span class="small">{{ sp.completion_percentage }}%</span>
+                                            </div>
+                                        </td>
+                                        <td class="small font-monospace">{{ sp.mastery_percentage }}%</td>
+                                        <td class="small">{{ sp.units_completed }} / {{ sp.units_total }}</td>
+                                        <td class="small">{{ sp.attempts_count }}</td>
+                                        <td class="small text-muted">{{ sp.last_activity_at|date:"Y-m-d H:i" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted small">
+                                            لا يوجد سجل ملخص للمواد بعد.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

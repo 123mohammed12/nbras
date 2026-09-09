@@ -1,0 +1,269 @@
+{
+  "grade_id": "3s",
+  "grade_name": "الصف  الثالث الثانوي",
+  "track_id": "3s_sci",
+  "track_name": "علمي",
+  "subject_id": "3s_sci_islamic",
+  "subject_name": "التربية الاسلامية",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "3s_sci_islamic_fy_u1",
+      "name": "كتاب الإيمان",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_islamic_fy_u1_l1",
+          "name": "الدرس الأول: عظمة الله تعالى.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l2",
+          "name": "الدرس الثاني: الإسلام دين تحرر من الطاغوت.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l3",
+          "name": "الدرس الثالث: الإسلام دين وعي وزكاء.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l4",
+          "name": "الدرس الرابع: الإسلام دين العدل والقسط.",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l5",
+          "name": "الدرس الخامس: الإسلام دين المسؤولية.",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l6",
+          "name": "الدرس السادس: التقوى.",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l7",
+          "name": "الدرس السابع: عداوة أهل الكتاب.",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l8",
+          "name": "الدرس الثامن: خطورة النفاق.",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l9",
+          "name": "الدرس التاسع: نعيم الجنة.",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_islamic_fy_u1_l10",
+          "name": "الدرس العاشر: عذاب النار.",
+          "order_index": 10
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_islamic_fy_u2",
+      "name": "الحديث والتهذيب",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_islamic_fy_u2_l11",
+          "name": "الدرس الأول: العلم النافع",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l12",
+          "name": "الدرس الثاني: حديث العرض على كتاب الله",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l13",
+          "name": "الدرس الثالث: الصلاة على النبي ﷺ",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l14",
+          "name": "الدرس الرابع: لتتخذن حذو بني إسرائيل",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l15",
+          "name": "الدرس الخامس: عوامل الاستقامة وعوامل الانحراف",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l16",
+          "name": "الدرس السادس: فضل الجهاد في سبيل الله",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l17",
+          "name": "الدرس السابع: العفاف",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l18",
+          "name": "الدرس الثامن: الشخصية المتميزة للمسلم",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l19",
+          "name": "الدرس التاسع: تتداعى عليكم الأمم",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_islamic_fy_u2_l20",
+          "name": "الدرس العاشر: حديث الثقلين",
+          "order_index": 10
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_islamic_fy_u3",
+      "name": "السيرة النبوية",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_islamic_fy_u3_l21",
+          "name": "الدرس الأول: الرسول القائد.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l22",
+          "name": "الدرس الثاني: صلح الحديبية.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l23",
+          "name": "الدرس الثالث: مكاتبات الرسول للملوك والأمراء.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l24",
+          "name": "الدرس الرابع: غزوة خيبر.",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l25",
+          "name": "الدرس الخامس: غزوة مؤتة.",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l26",
+          "name": "الدرس السادس: فتح مكة.",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l27",
+          "name": "الدرس السابع: غزوة حنين.",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l28",
+          "name": "الدرس الثامن: غزوة تبوك.",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l29",
+          "name": "الدرس التاسع: عام الوفود وإعلان البراءة.",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l30",
+          "name": "الدرس العاشر: إسلام أهل اليمن.",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l31",
+          "name": "الدرس الحادي عشر: حجة الوداع.",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_islamic_fy_u3_l32",
+          "name": "الدرس الثاني عشر: أعمال النبي بعد حجة الوداع ووفاته.",
+          "order_index": 12
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_islamic_fy_u4",
+      "name": "كتاب الفقه",
+      "order_index": 4,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_islamic_fy_u4_l33",
+          "name": "الدرس الأول: الجزاء والعقوبات في الإسلام.",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l34",
+          "name": "الدرس الثاني: العقوبات الشرعية.",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l35",
+          "name": "الدرس الثالث: عقوبة فاحشة الزنا.",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l36",
+          "name": "الدرس الرابع: عقوبة القذف.",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l37",
+          "name": "الدرس الخامس: عقوبة شرب الخمر.",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l38",
+          "name": "الدرس السادس: عقوبة جريمة السرقة.",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l39",
+          "name": "الدرس السابع: عقوبة الحرابة.",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l40",
+          "name": "الدرس الثامن: عقوبة قتل النفس المحرمة.",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l41",
+          "name": "الدرس التاسع: الديات والأروش.",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l42",
+          "name": "الدرس العاشر: طرق إثبات الدعوى.",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l43",
+          "name": "الدرس الحادي عشر: الميراث (أسبابه، وموانعه، وأنواعه).",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l44",
+          "name": "الدرس الثاني عشر: أصحاب الفرائض المقدرة في كتاب الله.",
+          "order_index": 12
+        },
+        {
+          "id": "3s_sci_islamic_fy_u4_l45",
+          "name": "الدرس الثالث عشر: قضايا معاصرة وموقف الشريعة منها.",
+          "order_index": 13
+        }
+      ]
+    }
+  ]
+}

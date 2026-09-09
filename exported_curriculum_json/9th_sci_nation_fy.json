@@ -1,0 +1,35 @@
+{
+  "grade_id": "9th",
+  "grade_name": "الصف  التاسع",
+  "track_id": "9th_sci",
+  "track_name": "علمي",
+  "subject_id": "9th_sci_nation",
+  "subject_name": "التربية الوطنية",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "9th_sci_nation_fy_u1",
+      "name": "الوحدة الأولى الشباب والعادات غير الصحية",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "9th_sci_nation_fy_u1_l1",
+          "name": "الدرس الأول: مرحلة الشباب.",
+          "order_index": 1
+        },
+        {
+          "id": "9th_sci_nation_fy_u1_l2",
+          "name": "الدرس الثاني: عقل الإنسان وجسمه.",
+          "order_index": 2
+        },
+        {
+          "id": "9th_sci_nation_fy_u1_l3",
+          "name": "الدرس الثالث: العادات غير الصحية وطرق معالجتها.",
+          "order_index": 3
+        }
+      ]
+    }
+  ]
+}

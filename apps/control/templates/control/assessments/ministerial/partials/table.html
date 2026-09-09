@@ -1,0 +1,98 @@
+<div id="ministerial-table-container">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>رمز النموذج / العنوان</th>
+                    <th>المادة الدراسية</th>
+                    <th>السنة والدور</th>
+                    <th>النموذج</th>
+                    <th>الأسئلة والدرجات</th>
+                    <th>الحالة</th>
+                    <th class="text-center">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td>
+                        <div class="fw-bold text-dark">{{ exam.title }}</div>
+                        <small class="font-monospace text-muted">{{ exam.model_code }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">{{ exam.subject.name_ar }}</span>
+                        {% if exam.term %}
+                        <div class="small text-muted">{{ exam.term.name_ar }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="fw-bold">{{ exam.exam_year }}</div>
+                        <small class="text-secondary">{{ exam.get_exam_role_display|default:"-" }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary-subtle text-secondary border">نموذج {{ exam.model_number }}</span>
+                    </td>
+                    <td>
+                        <div><strong>{{ exam.total_questions }}</strong> سؤال</div>
+                        <small class="text-muted">{{ exam.total_points|default:"0.00" }} درجة</small>
+                    </td>
+                    <td>
+                        {% if exam.status == "published" %}
+                        <span class="badge bg-success">منشور</span>
+                        {% elif exam.status == "draft" %}
+                        <span class="badge bg-warning text-dark">مسودة</span>
+                        {% else %}
+                        <span class="badge bg-secondary">{{ exam.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'control:ministerial_detail' pk=exam.pk %}" class="btn btn-outline-primary" title="عرض التفاصيل والأقسام">
+                                فتح النموذج &larr;
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        لا توجد نماذج وزارية مطابقة للمعايير المحددة.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="text-muted small">
+            عرض {{ page_obj.start_index }} إلى {{ page_obj.end_index }} من إجمالي {{ total_count }} نموذجاً
+        </div>
+        <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.exam_year %}&exam_year={{ request.GET.exam_year }}{% endif %}{% if request.GET.exam_role %}&exam_role={{ request.GET.exam_role }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-get="?page={{ page_obj.previous_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.exam_year %}&exam_year={{ request.GET.exam_year }}{% endif %}{% if request.GET.exam_role %}&exam_role={{ request.GET.exam_role }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-target="#ministerial-table-container"
+                   hx-swap="outerHTML">السابق</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.exam_year %}&exam_year={{ request.GET.exam_year }}{% endif %}{% if request.GET.exam_role %}&exam_role={{ request.GET.exam_role }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-get="?page={{ page_obj.next_page_number }}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.exam_year %}&exam_year={{ request.GET.exam_year }}{% endif %}{% if request.GET.exam_role %}&exam_role={{ request.GET.exam_role }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-target="#ministerial-table-container"
+                   hx-swap="outerHTML">التالي</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>

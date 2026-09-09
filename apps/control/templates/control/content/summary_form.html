@@ -1,0 +1,120 @@
+{% extends "control/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">إدارة الملخصات</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1>{{ page_title }}</h1>
+        <p>
+            {% if hierarchy.lesson %}
+                السياق التعليمي: درس <strong>{{ hierarchy.lesson.title }}</strong> ({{ hierarchy.unit.title }})
+            {% elif hierarchy.unit %}
+                السياق التعليمي: وحدة <strong>{{ hierarchy.unit.title }}</strong> ({{ hierarchy.subject.name_ar }})
+            {% elif hierarchy.subject %}
+                السياق التعليمي: مادة <strong>{{ hierarchy.subject.name_ar }}</strong>
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="card" style="max-width: 840px; margin: 0 auto;">
+    <div class="card-header">
+        <h3 class="card-title">بيانات ومحتوى الملخص</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.subject_id }}
+            {{ form.unit_id }}
+            {{ form.lesson_id }}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger" style="margin-bottom: 20px;">
+                <div class="alert-content">
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }} *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.title.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="{{ form.summary_type.id_for_label }}" class="form-label">{{ form.summary_type.label }} *</label>
+                    {{ form.summary_type }}
+                    {% if form.summary_type.errors %}
+                    <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.summary_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }} *</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                    <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.status.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.body.id_for_label }}" class="form-label">{{ form.body.label }}</label>
+                {{ form.body }}
+                {% if form.body.errors %}
+                <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.body.errors.0 }}</div>
+                {% endif %}
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">يدعم النص العادي وتنسيق Markdown (عناوين، قوائم، جداول).</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="{{ form.file_path.id_for_label }}" class="form-label">{{ form.file_path.label }}</label>
+                    {{ form.file_path }}
+                    {% if form.instance.file_path %}
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">الملف الحالي: <code>{{ form.instance.file_name|default:form.instance.file_path.name }}</code></div>
+                    {% endif %}
+                    {% if form.file_path.errors %}
+                    <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.file_path.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.sort_order.id_for_label }}" class="form-label">{{ form.sort_order.label }}</label>
+                    {{ form.sort_order }}
+                    {% if form.sort_order.errors %}
+                    <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.sort_order.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    {{ form.is_downloadable }}
+                    <span style="font-size: 13.5px; font-weight: 500;">{{ form.is_downloadable.label }}</span>
+                </label>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <button type="button" onclick="history.back()" class="btn btn-ghost">إلغاء</button>
+                <button type="submit" class="btn btn-primary">حفظ الملخص</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{
+  "grade_id": "3s",
+  "grade_name": "الصف  الثالث الثانوي",
+  "track_id": "3s_sci",
+  "track_name": "علمي",
+  "subject_id": "3s_sci_quran",
+  "subject_name": "القرآن الكريم",
+  "term_id": "fy",
+  "term_name": "عام كامل",
+  "units": [
+    {
+      "id": "3s_sci_quran_fy_u1",
+      "name": "أولاً: الحفظ والتفسير",
+      "order_index": 1,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_quran_fy_u1_l1",
+          "name": "الدرس الأول: فاحشة الزنا وعقوبتها",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l2",
+          "name": "الدرس الثاني: جريمة القذف",
+          "order_index": 2
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l3",
+          "name": "الدرس الثالث: حادثة الإفك",
+          "order_index": 3
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l4",
+          "name": "الدرس الرابع: خطورة خطوات الشيطان",
+          "order_index": 4
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l5",
+          "name": "الدرس الخامس: آداب الاستئذان لدخول البيوت",
+          "order_index": 5
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l6",
+          "name": "الدرس السادس: عوامل الطهر والعفة",
+          "order_index": 6
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l7",
+          "name": "الدرس السابع: الحث على الزواج، والأمر بالتعفف",
+          "order_index": 7
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l8",
+          "name": "الدرس الثامن: نور الإيمان وظلمات الكفر",
+          "order_index": 8
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l9",
+          "name": "الدرس التاسع: من دلائل قدرة الله تعالى في الكون",
+          "order_index": 9
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l10",
+          "name": "الدرس العاشر: طاعة الله ورسوله",
+          "order_index": 10
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l11",
+          "name": "الدرس الحادي عشر: استخلاف الله للمؤمنين في الأرض",
+          "order_index": 11
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l12",
+          "name": "الدرس الثاني عشر: آداب الاستئذان داخل البيوت",
+          "order_index": 12
+        },
+        {
+          "id": "3s_sci_quran_fy_u1_l13",
+          "name": "الدرس الثالث عشر: علاقة الأمة بقيادتها المؤمنة",
+          "order_index": 13
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_quran_fy_u2",
+      "name": "ثانياً: علوم القرآن الكريم",
+      "order_index": 2,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_quran_fy_u2_l14",
+          "name": "الدرس الأول: حاكمية القرآن الكريم",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_quran_fy_u2_l15",
+          "name": "الدرس الثاني: الإعجاز في القرآن الكريم",
+          "order_index": 2
+        }
+      ]
+    },
+    {
+      "id": "3s_sci_quran_fy_u3",
+      "name": "ثالثاً: التجويد والتلاوة",
+      "order_index": 3,
+      "is_free": false,
+      "lessons": [
+        {
+          "id": "3s_sci_quran_fy_u3_l16",
+          "name": "الدرس الأول: أحكام الوقف والسكت",
+          "order_index": 1
+        },
+        {
+          "id": "3s_sci_quran_fy_u3_l17",
+          "name": "الدرس الثاني: اصطلاحات الضبط",
+          "order_index": 2
+        }
+      ]
+    }
+  ]
+}

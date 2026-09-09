@@ -1,0 +1,165 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}مقارنة نسخ السؤال Q-{{ question.id|stringformat:"s"|slice:":8" }}{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <div class="breadcrumbs" style="margin-bottom: 8px;">
+                <a href="{% url 'control:question_list' %}">بنك الأسئلة</a>
+                <span>&rsaquo;</span>
+                <a href="{% url 'control:question_detail' question.pk %}">Q-{{ question.id|stringformat:"s"|slice:":8" }}</a>
+                <span>&rsaquo;</span>
+                <span class="current">مقارنة النسخ</span>
+            </div>
+            <h1 class="page-title">
+                مقارنة الفروق بين النسخ (V{{ v1.version_number }} مقابل V{{ v2.version_number }})
+            </h1>
+            <p class="page-subtitle">تتبع التغييرات التحريرية والتعديلات التربوية بين إصدارات هذا السؤال</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'control:question_detail' question.pk %}" class="btn btn-outline">العودة لتفاصيل السؤال</a>
+        </div>
+    </div>
+
+    <!-- Version Selector Filter -->
+    <div class="panel" style="margin-bottom: 20px;">
+        <div class="panel-body" style="padding: 12px 16px;">
+            <form method="get" style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px;">النسخة السابقة (المصدر):</label>
+                    <select name="from_v" class="form-control" style="width: 140px;">
+                        {% for v in versions %}
+                        <option value="{{ v.version_number }}" {% if v1.version_number == v.version_number %}selected{% endif %}>
+                            النسخة V{{ v.version_number }} ({{ v.get_status_display }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px;">النسخة الأحدث (الهدف):</label>
+                    <select name="to_v" class="form-control" style="width: 140px;">
+                        {% for v in versions %}
+                        <option value="{{ v.version_number }}" {% if v2.version_number == v.version_number %}selected{% endif %}>
+                            النسخة V{{ v.version_number }} ({{ v.get_status_display }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm">تطبيق المقارنة</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">جدول مقارنة الحقول التحريرية والتربوية</span>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">الحقل</th>
+                        <th style="width: 70px; text-align: center;">الحالة</th>
+                        <th style="width: 40%;">النسخة V{{ v1.version_number }} ({{ v1.get_status_display }})</th>
+                        <th style="width: 40%;">النسخة V{{ v2.version_number }} ({{ v2.get_status_display }})</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Question Text -->
+                    <tr {% if diffs.question_text.changed %}class="qb-diff-row-changed"{% endif %}>
+                        <td style="font-weight: 700;">نص السؤال</td>
+                        <td style="text-align: center;">
+                            {% if diffs.question_text.changed %}
+                            <span class="badge badge-warning">تعديل</span>
+                            {% else %}
+                            <span class="badge badge-muted">متطابق</span>
+                            {% endif %}
+                        </td>
+                        <td dir="rtl">{{ diffs.question_text.from|default:"[فارغ]" }}</td>
+                        <td dir="rtl">{{ diffs.question_text.to|default:"[فارغ]" }}</td>
+                    </tr>
+
+                    <!-- Options -->
+                    {% for opt in options_diff %}
+                    <tr {% if opt.changed %}class="qb-diff-row-changed"{% endif %}>
+                        <td style="font-weight: 700;">الخيار {{ opt.key }}</td>
+                        <td style="text-align: center;">
+                            {% if opt.changed %}
+                            <span class="badge badge-warning">تعديل</span>
+                            {% else %}
+                            <span class="badge badge-muted">متطابق</span>
+                            {% endif %}
+                        </td>
+                        <td dir="rtl">{{ opt.from|default:"[غير موجود]" }}</td>
+                        <td dir="rtl">{{ opt.to|default:"[غير موجود]" }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- Answer Key -->
+                    <tr {% if diffs.answer_key.changed %}class="qb-diff-row-changed"{% endif %}>
+                        <td style="font-weight: 700;">مفتاح الإجابة</td>
+                        <td style="text-align: center;">
+                            {% if diffs.answer_key.changed %}
+                            <span class="badge badge-warning">تعديل</span>
+                            {% else %}
+                            <span class="badge badge-muted">متطابق</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ diffs.answer_key.from }}</td>
+                        <td>{{ diffs.answer_key.to }}</td>
+                    </tr>
+
+                    <!-- Points -->
+                    <tr {% if diffs.points.changed %}class="qb-diff-row-changed"{% endif %}>
+                        <td style="font-weight: 700;">الدرجة</td>
+                        <td style="text-align: center;">
+                            {% if diffs.points.changed %}
+                            <span class="badge badge-warning">تعديل</span>
+                            {% else %}
+                            <span class="badge badge-muted">متطابق</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ diffs.points.from }}</td>
+                        <td>{{ diffs.points.to }}</td>
+                    </tr>
+
+                    <!-- Short Explanation -->
+                    <tr {% if diffs.short_explanation.changed %}class="qb-diff-row-changed"{% endif %}>
+                        <td style="font-weight: 700;">الشرح الموجز</td>
+                        <td style="text-align: center;">
+                            {% if diffs.short_explanation.changed %}
+                            <span class="badge badge-warning">تعديل</span>
+                            {% else %}
+                            <span class="badge badge-muted">متطابق</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ diffs.short_explanation.from|default:"—" }}</td>
+                        <td>{{ diffs.short_explanation.to|default:"—" }}</td>
+                    </tr>
+
+                    <!-- Full Explanation -->
+                    <tr {% if diffs.explanation.changed %}class="qb-diff-row-changed"{% endif %}>
+                        <td style="font-weight: 700;">التعليل الكامل</td>
+                        <td style="text-align: center;">
+                            {% if diffs.explanation.changed %}
+                            <span class="badge badge-warning">تعديل</span>
+                            {% else %}
+                            <span class="badge badge-muted">متطابق</span>
+                            {% endif %}
+                        </td>
+                        <td dir="rtl">{{ diffs.explanation.from|default:"—" }}</td>
+                        <td dir="rtl">{{ diffs.explanation.to|default:"—" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

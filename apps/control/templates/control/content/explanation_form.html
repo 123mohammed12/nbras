@@ -1,0 +1,83 @@
+{% extends "control/base.html" %}
+
+{% block title %}شرح درس: {{ lesson.title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:lesson_workspace' lesson_id=lesson.id %}">{{ lesson.title }}</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">تحرير الشرح</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1>شرح درس: {{ lesson.title }}</h1>
+        <p>المادة: {{ lesson.unit.subject.name_ar }} | الوحدة: {{ lesson.unit.title }}</p>
+    </div>
+</div>
+
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <div class="card-header">
+        <h3 class="card-title">محتوى الشرح التعليمي</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger" style="margin-bottom: 20px;">
+                <div class="alert-content">
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.title.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="{{ form.content_format.id_for_label }}" class="form-label">{{ form.content_format.label }} *</label>
+                    {{ form.content_format }}
+                    {% if form.content_format.errors %}
+                    <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.content_format.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }} *</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                    <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.status.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.body.id_for_label }}" class="form-label">{{ form.body.label }} *</label>
+                {{ form.body }}
+                {% if form.body.errors %}
+                <div style="color: var(--color-danger); font-size: 12px; margin-top: 4px;">{{ form.body.errors.0 }}</div>
+                {% endif %}
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">يدعم تنسيق Markdown والعناوين والقوائم والصيغ التعليمية.</div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <a href="{% url 'control:lesson_workspace' lesson_id=lesson.id %}?tab=explanation" class="btn btn-ghost">إلغاء</a>
+                <button type="submit" class="btn btn-primary">حفظ الشرح</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

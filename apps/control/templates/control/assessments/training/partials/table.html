@@ -1,0 +1,100 @@
+<div id="training-table-container">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>النطاق ومفتاح الدفعة</th>
+                    <th>نوع النطاق</th>
+                    <th>المادة / الوحدة / الدرس</th>
+                    <th>رقم الدفعة</th>
+                    <th>العناصر والحجم المستهدف</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th class="text-center">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for batch in batches %}
+                <tr>
+                    <td>
+                        <div class="fw-bold text-dark font-monospace small">{{ batch.scope_key }}</div>
+                    </td>
+                    <td>
+                        {% if batch.scope_type == "lesson" %}
+                        <span class="badge bg-info-subtle text-info border">درس</span>
+                        {% elif batch.scope_type == "unit" %}
+                        <span class="badge bg-primary-subtle text-primary border">وحدة</span>
+                        {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary border">مادة</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ batch.subject.name_ar }}</div>
+                        {% if batch.unit %}
+                        <small class="text-muted">{{ batch.unit.title }}</small>
+                        {% endif %}
+                        {% if batch.lesson %}
+                        <div class="small text-muted">{{ batch.lesson.title }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">دفعة #{{ batch.batch_index }}</span>
+                        {% if batch.free_access_rank %}
+                        <small class="text-success d-block">رتبة مجانية: {{ batch.free_access_rank }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div><strong>{{ batch.actual_items_count }}</strong> عنصر</div>
+                        <small class="text-muted">مستهدف: {{ batch.target_size }}</small>
+                    </td>
+                    <td class="text-muted small">
+                        {{ batch.created_at|date:"Y-m-d H:i" }}
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'control:training_detail' pk=batch.pk %}" class="btn btn-sm btn-outline-primary">
+                            استعراض العناصر &larr;
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        لا توجد دفعات تدريب مطابقة للمعايير المحددة.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="text-muted small">
+            عرض {{ page_obj.start_index }} إلى {{ page_obj.end_index }} من إجمالي {{ total_count }} دفعة تدريب
+        </div>
+        <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.scope_type %}&scope_type={{ request.GET.scope_type }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-get="?page={{ page_obj.previous_page_number }}{% if request.GET.scope_type %}&scope_type={{ request.GET.scope_type }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-target="#training-table-container"
+                   hx-swap="outerHTML">السابق</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.scope_type %}&scope_type={{ request.GET.scope_type }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-get="?page={{ page_obj.next_page_number }}{% if request.GET.scope_type %}&scope_type={{ request.GET.scope_type }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-target="#training-table-container"
+                   hx-swap="outerHTML">التالي</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>

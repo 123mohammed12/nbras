@@ -1,0 +1,3 @@
+"""
+Operations Console (control) app.
+"""

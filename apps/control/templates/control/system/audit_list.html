@@ -1,0 +1,164 @@
+{% extends "control/base.html" %}
+
+{% block title %}سجل تدقيق العمليات | منصة المعلم الذكي{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title h3 mb-1">سجل تدقيق العمليات (Central Audit Log)</h1>
+            <p class="text-muted mb-0">سجل غير قابل للتعديل (Append-Only) لتتبع العمليات التشغيلية عالية الأثر المنفذة عبر منصة العمليات.</p>
+        </div>
+        <div class="header-actions">
+            <span class="badge bg-light text-dark border p-2">
+                إجمالي السجلات: <strong>{{ total_count }}</strong>
+            </span>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">نوع العملية</label>
+                    <select name="action" class="form-select form-select-sm">
+                        <option value="">جميع العمليات</option>
+                        {% for code, label in action_choices %}
+                        <option value="{{ code }}" {% if action == code %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">المنفذ (هاتف / كود)</label>
+                    <input type="text" name="actor" value="{{ actor_query }}" class="form-control form-control-sm" placeholder="ابحث بالمنفذ...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">نوع الكائن</label>
+                    <input type="text" name="target_type" value="{{ target_type }}" class="form-control form-control-sm" placeholder="user, subscription...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">بحث (الوصف / المعرّف / السبب)</label>
+                    <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="ابحث في التفاصيل...">
+                </div>
+                <div class="col-md-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">تصفية</button>
+                    <a href="{% url 'control:control_audit_list' %}" class="btn btn-outline-secondary btn-sm" title="إعادة ضبط">✕</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Table Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">سجلات التدقيق التشغيلية ({{ total_count }})</h5>
+            <span class="badge bg-secondary-subtle text-secondary small">للقراءة فقط — غير قابل للتعديل</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>التاريخ والوقت</th>
+                        <th>المنفذ</th>
+                        <th>العملية</th>
+                        <th>الكائن والوصف</th>
+                        <th>السبب</th>
+                        <th>معرّف التتبع</th>
+                        <th class="text-end">بيانات سياقية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in page_obj %}
+                    <tr>
+                        <td class="small font-monospace text-nowrap">
+                            {{ item.created_at|date:"Y-m-d H:i:s" }}
+                        </td>
+                        <td>
+                            {% if item.actor %}
+                                <div class="fw-semibold text-dark small font-monospace">{{ item.actor.phone }}</div>
+                                <div class="text-muted small">{{ item.actor.public_code }}</div>
+                            {% else %}
+                                <span class="badge bg-light text-muted border">النظام التلقائي</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary border">
+                                {{ item.get_action_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="small fw-semibold text-dark">{{ item.target_repr|default:item.target_type }}</div>
+                            {% if item.target_id %}
+                                <div class="small text-muted font-monospace">{{ item.target_id|slice:":12" }}…</div>
+                            {% endif %}
+                        </td>
+                        <td class="small text-muted">
+                            {{ item.reason|default:"—" }}
+                        </td>
+                        <td class="small font-monospace text-muted">
+                            {{ item.request_id|default:"—" }}
+                        </td>
+                        <td class="text-end">
+                            {% if item.metadata %}
+                                <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" data-bs-toggle="collapse" data-bs-target="#meta-{{ item.id }}">
+                                    عرض التفاصيل
+                                </button>
+                            {% else %}
+                                <span class="text-muted small">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if item.metadata %}
+                    <tr class="collapse bg-light" id="meta-{{ item.id }}">
+                        <td colspan="7" class="p-3">
+                            <div class="card border-0 bg-white p-2">
+                                <div class="text-muted small fw-bold mb-1">البيانات الإضافية الآمنة (Metadata):</div>
+                                <pre class="mb-0 small font-monospace bg-light p-2 rounded text-dark" style="max-height: 150px; overflow-y: auto;">{{ item.metadata }}</pre>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 text-secondary">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <p class="mb-0">لا توجد سجلات تدقيق مسجلة بالشروط الحالية.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer bg-white py-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&action={{ action }}&actor={{ actor_query }}&target_type={{ target_type }}&q={{ q }}&date_from={{ date_from }}&date_to={{ date_to }}">السابق</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                        <span class="page-link">صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&action={{ action }}&actor={{ actor_query }}&target_type={{ target_type }}&q={{ q }}&date_from={{ date_from }}&date_to={{ date_to }}">التالي</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

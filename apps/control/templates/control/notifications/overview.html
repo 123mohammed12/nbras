@@ -1,0 +1,221 @@
+{% extends "control/base.html" %}
+
+{% block title %}مركز إدارة الإشعارات والتنبيهات | لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item active" aria-current="page">مركز إدارة الإشعارات</li>
+        </ol>
+    </nav>
+
+    <!-- Subnav -->
+    {% include "control/notifications/partials/subnav.html" %}
+
+    <!-- Overview Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">مركز إدارة الإشعارات والتنبيهات (Notification Operations)</h3>
+            <p class="text-muted mb-0">إعداد، جدولة، وتوجيه الإشعارات للطلاب والمستخدمين مع متابعة كفاءة وتدقيق التسليم عبر FCM.</p>
+        </div>
+        {% if perms.notifications.add_notification or user.is_superuser %}
+        <div>
+            <a href="{% url 'control:notification_create' %}" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> إنشاء حملة إشعار جديدة
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- KPI Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card border-0 shadow-sm text-center h-100 p-3 border-start border-4 border-secondary">
+                <div class="text-muted small mb-1">المسودات (Draft)</div>
+                <div class="fs-2 fw-bold text-secondary">{{ notif_stats.draft|default:0 }}</div>
+                <a href="{% url 'control:notification_list' %}?status=DRAFT" class="stretched-link text-decoration-none small text-muted">استعراض المسودات</a>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card border-0 shadow-sm text-center h-100 p-3 border-start border-4 border-warning">
+                <div class="text-muted small mb-1">المجدولة (Scheduled)</div>
+                <div class="fs-2 fw-bold text-warning">{{ notif_stats.scheduled|default:0 }}</div>
+                <a href="{% url 'control:notification_list' %}?status=SCHEDULED" class="stretched-link text-decoration-none small text-muted">استعراض المجدولة</a>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card border-0 shadow-sm text-center h-100 p-3 border-start border-4 border-info">
+                <div class="text-muted small mb-1">قيد التجهيز (Publishing)</div>
+                <div class="fs-2 fw-bold text-info">{{ notif_stats.publishing|default:0 }}</div>
+                <a href="{% url 'control:notification_list' %}?status=PUBLISHING" class="stretched-link text-decoration-none small text-muted">استعراض الجاري</a>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card border-0 shadow-sm text-center h-100 p-3 border-start border-4 border-success">
+                <div class="text-muted small mb-1">المنشورة (Published)</div>
+                <div class="fs-2 fw-bold text-success">{{ notif_stats.published|default:0 }}</div>
+                <a href="{% url 'control:notification_list' %}?status=PUBLISHED" class="stretched-link text-decoration-none small text-muted">استعراض المنشورة</a>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card border-0 shadow-sm text-center h-100 p-3 border-start border-4 border-danger">
+                <div class="text-muted small mb-1">الملغاة (Cancelled)</div>
+                <div class="fs-2 fw-bold text-danger">{{ notif_stats.cancelled|default:0 }}</div>
+                <a href="{% url 'control:notification_list' %}?status=CANCELLED" class="stretched-link text-decoration-none small text-muted">استعراض الملغاة</a>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card border-0 shadow-sm text-center h-100 p-3 border-start border-4 border-dark">
+                <div class="text-muted small mb-1">المنتهية (Expired)</div>
+                <div class="fs-2 fw-bold text-dark">{{ notif_stats.expired|default:0 }}</div>
+                <a href="{% url 'control:notification_list' %}?status=EXPIRED" class="stretched-link text-decoration-none small text-muted">استعراض المنتهية</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Push Delivery Analytics Overview Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">🚀 كفاءة وتدقيق التسليم الفوري (FCM Push Delivery Analytics)</h5>
+            <span class="badge bg-light text-dark border">بيانات حية مجمعة</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-3 col-md-6">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">إجمالي محاولات الإرسال</div>
+                        <div class="fs-3 fw-bold">{{ delivery_stats.total|default:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">قيد الإرسال (Pending)</div>
+                        <div class="fs-3 fw-bold text-primary">{{ delivery_stats.pending|default:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">تم التسليم (Sent)</div>
+                        <div class="fs-3 fw-bold text-success">{{ delivery_stats.sent|default:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="p-3 bg-light rounded text-center">
+                        <div class="text-muted small">فشل الإرسال (Failed)</div>
+                        <div class="fs-3 fw-bold text-danger">{{ delivery_stats.failed|default:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-12">
+                    <div class="p-3 border rounded">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small fw-bold">نسبة نجاح التسليم:</span>
+                            <span class="small fw-bold text-success">{{ success_rate }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ success_rate }}%;" aria-valuenow="{{ success_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted d-block mt-2 font-monospace">تم تخطي {{ delivery_stats.skipped|default:0 }} محاولة لعدم وجود جلسات نشطة أو قيود تفضيلات.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Notifications Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">📢 أحدث الحملات والإشعارات</h5>
+            <a href="{% url 'control:notification_list' %}" class="btn btn-sm btn-outline-secondary">عرض كافة الإشعارات</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">العنوان والنص</th>
+                            <th>التصنيف</th>
+                            <th>الأولوية</th>
+                            <th>الجمهور المستهدف</th>
+                            <th>الحالة</th>
+                            <th>المستلمون</th>
+                            <th>تاريخ الإنشاء</th>
+                            <th class="text-end pe-3">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for n in recent_notifications %}
+                        <tr>
+                            <td class="ps-3" style="max-width: 280px;">
+                                <div class="fw-bold text-truncate" title="{{ n.title }}">{{ n.title }}</div>
+                                <small class="text-muted text-truncate d-block" title="{{ n.body }}">{{ n.body|truncatechars:65 }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ n.get_category_display }}</span>
+                            </td>
+                            <td>
+                                {% if n.priority == 'HIGH' %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger">مرتفع</span>
+                                {% elif n.priority == 'LOW' %}
+                                    <span class="badge bg-secondary-subtle text-secondary">منخفض</span>
+                                {% else %}
+                                    <span class="badge bg-primary-subtle text-primary">عادي</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info-subtle text-info-emphasis">{{ n.get_audience_display }}</span>
+                                {% if n.grade %}
+                                    <small class="d-block text-muted">{{ n.grade.name_ar }}{% if n.section %} - {{ n.section.name_ar }}{% endif %}</small>
+                                {% elif n.subject %}
+                                    <small class="d-block text-muted">{{ n.subject.name_ar }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if n.status == 'DRAFT' %}
+                                    <span class="badge bg-secondary">مسودة</span>
+                                {% elif n.status == 'SCHEDULED' %}
+                                    <span class="badge bg-warning text-dark">مجدول</span>
+                                {% elif n.status == 'PUBLISHING' %}
+                                    <span class="badge bg-info text-dark">تجهيز</span>
+                                {% elif n.status == 'PUBLISHED' %}
+                                    <span class="badge bg-success">منشور</span>
+                                {% elif n.status == 'CANCELLED' %}
+                                    <span class="badge bg-danger">ملغى</span>
+                                {% elif n.status == 'EXPIRED' %}
+                                    <span class="badge bg-dark">منتهي</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="fw-bold">{{ n.recipients_count }}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ n.created_at|date:"Y-m-d H:i" }}</small>
+                            </td>
+                            <td class="text-end pe-3">
+                                <a href="{% url 'control:notification_detail' n.pk %}" class="btn btn-sm btn-outline-primary">
+                                    تفاصيل
+                                </a>
+                                {% if n.status == 'DRAFT' and perms.notifications.change_notification %}
+                                <a href="{% url 'control:notification_edit' n.pk %}" class="btn btn-sm btn-outline-secondary ms-1">
+                                    تعديل
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <div class="fs-1 mb-2">📭</div>
+                                <p class="mb-0">لا توجد إشعارات مسجلة حتى الآن.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

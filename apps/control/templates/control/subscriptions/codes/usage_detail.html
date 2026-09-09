@@ -1,0 +1,160 @@
+{% extends "control/base.html" %}
+
+{% block title %}تفاصيل الرمز {{ code.display_code_masked }} | لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:subscriptions_overview' %}">الاشتراكات والرموز</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'control:activation_code_lookup' %}">استعلام الرموز</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ code.display_code_masked }}</li>
+        </ol>
+    </nav>
+
+    <!-- Sub-Nav -->
+    {% include "control/subscriptions/partials/subnav.html" %}
+
+    <div class="row g-4">
+        <!-- Code Information Card -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">معلومات رمز التفعيل</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 35%;">الرمز المقنع:</th>
+                                <td><code class="fs-5 font-monospace text-primary fw-bold">{{ code.display_code_masked }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">الدفعة:</th>
+                                <td>
+                                    {% if code.batch %}
+                                        <a href="{% url 'control:activation_code_lookup' %}?batch={{ code.batch.pk }}" class="font-monospace">
+                                            {{ code.batch.batch_code }}
+                                        </a>
+                                    {% else %}
+                                        <span class="font-monospace">{{ code.batch_code }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">الخطة:</th>
+                                <td><strong>{{ code.plan.name }}</strong> ({{ code.plan.get_tier_type_display }})</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">الحالة الحالية:</th>
+                                <td>
+                                    {% if code.status == 'available' or code.status == 'active' %}
+                                        <span class="badge bg-success-subtle text-success border border-success">متاح للتفعيل</span>
+                                    {% elif code.status == 'redeemed' or code.status == 'exhausted' %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary">مُستخدم</span>
+                                    {% elif code.status == 'revoked' or code.status == 'disabled' %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger">مُلغى</span>
+                                    {% elif code.status == 'expired' %}
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary">منتهي الصلاحية</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">{{ code.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">تاريخ الإنشاء:</th>
+                                <td>{{ code.created_at|date:"Y-m-d H:i:s" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">انتهاء صلاحية الرمز:</th>
+                                <td>{% if code.code_expires_at %}{{ code.code_expires_at|date:"Y-m-d H:i" }}{% else %}بدون تاريخ انتهاء{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Details Card -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">بيانات الاستخدام والاسترداد</h5>
+                </div>
+                <div class="card-body">
+                    {% if usage %}
+                        <div class="alert alert-success d-flex align-items-center mb-3">
+                            <span class="fs-4 me-2">✅</span>
+                            <div>تم استخدام هذا الرمز بنجاح وتفعيل الاشتراك للطالب.</div>
+                        </div>
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th class="text-muted" style="width: 35%;">الطالب المستفيد:</th>
+                                    <td>
+                                        <a href="{% url 'control:student_subscription_detail' usage.user.pk %}" class="fw-bold">
+                                            {{ usage.user.get_full_name|default:usage.user.phone }}
+                                        </a>
+                                        <small class="text-muted d-block font-monospace">{{ usage.user.phone }}</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">تاريخ الاستخدام:</th>
+                                    <td>{{ usage.used_at|date:"Y-m-d H:i:s" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">الاشتراك المفعّل:</th>
+                                    <td>
+                                        {% if usage.subscription %}
+                                            <a href="{% url 'control:student_subscription_detail' usage.user.pk %}">
+                                                اشتراك #{{ usage.subscription.pk|slice:":8" }}
+                                            </a>
+                                            <span class="badge bg-light text-dark border ms-1">{{ usage.subscription.get_status_display }}</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">القيد الدراسي وقت التفعيل:</th>
+                                    <td>
+                                        {% if usage.study_enrollment %}
+                                            {{ usage.study_enrollment.grade.name }} - {{ usage.study_enrollment.section.name }}
+                                            <small class="text-muted d-block">{{ usage.study_enrollment.academic_year.name }}</small>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">معرف الطلب التشغيلي:</th>
+                                    <td><code class="text-muted font-monospace">{{ usage.request_id|default:"-" }}</code></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">حماية الخصوصية والأمان:</th>
+                                    <td>
+                                        <span class="badge bg-success-subtle text-success border border-success mb-1">
+                                            محمي وفق ضوابط الخصوصية
+                                        </span>
+                                        <small class="text-muted d-block">
+                                            عناوين IP وتفاصيل الأجهزة الحساسة محجوبة عن واجهات التشغيل العادية لحماية خصوصية الطلاب مع الحفاظ على سلامة سجلات التدقيق الأمني المركزية.
+                                        </small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <div class="fs-1 mb-2">🏷️</div>
+                            <p class="mb-1 fw-bold">لم يتم استخدام هذا الرمز بعد.</p>
+                            <p class="small">الرمز ما زال متاحاً للاستخدام من قبل أي طالب تنطبق عليه شروط الخطة.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

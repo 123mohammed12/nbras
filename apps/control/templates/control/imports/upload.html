@@ -1,0 +1,160 @@
+{% extends "control/base.html" %}
+
+{% block title %}استيراد محتوى جديد{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:import_overview' %}">مركز الاستيراد</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item current">استيراد جديد</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">استيراد حزمة محتوى جديدة</h1>
+        <p class="text-muted" style="margin-top: 4px; font-size: 13.5px;">
+            رفع ملفات الامتحانات الوزارية أو الملخصات أو البطاقات للفحص الآلي والمعاينة الذرية.
+        </p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'control:import_overview' %}" class="btn btn-outline btn-sm">
+            &rarr; العودة لسجل العمليات
+        </a>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Main Upload Form -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">إعدادات الحزمة والرفع</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="importUploadForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" style="margin-bottom: 20px;">
+                    <div class="alert-content">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- 1. Content Type -->
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.content_type.id_for_label }}">
+                        {{ form.content_type.label }} <span style="color: var(--danger);">*</span>
+                    </label>
+                    {{ form.content_type }}
+                    {% if form.content_type.errors %}
+                    <div style="color: var(--danger); font-size: 12px; margin-top: 4px;">
+                        {{ form.content_type.errors.0 }}
+                    </div>
+                    {% endif %}
+                    <p class="text-muted" style="font-size: 12px; margin-top: 4px;">
+                        يمكنك تركه على "اكتشاف آمن تلقائياً" ليقوم النظام بفحص عقد JSON وتحديد النوع المطابق.
+                    </p>
+                </div>
+
+                <!-- 2. Operation -->
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.operation.id_for_label }}">
+                        {{ form.operation.label }} <span style="color: var(--danger);">*</span>
+                    </label>
+                    {{ form.operation }}
+                    {% if form.operation.errors %}
+                    <div style="color: var(--danger); font-size: 12px; margin-top: 4px;">
+                        {{ form.operation.errors.0 }}
+                    </div>
+                    {% endif %}
+                    <p class="text-muted" style="font-size: 12px; margin-top: 4px;">
+                        <strong>تحقق فقط:</strong> يفحص البنية والتسلسل دون حفظ. | <strong>إضافة وتحديث:</strong> يضيف الجديد ويحدث المطابق مع حفظ النسخ التاريخية. | <strong>استبدال النطاق:</strong> يستبدل المحتوى القديم للنماذج ضمن النطاق.
+                    </p>
+                </div>
+
+                <!-- 3. File Upload -->
+                <div class="form-group" style="margin-top: 24px;">
+                    <label class="form-label" for="{{ form.files.id_for_label }}">
+                        {{ form.files.label }} <span style="color: var(--danger);">*</span>
+                    </label>
+                    
+                    <div class="file-upload-dropzone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 32px 20px; text-align: center; background: var(--bg-surface); cursor: pointer; transition: all 0.2s ease;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--primary); margin-bottom: 12px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">
+                            انقر لاختيار الملفات أو اسحبها وأفلتها هنا
+                        </div>
+                        <div class="text-muted" style="font-size: 12px; margin-bottom: 14px;">
+                            يدعم ملفات JSON مفردة أو متعددة، أو أرشيف ZIP مدمج
+                        </div>
+                        {{ form.files }}
+                    </div>
+
+                    {% if form.files.errors %}
+                    <div style="color: var(--danger); font-size: 12px; margin-top: 6px;">
+                        {{ form.files.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Button -->
+                <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+                    <a href="{% url 'control:import_overview' %}" class="btn btn-outline">إلغاء</a>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitUpload">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 6px;">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>رفع والبدء بالفحص الآلي &larr;</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Safety & Architecture Constraints Sidebar -->
+    <div>
+        <div class="card" style="border-right: 4px solid var(--primary);">
+            <div class="card-header">
+                <h3 class="card-title">ضوابط الأمان والأحجام القصوى</h3>
+            </div>
+            <div class="card-body" style="font-size: 13px; line-height: 1.7;">
+                <ul style="padding-right: 18px; margin-bottom: 12px;">
+                    <li><strong>أرشيف ZIP:</strong> الحد الأقصى للحجم هو <strong>25 ميجابايت</strong>.</li>
+                    <li><strong>ملفات JSON:</strong> الحد الأقصى للملف الواحد هو <strong>5 ميجابايت</strong>.</li>
+                    <li><strong>مسار المسح:</strong> فحص تلقائي لكافة ملفات JSON داخل الأرشيف.</li>
+                    <li><strong>حماية المسارات:</strong> منع استخراج مسارات المسارات غير الآمنة (Zip Traversal Guard).</li>
+                    <li><strong>فصل الصلاحيات:</strong> التحقق يتم في بيئة معزولة تماماً بدون تعديل أي بيانات في قاعدة البيانات.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card" style="border-right: 4px solid var(--warning); margin-top: 16px;">
+            <div class="card-header">
+                <h3 class="card-title">أنواع المحتوى المدعومة</h3>
+            </div>
+            <div class="card-body" style="font-size: 12.5px; line-height: 1.6;">
+                <div style="margin-bottom: 10px;">
+                    <strong style="color: var(--text-primary);">1. نماذج الامتحانات الوزارية (Exams):</strong>
+                    <p class="text-muted">تحتوي على `exam_id`، والسنة، والنموذج، والأسئلة مع مفتاح الإجابة والخيارات.</p>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong style="color: var(--text-primary);">2. ملخصات الدروس والوحدات (Summaries):</strong>
+                    <p class="text-muted">تحتوي على `summary_type` و `body` مع الربط الأكاديمي.</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-primary);">3. البطاقات الذكية (Smart Cards):</strong>
+                    <p class="text-muted">تحتوي على `deck` ومجموعة بطاقات بوجه أمامي وخلفي وشرح.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,533 @@
+{% extends "control/base.html" %}
+{% load static %}
+
+{% block title %}سؤال Q-{{ question.id|stringformat:"s"|slice:":8" }}{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Header with Breadcrumbs & Actions -->
+    <div class="page-header" style="align-items: flex-start;">
+        <div>
+            <div class="breadcrumbs" style="margin-bottom: 8px;">
+                <a href="{% url 'control:question_list' %}">بنك الأسئلة</a>
+                <span>&rsaquo;</span>
+                <a href="{% url 'control:question_list' %}?subject={{ question.subject.id }}">{{ question.subject.name_ar }}</a>
+                {% if question.unit %}
+                <span>&rsaquo;</span>
+                <a href="{% url 'control:question_list' %}?unit={{ question.unit.id }}">{{ question.unit.title|truncatechars:25 }}</a>
+                {% endif %}
+                <span>&rsaquo;</span>
+                <span class="current">Q-{{ question.id|stringformat:"s"|slice:":8" }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <h1 class="page-title" style="margin: 0;">
+                    السؤال Q-{{ question.id|stringformat:"s"|slice:":8" }}
+                </h1>
+                {% if version %}
+                <span class="qb-version-pill">النسخة V{{ version.version_number }}{% if is_historical %} (تاريخية){% endif %}</span>
+                {% endif %}
+                {% if question.status == 'published' %}
+                <span class="badge badge-success">منشور</span>
+                {% elif question.status == 'approved' %}
+                <span class="badge badge-info">معتمد</span>
+                {% elif question.status == 'under_review' %}
+                <span class="badge badge-warning">قيد المراجعة</span>
+                {% elif question.status == 'draft' %}
+                <span class="badge badge-muted">مسودة</span>
+                {% elif question.status == 'archived' %}
+                <span class="badge badge-danger">مؤرشف</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="page-header-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <!-- Validation button -->
+            <a href="{% url 'control:question_validate' question.pk %}" class="btn btn-outline" title="فحص معايير النشر">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>تحقق</span>
+            </a>
+
+            <!-- Student Preview -->
+            <a href="{% url 'control:question_student_preview' question.pk %}" class="btn btn-outline" title="معاينة كطالب (بدون إجابات)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>معاينة كطالب</span>
+            </a>
+
+            <!-- Review Mode -->
+            <a href="{% url 'control:question_review' question.pk %}" class="btn btn-outline" title="وضع المراجعة والتدقيق التربوي">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>وضع المراجعة</span>
+            </a>
+
+            <!-- Editing vs Cloning based on Immutability -->
+            {% if version and version.is_frozen %}
+                {% if perms.question_bank.change_question or user.is_superuser %}
+                <form method="post" action="{% url 'control:question_clone' question.pk %}" style="display: inline;" onsubmit="return confirm('هذا السؤال منشور ومحمي. هل تريد إنشاء مسودة جديدة (نسخة للتعديل)؟');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" title="إنشاء مسودة جديدة للتعديل">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span>نسخة جديدة للتعديل</span>
+                    </button>
+                </form>
+                {% endif %}
+            {% else %}
+                {% if perms.question_bank.change_question or user.is_superuser %}
+                <a href="{% url 'control:question_edit' question.pk %}" class="btn btn-primary" title="تعديل مسودة السؤال">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    <span>تعديل المسودة</span>
+                </a>
+                {% endif %}
+            {% endif %}
+
+            <!-- Lifecycle Actions -->
+            <form method="post" action="{% url 'control:question_lifecycle' question.pk %}" style="display: inline;">
+                {% csrf_token %}
+                {% if version and version.status == 'draft' and perms.question_bank.change_question %}
+                <button type="submit" name="action" value="send_to_review" class="btn btn-outline" style="color: var(--warning); border-color: var(--warning-border);">
+                    إرسال للمراجعة
+                </button>
+                {% elif version and version.status == 'under_review' and perms.question_bank.review_question %}
+                <button type="submit" name="action" value="approve" class="btn btn-outline" style="color: var(--info); border-color: var(--info-border);">
+                    اعتماد النسخة
+                </button>
+                {% elif version and version.status == 'approved' and perms.question_bank.publish_question %}
+                <button type="submit" name="action" value="publish" class="btn btn-primary" onclick="return confirm('هل أنت متأكد من نشر هذا السؤال؟ سيصبح متاحاً للطلاب وغير قابل للتعديل المباشر.');">
+                    نشر السؤال
+                </button>
+                {% endif %}
+
+                {% if question.status != 'archived' and perms.question_bank.retire_question %}
+                <button type="submit" name="action" value="retire" class="btn btn-outline" style="color: var(--danger); border-color: var(--danger-border);" onclick="return confirm('هل أنت متأكد من أرشفة/تقاعد هذا السؤال؟');" title="إيقاف ظهور السؤال في الاختبارات الجديدة">
+                    أرشفة
+                </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert for Frozen Version -->
+    {% if version and version.is_frozen %}
+    <div class="alert alert-info" style="margin-bottom: 20px;">
+        <div>
+            <strong>تنبيه الأمان والنزاهة:</strong> هذه النسخة منشورة رسمياً ومجمدة تاريخياً. لا يمكن تعديلها مباشرة لضمان مطابقة محاولات الطلاب السابقة. للتعديل، اضغط على <strong>"نسخة جديدة للتعديل"</strong> لإنشاء مسودة تالية.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Alert for Historical Version View -->
+    {% if is_historical %}
+    <div class="alert alert-warning" style="margin-bottom: 20px;">
+        <div>
+            <strong>نسخة سابقة (للقراءة فقط):</strong> أنت تستعرض النسخة رقم V{{ version.version_number }}. للعودة إلى النسخة النشطة الحالية 
+            <a href="{% url 'control:question_detail' question.pk %}" style="font-weight: 700; text-decoration: underline;">اضغط هنا</a>.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Two-Column Layout -->
+    <div class="qb-detail-grid">
+        <!-- LEFT: Primary Reading Pane -->
+        <div class="qb-detail-main">
+            <!-- Stimulus if present -->
+            {% if stimuli %}
+            {% for stim in stimuli %}
+            <div class="panel" style="border-right: 4px solid var(--info);">
+                <div class="panel-header">
+                    <span class="panel-title">المحتوى المشترك: {{ stim.title|default:"قطعة القراءة / النص المرجعي" }}</span>
+                    <span class="badge badge-info">{{ stim.get_stimulus_type_display }}</span>
+                </div>
+                <div class="panel-body" style="font-size: 14.5px; line-height: 1.8;">
+                    {{ stim.text_content|linebreaks }}
+                    {% if stim.image_path %}
+                    <div style="margin-top: 12px; text-align: center;">
+                        <img src="{{ stim.image_path.url }}" alt="صورة المحتوى المشترك" style="max-width: 100%; max-height: 300px; border-radius: 4px;">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Question Stem Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">نص السؤال</span>
+                    <span class="badge badge-muted">{{ question.get_question_type_display }}</span>
+                </div>
+                <div class="panel-body">
+                    <div class="qb-stem-content" dir="rtl">
+                        {{ version.question_text|linebreaks|default:"[سؤال صوري / بدون نص مضاف]" }}
+                    </div>
+
+                    <!-- Assets/Diagrams -->
+                    {% if assets %}
+                    <div class="qb-assets-grid" style="margin-top: 16px;">
+                        {% for asset in assets %}
+                        <div class="qb-asset-card">
+                            <span class="qb-asset-role">{{ asset.get_asset_role_display }}</span>
+                            <img src="{{ asset.file_path.url }}" alt="{{ asset.alt_text|default:'ملحق السؤال' }}" style="max-width: 100%; max-height: 240px; object-fit: contain;">
+                            {% if asset.caption %}
+                            <p class="qb-asset-caption">{{ asset.caption }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Options Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">الخيارات المتاحة</span>
+                    <span class="text-muted" style="font-size: 12px;">(الخيار المظلل بالأخضر هو الإجابة المعتمدة)</span>
+                </div>
+                <div class="panel-body" style="padding: 12px 18px;">
+                    <div class="qb-options-list">
+                        {% for opt in options %}
+                        <div class="qb-option-item {% if opt.is_correct %}qb-option-correct{% endif %}">
+                            <div class="qb-option-badge">{{ opt.option_key }}</div>
+                            <div class="qb-option-text">
+                                {{ opt.option_text|default:"—" }}
+                                {% if opt.option_image_path %}
+                                <div style="margin-top: 6px;">
+                                    <img src="{{ opt.option_image_path.url }}" alt="صورة الخيار" style="max-height: 120px; border-radius: 4px;">
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if opt.is_correct %}
+                            <div class="qb-correct-tag">
+                                ✓ الإجابة الصحيحة
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">لا توجد خيارات مسجلة لهذه النسخة.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedagogical Explanations -->
+            {% if version.short_explanation or version.explanation %}
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">الشرح والتعليل التربوي</span>
+                </div>
+                <div class="panel-body">
+                    {% if version.short_explanation %}
+                    <div style="margin-bottom: 12px;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">شرح موجز (تلميح للطالب):</span>
+                        <div style="background: var(--bg-muted); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13.5px;">
+                            {{ version.short_explanation }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if version.explanation %}
+                    <div>
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">التعليل الكامل والخطوات:</span>
+                        <div style="background: var(--bg-muted); padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.7;">
+                            {{ version.explanation|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Validation Report Panel -->
+            {% if validation_report %}
+            <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="panel-title">تقرير فحص النشر والجودة التربوية</span>
+                    {% if validation_report.valid %}
+                    <span class="badge badge-success">✓ مطابق للنشر</span>
+                    {% else %}
+                    <span class="badge badge-danger">✕ يتطلب تصحيحاً</span>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    {% include "control/questions/partials/validation_report.html" %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT: Side Information Panel -->
+        <div class="qb-detail-sidebar">
+            <!-- Source & Ministerial Metadata -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">بيانات المنشأ والمصدر</span>
+                </div>
+                <div class="panel-body" style="padding: 12px 16px;">
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">المصدر الأساسي</span>
+                        <span class="qb-meta-value font-weight-bold">{{ question.get_source_type_display }}</span>
+                    </div>
+
+                    {% if ministerial_item %}
+                    <div class="qb-meta-highlight-box">
+                        <div style="font-weight: 700; font-size: 13px; color: var(--primary); margin-bottom: 6px;">
+                            الارتباط بالنموذج الوزاري الرسمي:
+                        </div>
+                        <div class="qb-meta-row">
+                            <span class="qb-meta-label">السنة الوزارية</span>
+                            <span class="qb-meta-value">{{ ministerial_item.ministerial_exam.exam_year }}</span>
+                        </div>
+                        <div class="qb-meta-row">
+                            <span class="qb-meta-label">النموذج</span>
+                            <span class="qb-meta-value">{{ ministerial_item.ministerial_exam.model_number }}</span>
+                        </div>
+                        <div class="qb-meta-row">
+                            <span class="qb-meta-label">رقم السؤال الوزاري</span>
+                            <span class="qb-meta-value font-weight-bold" style="color: var(--primary);">سؤال {{ ministerial_item.question_number }}</span>
+                        </div>
+                        <div class="qb-meta-row">
+                            <span class="qb-meta-label">الدور</span>
+                            <span class="qb-meta-value">{{ ministerial_item.ministerial_exam.get_exam_role_display|default:"الأول" }}</span>
+                        </div>
+                        <div class="qb-meta-row" style="margin-top: 4px;">
+                            <span class="qb-meta-label">النموذج</span>
+                            <span class="qb-meta-value" style="font-size: 11.5px;">{{ ministerial_item.ministerial_exam.title }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if question.metadata.origin %}
+                    <div class="qb-meta-row" style="margin-top: 8px;">
+                        <span class="qb-meta-label">مرجع المنشأ</span>
+                        <span class="qb-meta-value">{{ question.metadata.origin }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Academic Hierarchy -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">السياق الأكاديمي</span>
+                </div>
+                <div class="panel-body" style="padding: 12px 16px;">
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">الصف والمرحلة</span>
+                        <span class="qb-meta-value">{{ question.subject.grade.name_ar }} ({{ question.subject.section.name_ar }})</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">المادة الدراسية</span>
+                        <span class="qb-meta-value font-weight-bold">{{ question.subject.name_ar }}</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">الوحدة</span>
+                        <span class="qb-meta-value">{{ question.unit.title|default:"غير محددة" }}</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">الدرس</span>
+                        <span class="qb-meta-value">{{ question.lesson.title|default:"غير محدد" }}</span>
+                    </div>
+                    {% if question.topic %}
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">الموضوع</span>
+                        <span class="qb-meta-value">{{ question.topic.title }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Question Attributes -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">خصائص السؤال</span>
+                </div>
+                <div class="panel-body" style="padding: 12px 16px;">
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">نوع السؤال</span>
+                        <span class="qb-meta-value">{{ question.get_question_type_display }}</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">مستوى الصعوبة</span>
+                        <span class="qb-meta-value">
+                            <span class="qb-diff-tag qb-diff-{{ question.difficulty }}">{{ question.get_difficulty_display }}</span>
+                        </span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">درجة السؤال</span>
+                        <span class="qb-meta-value font-weight-bold">{{ version.points|default:"1.00" }} درجات</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">تخطيط النص</span>
+                        <span class="qb-meta-value">{{ version.get_prompt_layout_display|default:"نص فقط" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifecycle Audit Trail -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">سجل التدقيق والحالة</span>
+                </div>
+                <div class="panel-body" style="padding: 12px 16px; font-size: 12.5px;">
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">المنشئ</span>
+                        <span class="qb-meta-value">{% if question.created_by %}{{ question.created_by.phone }}{% else %}النظام{% endif %}</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">تاريخ الإنشاء</span>
+                        <span class="qb-meta-value text-muted">{{ question.created_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                    {% if question.reviewed_by %}
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">المراجع</span>
+                        <span class="qb-meta-value">{{ question.reviewed_by.phone }}</span>
+                    </div>
+                    {% endif %}
+                    {% if question.approved_by %}
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">المعتمد</span>
+                        <span class="qb-meta-value">{{ question.approved_by.phone }}</span>
+                    </div>
+                    {% endif %}
+                    {% if question.published_by %}
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">الناشر</span>
+                        <span class="qb-meta-value">{{ question.published_by.phone }}</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">تاريخ النشر</span>
+                        <span class="qb-meta-value text-muted">{{ question.published_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if question.retired_at %}
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label" style="color: var(--danger);">تاريخ التقاعد</span>
+                        <span class="qb-meta-value text-danger">{{ question.retired_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quality Aggregate if present -->
+            {% if quality_aggregate %}
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">مؤشرات أداء الطلاب</span>
+                </div>
+                <div class="panel-body" style="padding: 12px 16px;">
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">حجم العينة</span>
+                        <span class="qb-meta-value font-weight-bold">{{ quality_aggregate.sample_size }} إجابة</span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">نسبة الحل الصحيح</span>
+                        <span class="qb-meta-value">
+                            {% if quality_aggregate.correct_rate != None %}
+                            {{ quality_aggregate.correct_rate|floatformat:1 }}%
+                            {% else %}—{% endif %}
+                        </span>
+                    </div>
+                    <div class="qb-meta-row">
+                        <span class="qb-meta-label">نسبة التخطي</span>
+                        <span class="qb-meta-value">
+                            {% if quality_aggregate.skip_rate != None %}
+                            {{ quality_aggregate.skip_rate|floatformat:1 }}%
+                            {% else %}—{% endif %}
+                        </span>
+                    </div>
+                    {% if quality_aggregate.quality_flags %}
+                    <div style="margin-top: 8px;">
+                        <span class="qb-meta-label" style="display: block; margin-bottom: 4px;">إشارات الجودة:</span>
+                        {% for flag in quality_aggregate.quality_flags %}
+                        <span class="qb-flag-pill">{{ flag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- LOWER: Version History Table -->
+    <div class="panel" style="margin-top: 24px;">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title">سجل وتاريخ النسخ (Version History)</span>
+            {% if versions.count >= 2 %}
+            <a href="{% url 'control:question_version_compare' question.pk %}" class="btn btn-outline btn-sm">
+                مقارنة الفروق بين النسخ
+            </a>
+            {% endif %}
+        </div>
+        <div class="panel-body" style="padding: 0;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">النسخة</th>
+                        <th>الحالة</th>
+                        <th>الحالية؟</th>
+                        <th>الدرجة</th>
+                        <th>أنشأها</th>
+                        <th>راجعها</th>
+                        <th>اعتمدها</th>
+                        <th>نشرها</th>
+                        <th>تاريخ النشر</th>
+                        <th style="text-align: center;">معاينة النسخة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in versions %}
+                    <tr {% if v.pk == version.pk %}style="background-color: var(--primary-light);"{% endif %}>
+                        <td style="font-weight: 700;">V{{ v.version_number }}</td>
+                        <td>
+                            {% if v.status == 'published' %}
+                            <span class="badge badge-success">منشور</span>
+                            {% elif v.status == 'approved' %}
+                            <span class="badge badge-info">معتمد</span>
+                            {% elif v.status == 'under_review' %}
+                            <span class="badge badge-warning">قيد المراجعة</span>
+                            {% elif v.status == 'draft' %}
+                            <span class="badge badge-muted">مسودة</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.is_current %}
+                            <span style="color: var(--success); font-weight: 600;">✓ نعم</span>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ v.points }}</td>
+                        <td>{% if v.created_by %}{{ v.created_by.phone }}{% else %}النظام{% endif %}</td>
+                        <td>{% if v.reviewed_by %}{{ v.reviewed_by.phone }}{% else %}—{% endif %}</td>
+                        <td>{% if v.approved_by %}{{ v.approved_by.phone }}{% else %}—{% endif %}</td>
+                        <td>{% if v.published_by %}{{ v.published_by.phone }}{% else %}—{% endif %}</td>
+                        <td class="text-muted">{{ v.published_at|date:"Y-m-d H:i"|default:"—" }}</td>
+                        <td style="text-align: center;">
+                            {% if v.pk == question.current_version_id %}
+                            <a href="{% url 'control:question_detail' question.pk %}" class="btn btn-outline btn-sm">النسخة الحالية</a>
+                            {% else %}
+                            <a href="{% url 'control:question_version_detail' question.pk v.version_number %}" class="btn btn-outline btn-sm" title="عرض هذه النسخة التاريخية للقراءة فقط">استعراض</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends "control/base.html" %}
+
+{% block title %}تفاصيل سجل الاستيراد #{{ log.id|slice:":8" }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:import_overview' %}">مركز الاستيراد</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item current">تفاصيل العملية #{{ log.id|slice:":8" }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+            <h1 class="page-title" style="margin: 0;">سجل الاستيراد</h1>
+            <span class="badge {% if log.status == 'succeeded' %}badge-success{% elif log.status == 'failed' %}badge-danger{% else %}badge-warning{% endif %}" style="font-size: 13px;">
+                {{ log.get_status_display }}
+            </span>
+            <span class="badge badge-primary" style="font-size: 12px;">{{ log.get_operation_display }}</span>
+            <span class="badge badge-neutral" style="font-size: 12px;">{{ log.get_content_type_display }}</span>
+        </div>
+        <p class="text-muted" style="margin: 0; font-size: 13px;" dir="ltr">
+            ID: {{ log.id }} &bull; {{ log.created_at|date:"Y-m-d H:i:s" }}
+        </p>
+    </div>
+    <div class="page-actions" style="display: flex; gap: 8px;">
+        <a href="{% url 'control:import_overview' %}" class="btn btn-outline btn-sm">
+            &rarr; العودة لسجل العمليات
+        </a>
+        {% if user.is_superuser %}
+        <a href="/admin/imports/contentimportlog/{{ log.id }}/change/" target="_blank" class="btn btn-ghost btn-sm" title="عرض السجل في Django Admin">
+            Django Admin &larr;
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Primary Metrics Cards -->
+<div class="metrics-grid">
+    <div class="metric-card border-success">
+        <div class="metric-header">
+            <span class="metric-title">تمت إضافتها (Created)</span>
+            <div class="metric-icon badge-success" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value" style="color: var(--success);">{{ log.report.created|default:"0" }}</div>
+        <div class="metric-subtitle">سجلات جديدة أُنشئت في النظام</div>
+    </div>
+
+    <div class="metric-card border-primary">
+        <div class="metric-header">
+            <span class="metric-title">تم تحديثها (Updated)</span>
+            <div class="metric-icon badge-primary" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value" style="color: var(--primary);">{{ log.report.updated|default:"0" }}</div>
+        <div class="metric-subtitle">تحديث سجلات قائمة</div>
+    </div>
+
+    <div class="metric-card border-warning">
+        <div class="metric-header">
+            <span class="metric-title">نسخ جديدة للأسئلة (New Versions)</span>
+            <div class="metric-icon badge-warning" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="16 16 12 12 8 16"></polyline>
+                    <line x1="12" y1="12" x2="12" y2="21"></line>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ log.report.new_versions|default:"0" }}</div>
+        <div class="metric-subtitle">نسخ جديدة لحفظ السجل التاريخي</div>
+    </div>
+
+    <div class="metric-card border-primary">
+        <div class="metric-header">
+            <span class="metric-title">مطابق للشيكسوم (Unchanged)</span>
+            <div class="metric-icon badge-neutral" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ log.report.unchanged|default:"0" }}</div>
+        <div class="metric-subtitle">لم يتم تكرار إنشائها</div>
+    </div>
+</div>
+
+<!-- Metadata & Audit Details Grid -->
+<div class="dashboard-grid">
+    <!-- Metadata Summary -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">بيانات العملية والتدقيق</h2>
+        </div>
+        <div class="card-body">
+            <table class="table" style="font-size: 13.5px;">
+                <tbody>
+                    <tr>
+                        <td style="width: 160px; font-weight: 600; color: var(--text-secondary);">المعرف الفريد (UUID):</td>
+                        <td dir="ltr" style="font-family: monospace; font-size: 12.5px;">{{ log.id }}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600; color: var(--text-secondary);">تاريخ وتوقيت العملية:</td>
+                        <td dir="ltr">{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600; color: var(--text-secondary);">المستخدم المنفذ:</td>
+                        <td>
+                            {% if log.created_by %}
+                                <strong>{{ log.created_by.phone }}</strong>
+                                {% if log.created_by.is_superuser %}
+                                <span class="badge badge-primary" style="font-size: 10px; margin-right: 6px;">Super Admin</span>
+                                {% else %}
+                                <span class="badge badge-neutral" style="font-size: 10px; margin-right: 6px;">Staff</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">النظام (System Process)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600; color: var(--text-secondary);">كود الشيكسوم (SHA256):</td>
+                        <td dir="ltr" style="font-family: monospace; font-size: 12px; word-break: break-all;">
+                            {{ log.source_checksum|default:"—" }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600; color: var(--text-secondary);">الملفات المصدرية:</td>
+                        <td>
+                            {% if log.source_names %}
+                            <ul style="padding-right: 18px; margin: 0; font-size: 12.5px;">
+                                {% for name in log.source_names %}
+                                <li>{{ name }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Errors / Warnings breakdown if present -->
+            {% if log.errors %}
+            <div style="margin-top: 20px;">
+                <h3 style="font-size: 14px; font-weight: 700; color: var(--danger); margin-bottom: 8px;">
+                    قائمة الأخطاء المسجلة ({{ log.errors|length }}):
+                </h3>
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); padding: 12px;">
+                    <ul style="padding-right: 18px; color: #991b1b; font-size: 13px; margin: 0;">
+                        {% for err in log.errors %}
+                        <li style="margin-bottom: 4px;">{{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if log.warnings %}
+            <div style="margin-top: 20px;">
+                <h3 style="font-size: 14px; font-weight: 700; color: var(--warning); margin-bottom: 8px;">
+                    التنبيهات المسجلة ({{ log.warnings|length }}):
+                </h3>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 12px;">
+                    <ul style="padding-right: 18px; color: #92400e; font-size: 12.5px; margin: 0;">
+                        {% for warn in log.warnings %}
+                        <li style="margin-bottom: 4px;">{{ warn }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Technical Report Viewer (Collapsible) -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">التقرير الفني الخام (JSON Report)</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted" style="font-size: 12.5px; margin-bottom: 12px;">
+                    المخرجات التفصيلية الناتجة عن محرك الاستيراد للأغراض التشخيصية والتدقيقية:
+                </p>
+                <div style="background: #0f172a; color: #e2e8f0; border-radius: var(--radius-md); padding: 16px; font-family: monospace; font-size: 12px; max-height: 420px; overflow: auto;" dir="ltr">
+                    <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ report_json|default:"{}" }}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

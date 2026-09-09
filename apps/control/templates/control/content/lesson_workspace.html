@@ -1,0 +1,255 @@
+{% extends "control/base.html" %}
+
+{% block title %}{{ lesson.title }} — مساحة الدرس{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:content_home' %}">المحتوى الدراسي</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:subject_workspace' subject_id=lesson.unit.subject.id %}">{{ lesson.unit.subject.name_ar }}</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item"><a href="{% url 'control:unit_workspace' unit_id=lesson.unit.id %}">{{ lesson.unit.title }}</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">{{ lesson.title }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title-group">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h1>{{ lesson.title }}</h1>
+            <span class="status-pill {{ lesson.status }}">{{ lesson.get_status_display }}</span>
+        </div>
+        <p>
+            الوحدة: <strong>{{ lesson.unit.title }}</strong> | 
+            المادة: <strong>{{ lesson.unit.subject.name_ar }}</strong> | 
+            المدة المقدرة: {{ lesson.estimated_minutes }} دقيقة | 
+            المعرف: <code>{{ lesson.id }}</code>
+        </p>
+    </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="workspace-tabs">
+    <a href="?tab=explanation" class="workspace-tab-item {% if current_tab == 'explanation' %}active{% endif %}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>شرح الدرس</span>
+        {% if explanation %}
+        <span class="tab-badge">متوفر</span>
+        {% endif %}
+    </a>
+
+    <a href="?tab=summaries" class="workspace-tab-item {% if current_tab == 'summaries' %}active{% endif %}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>الملخصات والمراجعات</span>
+        <span class="tab-badge">{{ summaries|length }}</span>
+    </a>
+
+    <a href="?tab=flashcards" class="workspace-tab-item {% if current_tab == 'flashcards' %}active{% endif %}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="12" y1="4" x2="12" y2="20"></line>
+        </svg>
+        <span>البطاقات الذكية</span>
+        <span class="tab-badge">{{ decks|length }}</span>
+    </a>
+</div>
+
+<!-- Tab 1: Lesson Explanation Content -->
+{% if current_tab == 'explanation' %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">شرح الدرس المفصل</h3>
+            <p class="card-subtitle">المحتوى التعليمي الأساسي الذي يقرأه الطالب في مركز الدرس</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            {% if explanation %}
+            <a href="{% url 'control:lesson_explanation_preview' lesson_id=lesson.id %}" class="btn btn-ghost btn-sm">
+                معاينة الشرح &larr;
+            </a>
+            {% if perms.content.change_lessonexplanation or user.is_superuser %}
+            <a href="{% url 'control:lesson_explanation_edit' lesson_id=lesson.id %}" class="btn btn-primary btn-sm">
+                تعديل الشرح
+            </a>
+            {% endif %}
+            {% else %}
+            {% if perms.content.add_lessonexplanation or user.is_superuser %}
+            <a href="{% url 'control:lesson_explanation_edit' lesson_id=lesson.id %}" class="btn btn-primary btn-sm">
+                + إنشاء شرح للدرس
+            </a>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        {% if explanation %}
+        <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+            <span class="status-pill {{ explanation.status }}">{{ explanation.get_status_display }}</span>
+            <span class="badge badge-neutral">التنسيق: {{ explanation.get_content_format_display }}</span>
+            <span style="font-size: 12px; color: var(--text-muted);" dir="ltr">آخر تحديث: {{ explanation.updated_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <div style="background-color: var(--bg-secondary); padding: 18px; border-radius: var(--radius-md); font-size: 14px; max-height: 280px; overflow-y: auto; white-space: pre-wrap; font-family: inherit; line-height: 1.7;">{{ explanation.body|truncatechars:1200 }}</div>
+        {% else %}
+        <div class="empty-state" style="padding: 40px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; opacity: 0.5;">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            <p>لم يتم إنشاء شرح لهذا الدرس بعد.</p>
+            {% if perms.content.add_lessonexplanation or user.is_superuser %}
+            <div style="margin-top: 12px;">
+                <a href="{% url 'control:lesson_explanation_edit' lesson_id=lesson.id %}" class="btn btn-secondary btn-sm">
+                    كتابة الشرح الآن
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Tab 2: Summaries Content -->
+{% if current_tab == 'summaries' %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">ملخصات ومراجعات الدرس ({{ summaries|length }})</h3>
+            <p class="card-subtitle">الملخصات والمراجعات السريعة والملفات الإثرائية التابعة لهذا الدرس</p>
+        </div>
+        {% if perms.content.add_summary or user.is_superuser %}
+        <a href="{% url 'control:summary_create' %}?lesson_id={{ lesson.id }}" class="btn btn-primary btn-sm">
+            + إضافة ملخص للدرس
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if summaries %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>عنوان الملخص</th>
+                        <th>النوع</th>
+                        <th>الحالة</th>
+                        <th>مرفق</th>
+                        <th>قابل للتحميل</th>
+                        <th>تاريخ التحديث</th>
+                        <th style="text-align: left;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for summary in summaries %}
+                    <tr>
+                        <td><strong>{{ summary.title }}</strong></td>
+                        <td>{{ summary.get_summary_type_display }}</td>
+                        <td><span class="status-pill {{ summary.status }}">{{ summary.get_status_display }}</span></td>
+                        <td>
+                            {% if summary.file_path %}
+                            <span class="badge badge-neutral">ملف مرفق</span>
+                            {% else %}
+                            <span style="color: var(--text-muted); font-size: 12px;">نص فقط</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if summary.is_downloadable %}
+                            <span style="color: var(--color-success); font-size: 12px;">نعم</span>
+                            {% else %}
+                            <span style="color: var(--text-muted); font-size: 12px;">لا</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size: 12px; color: var(--text-muted);" dir="ltr">{{ summary.updated_at|date:"Y-m-d H:i" }}</td>
+                        <td style="text-align: left;">
+                            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                                <a href="{% url 'control:summary_preview' pk=summary.pk %}" class="btn btn-ghost btn-sm">معاينة</a>
+                                {% if perms.content.change_summary or user.is_superuser %}
+                                <a href="{% url 'control:summary_update' pk=summary.pk %}" class="btn btn-secondary btn-sm">تعديل</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>لا توجد ملخصات لهذا الدرس بعد.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Tab 3: Flashcards Decks Content -->
+{% if current_tab == 'flashcards' %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">حزم البطاقات الذكية ({{ decks|length }})</h3>
+            <p class="card-subtitle">البطاقات التفاعلية لتعزيز الحفظ والمراجعة الذاتية للطالب</p>
+        </div>
+        {% if perms.content.add_flashcarddeck or user.is_superuser %}
+        <a href="{% url 'control:deck_create' %}?lesson_id={{ lesson.id }}" class="btn btn-primary btn-sm">
+            + إضافة حزمة بطاقات
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if decks %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">الترتيب</th>
+                        <th>عنوان الحزمة</th>
+                        <th>عدد البطاقات</th>
+                        <th>الحالة</th>
+                        <th>الوصف</th>
+                        <th style="text-align: left;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deck in decks %}
+                    <tr>
+                        <td><span class="badge badge-neutral">{{ deck.sort_order }}</span></td>
+                        <td><strong>{{ deck.title }}</strong></td>
+                        <td>
+                            <span class="badge badge-primary" style="font-weight: 700;">{{ deck.card_count }} بطاقة</span>
+                        </td>
+                        <td><span class="status-pill {{ deck.status }}">{{ deck.get_status_display }}</span></td>
+                        <td style="font-size: 12px; color: var(--text-muted);">{{ deck.description|truncatechars:45|default:"—" }}</td>
+                        <td style="text-align: left;">
+                            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                                <a href="{% url 'control:deck_detail' pk=deck.pk %}" class="btn btn-secondary btn-sm">
+                                    إدارة البطاقات &larr;
+                                </a>
+                                {% if perms.content.change_flashcarddeck or user.is_superuser %}
+                                <a href="{% url 'control:deck_update' pk=deck.pk %}" class="btn btn-ghost btn-sm">تعديل</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>لم يتم إنشاء بطاقات ذكية لهذا الدرس بعد.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

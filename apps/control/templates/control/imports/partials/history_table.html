@@ -1,0 +1,161 @@
+<div id="historyTableContainer">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>وقت العملية</th>
+                    <th>نوع المحتوى</th>
+                    <th>طريقة التنفيذ</th>
+                    <th>الملفات المصدرية</th>
+                    <th>المنفذ</th>
+                    <th>الحالة</th>
+                    <th>النتائج والأثر</th>
+                    <th style="text-align: center;">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in page_obj %}
+                <tr>
+                    <td class="text-muted" style="white-space: nowrap;" dir="ltr">
+                        {{ log.created_at|date:"Y-m-d H:i" }}
+                    </td>
+                    <td>
+                        <span class="badge badge-neutral" style="font-weight: 600;">
+                            {{ log.get_content_type_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if log.operation == 'replace_scope' %}badge-danger{% elif log.operation == 'upsert' %}badge-primary{% else %}badge-neutral{% endif %}">
+                            {{ log.get_operation_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if log.source_names %}
+                            <div style="font-weight: 500;">
+                                {{ log.source_names.0|truncatechars:35 }}
+                            </div>
+                            {% if log.source_names|length > 1 %}
+                            <span class="text-muted" style="font-size: 11px;">
+                                + {{ log.source_names|length|add:"-1" }} ملفات إضافية
+                            </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.created_by %}
+                            <span style="font-size: 12px;">{{ log.created_by.phone }}</span>
+                        {% else %}
+                            <span class="text-muted">النظام</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.status == "succeeded" %}
+                            <span class="badge badge-success">ناجح</span>
+                        {% elif log.status == "failed" %}
+                            <span class="badge badge-danger">فشل</span>
+                        {% elif log.status == "previewed" %}
+                            <span class="badge badge-warning">معاينة فقط</span>
+                        {% else %}
+                            <span class="badge badge-neutral">{{ log.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.report %}
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px;">
+                                {% if log.report.created %}
+                                <span class="badge badge-success" title="عناصر تم إنشاؤها">+{{ log.report.created }}</span>
+                                {% endif %}
+                                {% if log.report.updated %}
+                                <span class="badge badge-primary" title="عناصر تم تحديثها">~{{ log.report.updated }}</span>
+                                {% endif %}
+                                {% if log.report.new_versions %}
+                                <span class="badge badge-warning" title="نسخ جديدة للحفاظ على السجل التاريخي">v+{{ log.report.new_versions }}</span>
+                                {% endif %}
+                                {% if log.report.unchanged %}
+                                <span class="badge badge-neutral" title="مطابق لا تغيير">{{ log.report.unchanged }} ثابت</span>
+                                {% endif %}
+                                {% if log.report.archived %}
+                                <span class="badge badge-neutral" title="مؤرشف">{{ log.report.archived }} مؤرشف</span>
+                                {% endif %}
+                                {% if log.report.deleted %}
+                                <span class="badge badge-danger" title="محذوف">{{ log.report.deleted }} محذوف</span>
+                                {% endif %}
+                                {% if log.report.errors %}
+                                <span class="badge badge-danger" title="أخطاء">{{ log.report.errors|length }} خطأ</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <a href="{% url 'control:import_log_detail' log.id %}" class="btn btn-outline btn-sm" title="عرض تفاصيل سجل الاستيراد">
+                            استعراض
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 32px 16px;">
+                        <div class="empty-state">
+                            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 8px; opacity: 0.5;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <p style="font-weight: 600; margin-bottom: 4px;">لا توجد عمليات استيراد تطابق الفلاتر المحددة.</p>
+                            <p class="text-muted" style="font-size: 12px;">يمكنك بدء استيراد جديد بالضغط على زر "استيراد جديد" بالأعلى.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-top: 1px solid var(--border-color);">
+        <div class="text-muted" style="font-size: 12px;">
+            عرض الصفحة {{ page_obj.number }} من إجمالي {{ page_obj.paginator.num_pages }} ({{ page_obj.paginator.count }} عملية)
+        </div>
+        <div style="display: flex; gap: 4px;">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.content_type %}&content_type={{ request.GET.content_type }}{% endif %}{% if request.GET.operation %}&operation={{ request.GET.operation }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+               class="btn btn-outline btn-sm"
+               hx-get="?page={{ page_obj.previous_page_number }}{% if request.GET.content_type %}&content_type={{ request.GET.content_type }}{% endif %}{% if request.GET.operation %}&operation={{ request.GET.operation }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+               hx-target="#historyTableContainer"
+               hx-push-url="true">
+                &rarr; السابقة
+            </a>
+            {% endif %}
+
+            {% for p in page_obj.paginator.page_range %}
+                {% if p == page_obj.number %}
+                <span class="btn btn-primary btn-sm" style="pointer-events: none;">{{ p }}</span>
+                {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                <a href="?page={{ p }}{% if request.GET.content_type %}&content_type={{ request.GET.content_type }}{% endif %}{% if request.GET.operation %}&operation={{ request.GET.operation }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                   class="btn btn-outline btn-sm"
+                   hx-get="?page={{ p }}{% if request.GET.content_type %}&content_type={{ request.GET.content_type }}{% endif %}{% if request.GET.operation %}&operation={{ request.GET.operation }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                   hx-target="#historyTableContainer"
+                   hx-push-url="true">
+                    {{ p }}
+                </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.content_type %}&content_type={{ request.GET.content_type }}{% endif %}{% if request.GET.operation %}&operation={{ request.GET.operation }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+               class="btn btn-outline btn-sm"
+               hx-get="?page={{ page_obj.next_page_number }}{% if request.GET.content_type %}&content_type={{ request.GET.content_type }}{% endif %}{% if request.GET.operation %}&operation={{ request.GET.operation }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+               hx-target="#historyTableContainer"
+               hx-push-url="true">
+                التالية &larr;
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>

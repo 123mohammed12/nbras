@@ -1,0 +1,151 @@
+<!-- Primary Operational KPIs & Attention Cards -->
+<div class="metrics-grid" id="dashboardKpisContainer">
+    <!-- 1. Questions Under Review -->
+    <div class="metric-card {% if metrics.questions_under_review > 0 %}border-warning{% endif %}">
+        <div class="metric-header">
+            <span class="metric-title">أسئلة بانتظار المراجعة</span>
+            <div class="metric-icon {% if metrics.questions_under_review > 0 %}badge-warning{% else %}badge-neutral{% endif %}" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 14 14"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.questions_under_review|default:"0" }}</div>
+        <div class="metric-subtitle">
+            {% if metrics.questions_under_review > 0 %}
+                تتطلب تدقيق المشرف العلمي قبل النشر
+            {% else %}
+                لا توجد أسئلة معلقة حالياً
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 2. Failed Imports (24h) -->
+    <div class="metric-card {% if metrics.imports_24h.failed > 0 %}border-danger{% endif %}">
+        <div class="metric-header">
+            <span class="metric-title">استيراد فاشل (24 ساعة)</span>
+            <div class="metric-icon {% if metrics.imports_24h.failed > 0 %}badge-danger{% else %}badge-neutral{% endif %}" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.imports_24h.failed|default:"0" }}</div>
+        <div class="metric-subtitle">
+            من إجمالي {{ metrics.imports_24h.total|default:"0" }} عملية استيراد
+        </div>
+    </div>
+
+    <!-- 3. Quality Warnings -->
+    <div class="metric-card {% if metrics.quality_flagged_count > 0 %}border-warning{% endif %}">
+        <div class="metric-header">
+            <span class="metric-title">تنبيهات جودة الأسئلة</span>
+            <div class="metric-icon {% if metrics.quality_flagged_count > 0 %}badge-warning{% else %}badge-neutral{% endif %}" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.quality_flagged_count|default:"0" }}</div>
+        <div class="metric-subtitle">
+            أسئلة بها مشاكل فنية أو شكاوى
+        </div>
+    </div>
+
+    <!-- 4. Notification Delivery Failures -->
+    <div class="metric-card {% if metrics.notifications_24h.failed > 0 %}border-danger{% endif %}">
+        <div class="metric-header">
+            <span class="metric-title">فشل تسليم الإشعارات</span>
+            <div class="metric-icon {% if metrics.notifications_24h.failed > 0 %}badge-danger{% else %}badge-neutral{% endif %}" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.notifications_24h.failed|default:"0" }}</div>
+        <div class="metric-subtitle">
+            من أصل {{ metrics.notifications_24h.total|default:"0" }} تسليم خلال آخر 24 ساعة
+        </div>
+    </div>
+
+    <!-- 5. Active Subscriptions -->
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">الاشتراكات النشطة</span>
+            <div class="metric-icon badge-success" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.active_subscriptions_count|default:"0" }}</div>
+        <div class="metric-subtitle">
+            اشتراكات فعالة حالياً
+        </div>
+    </div>
+
+    <!-- 6. Active Students (7 Days) -->
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">الطلاب النشطون (7 أيام)</span>
+            <div class="metric-icon badge-primary" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.active_students_7d|default:"0" }}</div>
+        <div class="metric-subtitle">
+            مبني على آخر نشاط مسجل للأجهزة
+        </div>
+    </div>
+
+    <!-- 7. Published Questions -->
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">الأسئلة المنشورة</span>
+            <div class="metric-icon badge-neutral" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value">{{ metrics.published_questions_count|default:"0" }}</div>
+        <div class="metric-subtitle">
+            إجمالي الأسئلة الجاهزة للاختبارات
+        </div>
+    </div>
+
+    <!-- 8. Pool Health Status -->
+    <div class="metric-card {% if not metrics.pool_health.healthy %}border-warning{% endif %}">
+        <div class="metric-header">
+            <span class="metric-title">جاهزية بنك الأسئلة</span>
+            <div class="metric-icon {% if metrics.pool_health.healthy %}badge-success{% else %}badge-warning{% endif %}" style="padding: 6px; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="metric-value" style="font-size: 1.5rem; margin-top: 0.25rem;">
+            {% if metrics.pool_health.healthy %}
+                <span style="color: var(--color-success);">سليم وجاهز</span>
+            {% else %}
+                <span style="color: var(--color-warning);">يحتاج انتباه ({{ metrics.pool_health.unhealthy_rules }})</span>
+            {% endif %}
+        </div>
+        <div class="metric-subtitle">
+            {{ metrics.pool_health.total_rules }} قاعدة تغطية مفحوصة
+        </div>
+    </div>
+</div>

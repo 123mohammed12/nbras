@@ -1,0 +1,245 @@
+{% extends "control/base.html" %}
+
+{% block title %}لوحة المؤشرات التشغيلية{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item"><a href="{% url 'control:dashboard' %}">لوحة العمليات</a></span>
+<span class="breadcrumb-separator">/</span>
+<span class="breadcrumb-item">المؤشرات الحية</span>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-title-group">
+        <h1>لوحة المؤشرات التشغيلية</h1>
+        <p>نظرة عامة على صحة العمليات، بنك الأسئلة، الاشتراكات، وحركة النظام الآنية</p>
+    </div>
+    <div class="page-actions">
+        <button type="button" class="btn btn-secondary btn-sm" 
+                hx-get="{% url 'control:dashboard' %}" 
+                hx-target="#dashboardKpisContainer" 
+                hx-swap="outerHTML"
+                hx-indicator="#refreshSpinner">
+            <svg id="refreshSpinner" class="htmx-indicator" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 6px;">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span>تحديث المؤشرات</span>
+        </button>
+
+        {% if user.is_superuser %}
+        <a href="/admin/" target="_blank" class="btn btn-ghost btn-sm" title="لوحة المدير الفني الفائقة">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 4px;">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>إدارة Django (Super)</span>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Primary KPIs Grid -->
+{% include "control/partials/dashboard_kpis.html" %}
+
+<!-- Operational Attention & Status Grid -->
+<div class="content-grid-2col" style="margin-top: 1.5rem;">
+    <!-- Column 1: Recent Imports (24h) -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">عمليات الاستيراد الأخيرة (24 ساعة)</h3>
+                <p class="card-subtitle">سجل حزم المحتوى والأسئلة التي تمت معالجتها مؤخراً</p>
+            </div>
+            {% if user.is_superuser %}
+            <a href="/admin/imports/contentimportlog/" target="_blank" class="btn btn-ghost btn-sm" style="font-size: 0.75rem;">
+                عرض في Django Admin &larr;
+            </a>
+            {% endif %}
+        </div>
+        <div class="card-body" style="padding: 0;">
+            {% if metrics.imports_24h.recent_logs %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>الحزمة / الملف</th>
+                            <th>المشرف</th>
+                            <th>الحالة</th>
+                            <th>الأسئلة</th>
+                            <th>الوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in metrics.imports_24h.recent_logs %}
+                        <tr>
+                            <td>
+                                <strong>{{ log.get_content_type_display }}</strong>
+                                {% if log.source_names %}
+                                <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px;">
+                                    {{ log.source_names.0|truncatechars:28 }}
+                                </div>
+                                {% endif %}
+                                {% if log.errors %}
+                                <div style="font-size: 0.75rem; color: var(--color-danger); margin-top: 2px;">
+                                    {{ log.errors.0|truncatechars:40 }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.created_by.phone|default:"نظام" }}</td>
+                            <td>
+                                {% if log.status == "succeeded" %}
+                                    <span class="badge badge-success">ناجح</span>
+                                {% elif log.status == "failed" %}
+                                    <span class="badge badge-danger">فشل</span>
+                                {% elif log.status == "previewed" %}
+                                    <span class="badge badge-warning">معاينة</span>
+                                {% else %}
+                                    <span class="badge badge-neutral">{{ log.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.get_operation_display }}</td>
+                            <td style="font-size: 0.8rem; color: var(--color-text-muted);" dir="ltr">
+                                {{ log.created_at|date:"Y-m-d H:i" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <p>لا توجد عمليات استيراد مسجلة خلال آخر 24 ساعة.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Column 2: Question Bank Health & Subject Breakdown -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">توزيع الأسئلة المنشورة حسب المادة</h3>
+                <p class="card-subtitle">جاهزية المحتوى التدريبي الفعال للطلاب</p>
+            </div>
+            {% if user.is_superuser %}
+            <a href="/admin/question_bank/question/health/" target="_blank" class="btn btn-ghost btn-sm" style="font-size: 0.75rem;">
+                فحص عميق (Admin) &larr;
+            </a>
+            {% endif %}
+        </div>
+        <div class="card-body" style="padding: 0;">
+            {% if metrics.published_questions_by_subject %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>المادة الدراسية</th>
+                            <th>الأسئلة المنشورة</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in metrics.published_questions_by_subject %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.subject_name }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge badge-neutral" style="font-weight: 700; font-size: 0.85rem;">
+                                    {{ item.count }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if item.count >= 50 %}
+                                    <span class="badge badge-success">مكتمل</span>
+                                {% elif item.count > 0 %}
+                                    <span class="badge badge-warning">مقبول</span>
+                                {% else %}
+                                    <span class="badge badge-danger">بحاجة لدعم</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <p>لا توجد أسئلة منشورة مرتبطة بمواد دراسية حالياً.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Operational Status: Delivery & Pool Details -->
+<div class="content-grid-2col" style="margin-top: 1.5rem;">
+    <!-- Notifications Delivery Summary -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">تسليم الإشعارات الفورية (24 ساعة)</h3>
+                <p class="card-subtitle">معدلات الوصول للأجهزة وحالات الإرسال عبر Firebase</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                <div style="padding: 1rem; background-color: var(--color-surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-success);">
+                        {{ metrics.notifications_24h.sent|default:"0" }}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.25rem;">تم التسليم بنجاح</div>
+                </div>
+                <div style="padding: 1rem; background-color: var(--color-surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-warning);">
+                        {{ metrics.notifications_24h.pending|default:"0" }}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.25rem;">قيد الإرسال</div>
+                </div>
+                <div style="padding: 1rem; background-color: var(--color-surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-danger);">
+                        {{ metrics.notifications_24h.failed|default:"0" }}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.25rem;">فشل التسليم</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pool Health Snapshot -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">مؤشر جاهزية القواعد (Pool Health)</h3>
+                <p class="card-subtitle">التحقق من كفاية الأسئلة لتوليد الاختبارات الوزارية والتدريبية</p>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if metrics.pool_health.healthy %}
+            <div class="alert alert-success" style="margin-bottom: 0;">
+                <div class="alert-content">
+                    <strong>بنك الأسئلة جاهز تماماً:</strong> تم فحص {{ metrics.pool_health.total_rules }} قاعدة توليد بنجاح، ولا توجد ثغرات نقص أسئلة.
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-warning" style="margin-bottom: 0;">
+                <div class="alert-content">
+                    <strong>تنبيه نقص محتوى:</strong> يوجد {{ metrics.pool_health.unhealthy_rules }} قاعدة تحتاج أسئلة إضافية لضمان عمل نماذج الاختبار بكفاءة.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
