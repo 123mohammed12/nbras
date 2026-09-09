@@ -5,7 +5,7 @@ def create_question_bank_roles(apps, schema_editor):
     ContentType = apps.get_model('contenttypes', 'ContentType')
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
-    question_type = ContentType.objects.get(app_label='question_bank', model='question')
+    question_type, _ = ContentType.objects.get_or_create(app_label='question_bank', model='question')
     for codename, name in (
         ('review_question', 'Can review question versions'),
         ('publish_question', 'Can publish question versions'),
@@ -20,6 +20,12 @@ def create_question_bank_roles(apps, schema_editor):
         'add_questionoption', 'change_questionoption', 'view_questionoption',
         'add_questionasset', 'change_questionasset', 'view_questionasset',
     }
+    for code in author_codes:
+        Permission.objects.get_or_create(
+            content_type=question_type,
+            codename=code,
+            defaults={'name': f"Can {code.replace('_', ' ')}"},
+        )
     role_codes = {
         'Question Bank Author': author_codes,
         'Question Bank Reviewer': author_codes | {'review_question'},
