@@ -1,154 +1,233 @@
-# 🚀 دليل نشر Smart Teacher API — الباكند
+# 🚀 دليل نشر Smart Teacher API — PythonAnywhere
 
-## المتطلبات الأساسية
+## المتطلبات
 
-| المتطلب | الإصدار المطلوب |
-|---------|----------------|
-| Python | 3.12+ |
-| PostgreSQL | 16+ |
-| Redis | 7+ |
+| المتطلب | التفاصيل |
+|---------|---------|
+| حساب PythonAnywhere | خطة **Developer** ($10/شهر) |
+| Python | 3.12 (متوفر على PythonAnywhere) |
+| PostgreSQL | متوفر في الخطة المدفوعة |
 
 ---
 
-## 🔧 خطوات النشر
+## 📋 خطوات النشر
 
-### الخطوة 1: تجهيز السيرفر
+### الخطوة 1: إنشاء حساب PythonAnywhere
+
+1. سجّل في [pythonanywhere.com](https://www.pythonanywhere.com)
+2. ارقِ إلى خطة **Developer** ($10/شهر) — مطلوب لـ PostgreSQL والاتصال الخارجي
+
+---
+
+### الخطوة 2: إنشاء قاعدة بيانات PostgreSQL
+
+1. من Dashboard → **Databases** tab
+2. أنشئ كلمة مرور لـ PostgreSQL
+3. أنشئ قاعدة بيانات جديدة باسم `smart_teacher`
+4. **سجّل هذه المعلومات** (ستحتاجها لاحقاً):
+   - **Host**: `YOUR_USERNAME-smart-teacher.postgres.pythonanywhere-services.com`
+   - **Database name**: `YOUR_USERNAME$smart_teacher`
+   - **Username**: `YOUR_USERNAME`
+   - **Port**: الرقم المعروض في الصفحة
+
+---
+
+### الخطوة 3: استنساخ المشروع من GitHub
+
+افتح **Bash Console** من Dashboard واكتب:
 
 ```bash
-# تحديث النظام
-sudo apt update && sudo apt upgrade -y
-
-# تثبيت المتطلبات
-sudo apt install -y python3.12 python3.12-venv python3-pip \
-    postgresql postgresql-contrib \
-    redis-server \
-    git curl build-essential libpq-dev
+git clone https://github.com/123mohammed12/nbras.git
 ```
 
-### الخطوة 2: إعداد قاعدة البيانات
+---
+
+### الخطوة 4: إنشاء البيئة الافتراضية
 
 ```bash
-# الدخول إلى PostgreSQL
-sudo -u postgres psql
-
-# إنشاء قاعدة البيانات والمستخدم
-CREATE USER smart_teacher_user WITH PASSWORD 'كلمة-مرور-قوية';
-CREATE DATABASE smart_teacher OWNER smart_teacher_user;
-ALTER USER smart_teacher_user CREATEDB;
-\q
+mkvirtualenv --python=/usr/bin/python3.12 smartteacher
+pip install -r nbras/requirements.txt
 ```
 
-### الخطوة 3: رفع الملفات
+---
+
+### الخطوة 5: إعداد ملف البيئة
 
 ```bash
-# إنشاء مجلد التطبيق
-sudo mkdir -p /home/smart_teacher/deploy_backend
-sudo chown -R $(whoami):$(whoami) /home/smart_teacher
-
-# رفع الملفات عبر scp
-scp -r ./* user@server:/home/smart_teacher/deploy_backend/
-```
-
-### الخطوة 4: إعداد ملف البيئة
-
-```bash
-cd /home/smart_teacher/deploy_backend
-
-# نسخ قالب البيئة
+cd ~/nbras
 cp .env.production .env
-
-# تعديل القيم ⚠️ مهم جداً!
 nano .env
 ```
 
-**القيم التي يجب تغييرها:**
+**عدّل القيم التالية** (استبدل `YOUR_USERNAME` باسم حسابك):
 
-| المتغير | الوصف | كيفية التوليد |
-|---------|-------|---------------|
-| `SECRET_KEY` | مفتاح Django السري | `python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
-| `DB_PASSWORD` | كلمة مرور قاعدة البيانات | نفس الكلمة المستخدمة في الخطوة 2 |
-| `ALLOWED_HOSTS` | الدومين/IP | `your-domain.com,www.your-domain.com` |
-| `OTP_HASH_SECRET` | مفتاح تشفير OTP | `python3 -c "import secrets; print(secrets.token_urlsafe(64))"` |
-| `ACTIVATION_CODE_HMAC_SECRET` | مفتاح HMAC | `python3 -c "import secrets; print(secrets.token_urlsafe(64))"` |
+| المتغير | القيمة |
+|---------|-------|
+| `SECRET_KEY` | شغّل: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
+| `ALLOWED_HOSTS` | `YOUR_USERNAME.pythonanywhere.com` |
+| `DB_NAME` | `YOUR_USERNAME$smart_teacher` |
+| `DB_USER` | `YOUR_USERNAME` |
+| `DB_PASSWORD` | كلمة المرور التي أنشأتها في الخطوة 2 |
+| `DB_HOST` | من صفحة Databases |
+| `DB_PORT` | من صفحة Databases |
+| `OTP_HASH_SECRET` | شغّل: `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
+| `ACTIVATION_CODE_HMAC_SECRET` | شغّل: `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
 
-### الخطوة 5: التثبيت والتشغيل
+---
+
+### الخطوة 6: تهيئة قاعدة البيانات
 
 ```bash
-# إنشاء البيئة الافتراضية
-python3 -m venv venv
-source venv/bin/activate
+cd ~/nbras
+workon smartteacher
 
-# تثبيت المتطلبات
-pip install --upgrade pip
-pip install -r requirements.txt
+# إنشاء جدول الكاش
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py createcachetable
 
-# ترحيل قاعدة البيانات
-python manage.py migrate --noinput
+# تشغيل الترحيلات
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py migrate
 
 # جمع الملفات الثابتة
-python manage.py collectstatic --noinput
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py collectstatic --noinput
 
-# إنشاء مستخدم admin (اختياري)
-python manage.py createsuperuser
-
-# تشغيل السيرفر
-python manage.py runserver 0.0.0.0:8000
+# إنشاء مستخدم admin
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py createsuperuser
 ```
 
 ---
 
-## 📦 استيراد بيانات المنهج
+### الخطوة 7: إعداد Web App
+
+1. من Dashboard → **Web** tab → **Add a new web app**
+2. اختر **Manual configuration**
+3. اختر **Python 3.12**
+4. في قسم **Virtualenv**:
+   - أدخل: `/home/YOUR_USERNAME/.virtualenvs/smartteacher`
+5. في قسم **Code**:
+   - **Source code**: `/home/YOUR_USERNAME/nbras`
+   - **Working directory**: `/home/YOUR_USERNAME/nbras`
+
+---
+
+### الخطوة 8: إعداد ملف WSGI
+
+اضغط على رابط **WSGI configuration file** وامسح كل المحتوى واكتب:
+
+```python
+import os
+import sys
+from dotenv import load_dotenv
+
+# ─── Load .env file ─────────────────────────────────
+project_folder = os.path.expanduser('~/nbras')
+load_dotenv(os.path.join(project_folder, '.env'))
+
+# ─── Add project to path ────────────────────────────
+path = '/home/YOUR_USERNAME/nbras'
+if path not in sys.path:
+    sys.path.insert(0, path)
+
+# ─── Set settings module ────────────────────────────
+os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.pythonanywhere'
+
+# ─── Start application ──────────────────────────────
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+```
+
+⚠️ **استبدل `YOUR_USERNAME`** باسم حسابك الحقيقي!
+
+---
+
+### الخطوة 9: إعداد Static و Media Files
+
+في **Web** tab، أضف في قسم **Static files**:
+
+| URL | Directory |
+|-----|-----------|
+| `/static/` | `/home/YOUR_USERNAME/nbras/staticfiles` |
+| `/media/` | `/home/YOUR_USERNAME/nbras/media` |
+
+---
+
+### الخطوة 10: إضافة python-dotenv
+
+WSGI file يحتاج مكتبة `python-dotenv` لتحميل ملف `.env`:
 
 ```bash
-source venv/bin/activate
-python manage.py import_curriculum exported_curriculum_json/
+workon smartteacher
+pip install python-dotenv
 ```
 
 ---
 
-## 🔍 التحقق من عمل الخدمة
+### الخطوة 11: Reload وتجربة
+
+1. اضغط زر **Reload** الأخضر في Web tab
+2. افتح في المتصفح: `https://YOUR_USERNAME.pythonanywhere.com/api/v1/docs/`
+3. يجب أن تظهر صفحة Swagger UI
+
+---
+
+## 📦 استيراد بيانات المنهج (اختياري)
 
 ```bash
-# فحص الـ API
-curl http://your-domain.com/api/v1/schema/
-
-# عرض Swagger UI — افتح في المتصفح:
-# http://your-domain.com/api/v1/docs/
+cd ~/nbras
+workon smartteacher
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py import_curriculum exported_curriculum_json/
 ```
 
 ---
 
-## ⚠️ ملاحظات أمنية مهمة
+## 🔄 التحديثات المستقبلية
 
-1. **لا ترفع ملف `.env`** إلى Git
-2. **غيّر جميع كلمات المرور والمفاتيح** قبل النشر
-3. **قيّد `ALLOWED_HOSTS`** بالدومين الفعلي فقط
-4. **النسخ الاحتياطي** لقاعدة البيانات بشكل يومي:
-   ```bash
-   pg_dump -U smart_teacher_user smart_teacher > backup_$(date +%Y%m%d).sql
-   ```
+```bash
+cd ~/nbras
+git pull origin main
+workon smartteacher
+pip install -r requirements.txt
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py migrate
+DJANGO_SETTINGS_MODULE=config.settings.pythonanywhere python manage.py collectstatic --noinput
+```
+
+ثم اضغط **Reload** في Web tab.
 
 ---
 
-## 📁 هيكل المجلدات
+## 🔍 حل المشاكل
+
+### خطأ 502 Bad Gateway
+- تحقق من **Error log** في Web tab
+- تأكد من مسار الـ virtualenv صحيح
+
+### خطأ "DisallowedHost"
+- تأكد من `ALLOWED_HOSTS` في `.env` يحتوي اسم الدومين الصحيح
+
+### خطأ في قاعدة البيانات
+- تأكد من قيم `DB_HOST` و `DB_NAME` و `DB_PORT` من صفحة Databases
+
+### خطأ "No module named..."
+- تأكد أنك مفعّل الـ virtualenv الصحيح في Web tab
+
+---
+
+## 📁 هيكل المجلدات على PythonAnywhere
 
 ```
-deploy_backend/
-├── apps/                    # تطبيقات Django (19 تطبيق)
-├── config/                  # إعدادات المشروع
-│   ├── settings/
-│   │   ├── base.py          # الإعدادات المشتركة
-│   │   ├── production.py    # إعدادات الإنتاج ✓
-│   │   ├── staging.py       # إعدادات التجريب
-│   │   └── development.py   # إعدادات التطوير
-│   ├── urls.py
-│   ├── wsgi.py              # → production settings
-│   └── asgi.py              # → production settings
-├── exported_curriculum_json/ # بيانات المنهج
-├── manage.py                # → production settings
-├── requirements.txt         # المتطلبات
-├── .env.production          # قالب متغيرات البيئة
-├── .gitignore
-├── pytest.ini               # إعدادات الاختبارات
-└── README_DEPLOY.md         # هذا الدليل
+/home/YOUR_USERNAME/
+├── nbras/                        # المشروع (من GitHub)
+│   ├── apps/                     # 19 تطبيق Django
+│   ├── config/
+│   │   └── settings/
+│   │       ├── base.py
+│   │       ├── production.py
+│   │       └── pythonanywhere.py  # ← الإعدادات المستخدمة
+│   ├── exported_curriculum_json/
+│   ├── staticfiles/              # ← يُنشأ بعد collectstatic
+│   ├── media/                    # ← ملفات المستخدمين
+│   ├── .env                      # ← ملف البيئة (محلي)
+│   ├── manage.py
+│   └── requirements.txt
+└── .virtualenvs/
+    └── smartteacher/             # البيئة الافتراضية
 ```
